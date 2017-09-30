@@ -3,12 +3,10 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 
-SOURCES += main.c
+SOURCES += plane.c
 SOURCES += color.h
 SOURCES += Allegro.h
 SOURCES += variate.h
-SOURCES += began.c
-SOURCES += Allegro_began.h
 INCLUDEPATH+=-I/usr/include/allegro5
 LIBS+=-L/usr/lib -lallegro
 LIBS+=-L/usr/lib -lallegro_color

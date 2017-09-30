@@ -20,17 +20,17 @@ int main()
         fprintf(stderr, "failed to create timer!\n");
         exit(1);
     }
-    n.bitmap=al_load_bitmap("img1.jpg");
+    n.bitmap=al_load_bitmap("../startrek/img1.jpg");
     if(!n.bitmap){
         fprintf(stderr, "failed to create bitmap!\n");
         exit(1);
     }
-    n.font1=al_load_ttf_font("a.ttf",word_size,128);
+    n.font1=al_load_ttf_font("../startrek/a.ttf",word_size,128);
     if(!n.font1){
         fprintf(stderr, "failed to create font1!\n");
         exit(1);
     }
-    n.font2=al_load_ttf_font("a.ttf",4*word_size,128);
+    n.font2=al_load_ttf_font("../startrek/a.ttf",4*word_size,128);
     if(!n.font2){
         fprintf(stderr, "failed to create font2!\n");
         exit(1);
