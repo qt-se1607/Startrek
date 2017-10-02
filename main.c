@@ -39,12 +39,11 @@ int main()
     Init_Queue(n);
     al_start_timer(n.timer);
     while(1){
-        if(al_start_game(n)){
-            if(al_join_game(n))al_end_game(n);
-        }
-        else{
-            Destroy_Allegro(n);
-            break;
-        }
+       al_start_game(n);
+       al_join_game(n);
+       if(al_end_game(n))
+           break;
     }
+    Destroy_Allegro(n);
+    return 0;
 }

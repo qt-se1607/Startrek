@@ -6,7 +6,7 @@ void Init_Queue(allegro n);
 void Init_Display(allegro n);
 bool al_start_game(allegro n);
 bool al_join_game(allegro n);
-void al_end_game(allegro n);
+bool al_end_game(allegro n);
 void Init_Bullet(bullet *n);
 void Init_Plane(plane *n);
 void Draw_plane(plane n);
@@ -129,7 +129,7 @@ bool al_join_game(allegro n)
                     my.m[my.bullet_num].tip=true;
                     my.m[my.bullet_num].attack=1;
                     my.m[my.bullet_num].speed=2*my.speed;
-                    my.m[my.bullet_num].img=al_load_bitmap("ship.png");
+                    my.m[my.bullet_num].img=al_load_bitmap("../startrek/ship.png");
                     my.m[my.bullet_num].x1=my.x1;
                     my.m[my.bullet_num].y1=my.y1;
                     my.bullet_num++;
@@ -139,7 +139,7 @@ bool al_join_game(allegro n)
                     if(m[i].tip&&m[i].blood!=0){
                         m[i].m[m[i].bullet_num].attack=m[i].level;
                         m[i].m[m[i].bullet_num].tip=true;
-                        m[i].m[m[i].bullet_num].img=al_load_bitmap("b1.png");
+                        m[i].m[m[i].bullet_num].img=al_load_bitmap("../startrek/b1.png");
                         m[i].m[m[i].bullet_num].speed=2*m[i].speed;
                         m[i].m[m[i].bullet_num].x1=m[i].x1;
                         m[i].m[m[i].bullet_num].y1=m[i].y1;
@@ -309,10 +309,13 @@ void is(plane *n,plane *m)
     }
 }
 
-void al_end_game(allegro n)
+bool al_end_game(allegro n)
 {
-    al_draw_bitmap(n.bitmap,0,0,0);
-    al_flip_display();
+    ALLEGRO_EVENT ev;
+    al_wait_for_event(n.event_queue,&ev);
+
+    if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE||ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+        return true;
 }
 bool judge_inside(ALLEGRO_EVENT ev,ALLEGRO_BITMAP *bitmap,int dx,int dy)
 {

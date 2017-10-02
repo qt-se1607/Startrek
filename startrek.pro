@@ -3,7 +3,8 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 
-SOURCES += plane.c
+SOURCES += \
+    main.c
 SOURCES += color.h
 SOURCES += Allegro.h
 SOURCES += variate.h
