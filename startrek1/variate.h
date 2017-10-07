@@ -37,6 +37,7 @@ typedef struct MY_BULLET{//子弹
     ALLEGRO_BITMAP *img;
     int speed;
     int attack;
+    int form;
     bool live;
 }bullet;
 
@@ -74,6 +75,8 @@ extern bool key_up;
 extern bool key_down;
 extern bool key_left;
 extern bool key_right;
+extern bool screenflag;//全屏标志
+extern float volume_num;
 
 
 #endif // VARIATE_H

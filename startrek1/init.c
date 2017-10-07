@@ -62,9 +62,15 @@ void Init_Display(allegro *n)
 {
     al_get_display_mode(0,&(n->display_date));
     //al_set_new_display_flags(ALLEGRO_FULLSCREEN);
-    n->display=al_create_display(n->display_date.width,n->display_date.height);
-
-
+    if(screenflag){
+        screen_width=n->display_date.width;
+        screen_height=n->display_date.height;
+    }
+    game_width=screen_width;
+    game_height=screen_height;
+    score_width=0.2*screen_width;
+    score_height=screen_height;
+    n->display=al_create_display(screen_width,screen_height);
     if(!n->display){
         fprintf(stderr, "failed to create display!\n");
         exit(1);
@@ -79,28 +85,4 @@ void Init_Display(allegro *n)
         fprintf(stderr, "failed to create timer!\n");
         exit(1);
     }
-    n->bitmap=al_load_bitmap("../startrek1/img1.jpg");
-    if(!n->bitmap){
-        fprintf(stderr, "failed to create bitmap!\n");
-        exit(1);
-    }
-    n->font1=al_load_ttf_font("../startrek1/a.ttf",word_size,128);
-    if(!n->font1){
-        fprintf(stderr, "failed to create font1!\n");
-        exit(1);
-    }
-    n->font2=al_load_ttf_font("../startrek1/a.ttf",4*word_size,128);
-    if(!n->font2){
-        fprintf(stderr, "failed to create font2!\n");
-        exit(1);
-    }
-    screen_width = n->display_date.width;
-    screen_height = n->display_date.height;
-    game_width = screen_width;
-    game_height = screen_height;
-    score_width = 0.2*screen_width;
-    score_height = screen_height;
-    img_x = 0.5*screen_width;
-    img_y = 0.5*screen_height;
-    al_draw_bitmap(n->bitmap,0,0,0);
 }

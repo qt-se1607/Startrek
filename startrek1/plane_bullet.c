@@ -54,16 +54,21 @@ void Init_enemyplane(plane n[MAXSIZE])
 
 bool Draw_plane_bullet(allegro *m)
 {
+    int k=0;
+    img_x=0.5*game_width;
+    img_y=game_height-0.5*al_get_bitmap_height(m->bitmap);
     plane n;
     plane enemy_plane[MAXSIZE];
 
     Init_Plane(&n);
     Init_enemyplane(enemy_plane);
     n.level = 1;
-    n.blood = 1;
+    n.blood = 100;
     n.live = true;
-    n.img = al_load_bitmap("../startrek1/timg.png");
-    n.size = al_get_bitmap_width(n.img);
+    char num[MAXSIZE];
+    sprintf(num,"plane_01/plane_01_%d.png",k);
+    n.img=al_load_bitmap(num);
+    n.size = 0.9*al_get_bitmap_width(n.img);
     n.x1 = 0.5 * game_width - n.size;
     n.y1 = game_height - n.size;
     int plane_num = 0;
@@ -89,8 +94,11 @@ bool Draw_plane_bullet(allegro *m)
                 if(n.live){
                     n.bull[n.bullet_num].live = true;
                     n.bull[n.bullet_num].attack = 1;
+                    n.bull[n.bullet_num].form = 0;
                     n.bull[n.bullet_num].speed = 2 * n.speed;
-                    n.bull[n.bullet_num].img = al_load_bitmap("../startrek1/ship.png");
+
+                    n.bull[n.bullet_num].img = al_load_bitmap("./bullet_01/bullet_0.png");
+
                     n.bull[n.bullet_num].x1 = n.x1;
                     n.bull[n.bullet_num].y1 = n.y1;
                     n.bullet_num ++;
@@ -102,7 +110,7 @@ bool Draw_plane_bullet(allegro *m)
                     if(enemy_plane[i].live && enemy_plane[i].blood != 0){
                         enemy_plane[i].bull[enemy_plane[i].bullet_num].attack = enemy_plane[i].level;
                         enemy_plane[i].bull[enemy_plane[i].bullet_num].live = true;
-                        enemy_plane[i].bull[enemy_plane[i].bullet_num].img = al_load_bitmap("../startrek1/b1.png");
+                        enemy_plane[i].bull[enemy_plane[i].bullet_num].img = al_load_bitmap("b1.png");
                         enemy_plane[i].bull[enemy_plane[i].bullet_num].speed = 2 * enemy_plane[i].speed;
                         enemy_plane[i].bull[enemy_plane[i].bullet_num].x1 = enemy_plane[i].x1;
                         enemy_plane[i].bull[enemy_plane[i].bullet_num].y1 = enemy_plane[i].y1;
@@ -130,15 +138,16 @@ bool Draw_plane_bullet(allegro *m)
                 enemy_plane[plane_num].level = Rand(1,3);
                 enemy_plane[plane_num].blood = enemy_plane[plane_num].level;
                 if(enemy_plane[plane_num].level == 1){
-                    enemy_plane[plane_num].img = al_load_bitmap("../startrek1/p1.png");
+                    enemy_plane[plane_num].img = al_load_bitmap("p1.png");
                 }
                 if(enemy_plane[plane_num].level == 2){
-                    enemy_plane[plane_num].img = al_load_bitmap("../startrek1/p2.png");
+                    enemy_plane[plane_num].img = al_load_bitmap("p2.png");
                 }
                 if(enemy_plane[plane_num].level == 3){
-                    enemy_plane[plane_num].img = al_load_bitmap("../startrek1/p2.png");
+                    enemy_plane[plane_num].img = al_load_bitmap("p2.png");
                 }
                 enemy_plane[plane_num].live = true;
+                enemy_plane[plane_num].form = 39;
                 enemy_plane[plane_num].speed = enemy_plane[plane_num].level;
                 enemy_plane[plane_num].size=al_get_bitmap_width(enemy_plane[plane_num].img);
                 enemy_plane[plane_num].x1= Rand(enemy_plane[plane_num].size,game_width-enemy_plane[plane_num].size);
@@ -173,9 +182,13 @@ bool Draw_plane_bullet(allegro *m)
                 enemy_plane[i].x1 += enemy_plane[i].x2;
                 enemy_plane[i].y1 += enemy_plane[i].y2;
             }
-            for(int i = 0;i<MAXSIZE;i++){
-                if(n.bull[i].live)
-                    n.bull[i].y1-=n.bull[i].speed;
+            for(int i=0;i<MAXSIZE;i++){
+                if(!n.bull[i].live)continue;
+                n.bull[i].y1-=n.bull[i].speed;
+//                sprintf(num,"./bullet_01/bullet_%d.png",n.bull[i].form/5);
+//                n.bull[i].img=al_load_bitmap(num);
+//                n.bull[i].form++;
+//                if(n.bull[i].form>74)n.bull[i].form=5;
             }
 
             img_y += 5;//背景滚动速度
@@ -201,19 +214,23 @@ bool Draw_plane_bullet(allegro *m)
             }
 
             //爆炸效果
-            for(int i = 0;i < MAXSIZE;i++){
-                if(enemy_plane[i].blood == 0 && enemy_plane[i].live){
-                    al_draw_circle(enemy_plane[i].x1,enemy_plane[i].y1,n.size-enemy_plane[i].size,
-                                   al_map_rgb(Rand(0,255),Rand(0,255),Rand(0,255)),
-                                   enemy_plane[i].size);
-                    enemy_plane[i].size--;
-                    if(enemy_plane[i].size<=0)
+            for(int i=0;i<MAXSIZE;i++){
+                if(enemy_plane[i].blood==0 && enemy_plane[i].live){
+                    sprintf(num,"boom_01_%d.png",enemy_plane[i].form/10);
+                    enemy_plane[i].img=al_load_bitmap(num);
+                    al_draw_pic(enemy_plane[i].img,enemy_plane[i].x1,enemy_plane[i].y1);
+                    enemy_plane[i].form--;
+                    if(enemy_plane[i].form<0){
                         enemy_plane[i].live=false;
+                    }
                 }
             }
+            if(n.blood==0){
+                Init_Bullet(n.bull);
+            }
             al_flip_display();
-            redraw = false;
-        }
+            redraw=false;
+            }
         //飞机移动
         if(ev.type == ALLEGRO_EVENT_KEY_DOWN){
             switch(ev.keyboard.keycode){
@@ -244,12 +261,28 @@ bool Draw_plane_bullet(allegro *m)
             if(n.y1>game_height-0.5*n.size)n.y1=game_height-0.5*n.size;
         }
         if(key_left){
+            if(k>-7)k--;
+            sprintf(num,"./plane_01/plane_01_%d.png",(int)k);
+            n.img=al_load_bitmap(num);
             n.x1-=n.speed;
             if(n.x1<0.5*n.size)n.x1=0.5*n.size;
         }
+        else{
+            if(k<0)k++;
+            sprintf(num,"./plane_01/plane_01_%d.png",(int)k);
+            n.img=al_load_bitmap(num);
+        }
         if(key_right){
+            if(k<7)k++;
+            sprintf(num,"./plane_01/plane_01_%d.png",(int)k);
+            n.img=al_load_bitmap(num);
             n.x1+=n.speed;
             if(n.x1>game_width-0.5*n.size)n.x1=game_width-0.5*n.size;
+        }
+        else{
+            if(k>0)k--;
+            sprintf(num,"./plane_01/plane_01_%d.png",(int)k);
+            n.img=al_load_bitmap(num);
         }
         if(key_up){
             n.y1-=n.speed;
@@ -262,48 +295,55 @@ bool Draw_plane_bullet(allegro *m)
 void boom(plane *n,plane *m)
 {
     for(int a=0;a<MAXSIZE;a++){
-        for(int b=0;b<MAXSIZE;b++){
-            if(!m[a].bull[b].live)
-                continue;
-            if(m[a].bull[b].x1<-0.5*al_get_bitmap_width(m[a].bull[b].img))
-                m[a].bull[b].live=false;
-            else if(m[a].bull[b].x1>game_width+0.5*al_get_bitmap_width(m[a].bull[b].img))
-                m[a].bull[b].live=false;
-            else if(m[a].bull[b].y1<-0.5*al_get_bitmap_height(m[a].bull[b].img))
-                m[a].bull[b].live=false;
-            else if(m[a].bull[b].y1>game_height+0.5*al_get_bitmap_height(m[a].bull[b].img))
-                m[a].bull[b].live=false;
+        for(int b=0;b<MAXSIZE;b++){//判断子弹是否出界
+            if(!m[a].bull[b].live)continue;
+            if(m[a].bull[b].x1<-0.5*al_get_bitmap_width(m[a].bull[b].img))m[a].bull[b].live=false;
+            else if(m[a].bull[b].x1>game_width+0.5*al_get_bitmap_width(m[a].bull[b].img))m[a].bull[b].live=false;
+            else if(m[a].bull[b].y1<-0.5*al_get_bitmap_height(m[a].bull[b].img))m[a].bull[b].live=false;
+            else if(m[a].bull[b].y1>game_height+0.5*al_get_bitmap_height(m[a].bull[b].img))m[a].bull[b].live=false;
         }
-        if(!m[a].live)
-            continue;
-        if(m[a].x1<-0.5*al_get_bitmap_width(m[a].img))
-            m[a].live=false;
-        else if(m[a].x1>game_width+0.5*al_get_bitmap_width(m[a].img))
-            m[a].live=false;
-        else if(m[a].y1<-0.5*al_get_bitmap_height(m[a].img))
-            m[a].live=false;
-        else if(m[a].y1>game_height+0.5*al_get_bitmap_height(m[a].img))
-            m[a].live=false;
+        if(!m[a].live)continue;//判断敌机是否出界
+        if(m[a].x1<-0.5*al_get_bitmap_width(m[a].img))m[a].live=false;
+        else if(m[a].x1>game_width+0.5*al_get_bitmap_width(m[a].img))m[a].live=false;
+        else if(m[a].y1<-0.5*al_get_bitmap_height(m[a].img))m[a].live=false;
+        else if(m[a].y1>game_height+0.5*al_get_bitmap_height(m[a].img))m[a].live=false;
     }
-    if(n->blood > 0)
-        for(int a=0;a<MAXSIZE;a++)
+    for(int a=0;a>MAXSIZE;a++){
+        if(!n->bull[a].live)continue;
+        if(n->bull[a].x1<-0.5*al_get_bitmap_width(n->bull[a].img))n->bull[a].live=false;
+        else if(n->bull[a].x1>game_width+0.5*al_get_bitmap_width(n->bull[a].img))n->bull[a].live=false;
+        else if(n->bull[a].y1<-0.5*al_get_bitmap_height(n->bull[a].img))n->bull[a].live=false;
+        else if(n->bull[a].y1>game_height+0.5*al_get_bitmap_height(n->bull[a].img))n->bull[a].live=false;
+    }
+    if(n->blood>0){//判断子弹是否命中
+        for(int a=0;a<MAXSIZE;a++){
             for(int b=0;b<MAXSIZE;b++){
-                if(!m[a].bull[b].live||n->blood==0)
-                    continue;
+                if(!m[a].bull[b].live||n->blood==0)continue;
                 if(Distance(m[a].bull[b].x1,m[a].bull[b].y1,n->x1,n->y1)<0.5*(n->size+al_get_bitmap_width(m[a].bull[b].img))){
                     m[a].bull[b].live=false;
                     n->blood--;
                 }
             }
-    for(int a=0;a<MAXSIZE;a++){
-        if(!n->bull[a].live)
-            continue;
-        for(int b=0;b<MAXSIZE;b++){
-            if(m[b].live&&m[b].blood!=0)
-                if(Distance(n->bull[a].x1,n->bull[a].y1,m[b].x1,m[b].y1)<0.5*(m[b].size+al_get_bitmap_width(n->bull[a].img))){
-                    n->bull[a].live=false;
-                    m[b].blood--;
+        }
+    }
+    if(n->blood>0){
+        for(int a=0;a<MAXSIZE;a++){//判断子弹是否击中敌机
+            if(!n->bull[a].live)continue;
+            for(int b=0;b<MAXSIZE;b++){
+                if(m[b].live&&m[b].blood!=0){
+                    if(Distance(n->bull[a].x1,n->bull[a].y1,m[b].x1,m[b].y1)<0.5*(m[b].size+al_get_bitmap_width(n->bull[a].img))){
+                        n->bull[a].live=false;
+                        m[b].blood--;
+                    }
                 }
+            }
+        }
+    }
+    for(int a=0;a<MAXSIZE;a++){
+        if(!m[a].live)continue;
+        if(Distance(n->x1,n->y1,m[a].x1,m[a].y1)<0.5*(m[a].size+n->size)){
+            n->blood--;
+            m[a].blood=0;
         }
     }
 }
