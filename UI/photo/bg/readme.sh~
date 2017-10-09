@@ -1,0 +1,6 @@
+#!/usr/bin/bash
+for i in {0..29}
+do
+	mv 图层 $i* bg_0$i.png
+	fi
+done
