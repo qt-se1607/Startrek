@@ -30,13 +30,37 @@ bool load_back=false;
 int list_num=7;
 char num[MAXSIZE];
 int number=0;
+void al_draw_wait(allegro n)
+{
+    char string[255];
+    int i=3*29-1;
+    bool redraw=false;
+    ALLEGRO_BITMAP *p=NULL;
+    while(i){
+        ALLEGRO_EVENT ev;
+        al_wait_for_event(n.event_queue,&ev);
+        if(ev.type==ALLEGRO_EVENT_TIMER)redraw=true;
+        if(redraw&&!al_is_event_queue_empty(n.event_queue)){
+            al_flip_display();
+            redraw=false;
+        }
+        i--;
+        sprintf(string,"../startrek/UI/photo/bg/bg_%d.png",i/3+1);
+        if(p)al_destroy_bitmap(p);
+        p=al_load_bitmap(string);
+        al_draw_bitmap(p,0,0,0);
+    }
+}
+
 void al_start(allegro n)
 {
+    al_draw_wait(n);
     switch(fork()){
     case -1:perror("fork");break;
     case 0:al_execl(0);break;
     default:wait(NULL);break;
     }
+    al_draw_wait(n);
 }
 void al_execl(int fp)
 {
@@ -46,12 +70,13 @@ void al_execl(int fp)
     sprintf(sh,"%d",img_y);
     sprintf(m,"%f",volume_num);
     if(fp)sprintf(num,"%d",fp);
-    if(fp)execl("../build-startrek1-C_C_Application_gcc_7_1_1-Debug/startrek1",s,sw,sh,m,num,NULL);
-    else execl("../build-startrek1-C_C_Application_gcc_7_1_1-Debug/startrek1",s,sw,sh,m,NULL);
+    if(fp)execl("../build-plane-C_C_Application_gcc_7_1_1-Debug/plane",s,sw,sh,m,num,NULL);
+    else execl("../build-plane-C_C_Application_gcc_7_1_1-Debug/plane",s,sw,sh,m,NULL);
 }
 
 void al_load(allegro n)
 {
+    al_draw_wait(n);
     bool event_timer = false;
     int checkout = 0.3*FPS;
     int git = checkout;
@@ -212,6 +237,7 @@ void al_load(allegro n)
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP)break;
         }
     }
+    al_draw_wait(n);
 }
 void al_draw_loadboard(allegro n)
 {
@@ -311,6 +337,7 @@ void al_draw_loadboard(allegro n)
 }
 void al_setting(allegro n)
 {
+    al_draw_wait(n);
     setting=false;
     int checkout = 0.3*FPS;
     int git = 7*checkout;
@@ -508,13 +535,13 @@ void al_setting(allegro n)
             }
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
                 int fd;
-                fd=open("../startrek/setting/UI/setting_R",O_RDONLY);
+                fd=open("../startrek/UI/setting/setting_R",O_RDONLY);
                 read(fd,&screenflag,sizeof(bool));
                 read(fd,&number,sizeof(int));
                 read(fd,&musicflag,sizeof(bool));
                 read(fd,&volume_num,sizeof(int));
                 close(fd);
-                fd=open("../startrek/setting/setting",O_CREAT|O_WRONLY);
+                fd=open("../startrek/UI/setting/setting",O_CREAT|O_WRONLY);
                 write(fd,&screenflag,sizeof(bool));
                 write(fd,&number,sizeof(int));
                 write(fd,&musicflag,sizeof(bool));
@@ -531,6 +558,7 @@ void al_setting(allegro n)
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP)break;
         }
     }
+    al_draw_wait(n);
 }
 void al_draw_settingboard(allegro n)
 {
@@ -643,6 +671,7 @@ void al_draw_startboard(allegro n)
 }
 void al_list(allegro n)
 {
+    al_draw_wait(n);
     int fd;
     if((fd=open("../startrek/UI/list/list",O_RDONLY))==-1){
         fd=open("../startrek/UI/list/list",O_CREAT|O_WRONLY);
@@ -667,6 +696,7 @@ void al_list(allegro n)
                 judge_in(ev,0.35*game_width,0.85*game_height,0.65*game_width,0.95*game_height))break;
         if(event_timer&&al_is_event_queue_empty(n.event_queue))al_flip_display();
     }
+    al_draw_wait(n);
 }
 void al_draw_listboard(allegro n)
 {

@@ -61,7 +61,6 @@ void Init_Queue(allegro *n)
 void Init_Display(allegro *n)
 {
     al_get_display_mode(0,&(n->display_date));
-    //al_set_new_display_flags(ALLEGRO_FULLSCREEN);
     if(screenflag){
         screen_width=n->display_date.width;
         screen_height=n->display_date.height;

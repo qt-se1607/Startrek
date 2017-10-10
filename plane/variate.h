@@ -77,6 +77,6 @@ extern bool key_left;
 extern bool key_right;
 extern bool screenflag;//全屏标志
 extern float volume_num;
-
+extern int file_num;
 
 #endif // VARIATE_H

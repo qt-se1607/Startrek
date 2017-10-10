@@ -98,4 +98,5 @@ void al_draw_listboard(allegro n);
 void al_turn(float x1,float y1,float x2,float y2,ALLEGRO_COLOR color);
 void al_execl(int fp);
 void al_start(allegro n);
+void al_draw_wait(allegro n);
 #endif // ALLEGRO_H

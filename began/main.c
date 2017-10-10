@@ -3,8 +3,8 @@ int main()
 {
     allegro n;
     Init_Allegro(&n);
-    game_width = 0.5 * screen_width;
-    game_height = 0.6 * screen_height;
+    game_width =960;
+    game_height =648;
     Init_Display(&n);
     n.bitmap1 = al_load_bitmap("../startrek/UI/welcome/bg.jpg");
     n.bitmap2 = al_load_bitmap("../startrek/UI/setting/bg.jpg");
@@ -140,7 +140,7 @@ int main()
             }
             else if(list){
                 al_list(n);
-                al_draw_listboard(n);
+                al_draw_startboard(n);
             }
             else if(setting){
                 al_setting(n);

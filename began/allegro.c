@@ -99,13 +99,13 @@ void Init_Display(allegro *n)
         Destroy_Allegro(n);
         exit(1);
     }
-    n->font1=al_load_font("a.ttf",word_size,0);
+    n->font1=al_load_font("../startrek/UI/a.ttf",word_size,0);
     if(!n->font1){
         fprintf(stderr, "failed to create font1!\n");
         Destroy_Allegro(n);
         exit(1);
     }
-    n->font2=al_load_font("a.ttf",2*word_size,0);
+    n->font2=al_load_font("../startrek/UI/a.ttf",2*word_size,0);
     if(!n->font2){
         fprintf(stderr, "failed to create font2!\n");
         Destroy_Allegro(n);

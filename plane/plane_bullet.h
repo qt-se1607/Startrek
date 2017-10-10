@@ -4,7 +4,7 @@
 #include "init.h"
 
 void Init_Plane(plane *n);
-bool Draw_plane_bullet(allegro *m);
+bool Draw_plane_bullet(allegro m);
 void Init_enemyplane(plane n[MAXSIZE]);
 void Init_Bullet(bullet n[]);
 void boom(plane *n,plane *m);

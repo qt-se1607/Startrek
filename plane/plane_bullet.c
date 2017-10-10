@@ -52,11 +52,11 @@ void Init_enemyplane(plane n[MAXSIZE])
     }
 }
 
-bool Draw_plane_bullet(allegro *m)
+bool Draw_plane_bullet(allegro m)
 {
     int k=0;
     img_x=0.5*game_width;
-    img_y=game_height-0.5*al_get_bitmap_height(m->bitmap);
+    img_y=game_height-0.5*al_get_bitmap_height(m.bitmap);
     plane n;
     plane enemy_plane[MAXSIZE];
 
@@ -65,8 +65,8 @@ bool Draw_plane_bullet(allegro *m)
     n.level = 1;
     n.blood = 100;
     n.live = true;
-    char num[MAXSIZE];
-    sprintf(num,"plane_01/plane_01_%d.png",k);
+    char num[255];
+    sprintf(num,"../startrek/UI/plane_01/plane_%d.png",k);
     n.img=al_load_bitmap(num);
     n.size = 0.9*al_get_bitmap_width(n.img);
     n.x1 = 0.5 * game_width - n.size;
@@ -75,20 +75,16 @@ bool Draw_plane_bullet(allegro *m)
     int bullet_num = 0;
     int plane_rate = 0;
     bool redraw = false;
-
+    al_set_mouse_xy(m.display,0.5*game_width,game_height+1);
     while(1){
         n.speed = n.level;
         plane_space = game_height / (5 + 2 * n.level);
         bullet_space = game_height / (5 + 2 * n.level);
         ALLEGRO_EVENT ev;
-        al_wait_for_event(m->event_queue,&ev);
-        if(ev.type == ALLEGRO_EVENT_TIMER){
-            redraw = true;
-        }
-        if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE||ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
-            break;
-        }
-        if(redraw && al_is_event_queue_empty(m->event_queue)){
+        al_wait_for_event(m.event_queue,&ev);
+        if(ev.type == ALLEGRO_EVENT_TIMER)redraw = true;
+        if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE||ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)break;
+        if(redraw && al_is_event_queue_empty(m.event_queue)){
             //加入子弹
             if(bullet_num >= bullet_space){
                 if(n.live){
@@ -96,9 +92,7 @@ bool Draw_plane_bullet(allegro *m)
                     n.bull[n.bullet_num].attack = 1;
                     n.bull[n.bullet_num].form = 0;
                     n.bull[n.bullet_num].speed = 2 * n.speed;
-
-                    n.bull[n.bullet_num].img = al_load_bitmap("./bullet_01/bullet_0.png");
-
+                    n.bull[n.bullet_num].img = al_load_bitmap("../startrek/UI/bullet_01/bullet_0.png");
                     n.bull[n.bullet_num].x1 = n.x1;
                     n.bull[n.bullet_num].y1 = n.y1;
                     n.bullet_num ++;
@@ -138,10 +132,10 @@ bool Draw_plane_bullet(allegro *m)
                 enemy_plane[plane_num].level = Rand(1,3);
                 enemy_plane[plane_num].blood = enemy_plane[plane_num].level;
                 if(enemy_plane[plane_num].level == 1){
-                    enemy_plane[plane_num].img = al_load_bitmap("p1.png");
+                    enemy_plane[plane_num].img = al_load_bitmap("../startrek/UI/enemy/enemy1.png");
                 }
                 if(enemy_plane[plane_num].level == 2){
-                    enemy_plane[plane_num].img = al_load_bitmap("p2.png");
+                    enemy_plane[plane_num].img = al_load_bitmap("../startrek/UI/enemy/enemy1.png");
                 }
                 if(enemy_plane[plane_num].level == 3){
                     enemy_plane[plane_num].img = al_load_bitmap("p2.png");
@@ -185,22 +179,22 @@ bool Draw_plane_bullet(allegro *m)
             for(int i=0;i<MAXSIZE;i++){
                 if(!n.bull[i].live)continue;
                 n.bull[i].y1-=n.bull[i].speed;
-//                sprintf(num,"./bullet_01/bullet_%d.png",n.bull[i].form/5);
-//                n.bull[i].img=al_load_bitmap(num);
-//                n.bull[i].form++;
-//                if(n.bull[i].form>74)n.bull[i].form=5;
+                sprintf(num,"../startrek/UI/bullet_01/bullet_%d.png",n.bull[i].form/5);
+                al_destroy_bitmap(n.bull[i].img);
+                n.bull[i].img=al_load_bitmap(num);
+                n.bull[i].form++;
+                if(n.bull[i].form>74)n.bull[i].form=5;
             }
 
             img_y += 5;//背景滚动速度
-            if(img_y > 1.5 * game_height)
-                img_y = 0.5*game_height;
+            if(img_y>game_height+0.5*al_get_bitmap_height(m.bitmap))img_y=game_height-0.5*al_get_bitmap_height(m.bitmap);
 
             //判断事件
             boom(&n,enemy_plane);
 
             //显示
-            al_draw_pic(m->bitmap,img_x,img_y);
-            al_draw_pic(m->bitmap,img_x,img_y-game_height);
+            al_draw_pic(m.bitmap,img_x,img_y);
+            al_draw_pic(m.bitmap,img_x,img_y-al_get_bitmap_height(m.bitmap));
             al_draw_pic(n.img,n.x1,n.y1);
             for(int i=0;i<MAXSIZE;i++)
                 if(n.bull[i].live)
@@ -216,7 +210,8 @@ bool Draw_plane_bullet(allegro *m)
             //爆炸效果
             for(int i=0;i<MAXSIZE;i++){
                 if(enemy_plane[i].blood==0 && enemy_plane[i].live){
-                    sprintf(num,"boom_01_%d.png",enemy_plane[i].form/10);
+                    sprintf(num,"../startrek/UI/boom_01/boom_%d.png",enemy_plane[i].form/10);
+                    al_destroy_bitmap(enemy_plane[i].img);
                     enemy_plane[i].img=al_load_bitmap(num);
                     al_draw_pic(enemy_plane[i].img,enemy_plane[i].x1,enemy_plane[i].y1);
                     enemy_plane[i].form--;
@@ -232,6 +227,11 @@ bool Draw_plane_bullet(allegro *m)
             redraw=false;
             }
         //飞机移动
+        //mouse
+        if(ev.type==ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY){
+            if(ev.mouse.x!=n.x1||ev.mouse.y!=n.y1)al_set_mouse_xy(m.display,n.x1,n.y1);
+        }
+        //keyboard
         if(ev.type == ALLEGRO_EVENT_KEY_DOWN){
             switch(ev.keyboard.keycode){
             case ALLEGRO_KEY_W:key_up=true;break;
@@ -262,26 +262,30 @@ bool Draw_plane_bullet(allegro *m)
         }
         if(key_left){
             if(k>-7)k--;
-            sprintf(num,"./plane_01/plane_01_%d.png",(int)k);
+            sprintf(num,"../startrek/UI/plane_01/plane_%d.png",k);
+            al_destroy_bitmap(n.img);
             n.img=al_load_bitmap(num);
             n.x1-=n.speed;
             if(n.x1<0.5*n.size)n.x1=0.5*n.size;
         }
         else{
             if(k<0)k++;
-            sprintf(num,"./plane_01/plane_01_%d.png",(int)k);
+            sprintf(num,"../startrek/UI/plane_01/plane_%d.png",k);
+            al_destroy_bitmap(n.img);
             n.img=al_load_bitmap(num);
         }
         if(key_right){
             if(k<7)k++;
-            sprintf(num,"./plane_01/plane_01_%d.png",(int)k);
+            sprintf(num,"../startrek/UI/plane_01/plane_%d.png",k);
+            al_destroy_bitmap(n.img);
             n.img=al_load_bitmap(num);
             n.x1+=n.speed;
             if(n.x1>game_width-0.5*n.size)n.x1=game_width-0.5*n.size;
         }
         else{
             if(k>0)k--;
-            sprintf(num,"./plane_01/plane_01_%d.png",(int)k);
+            sprintf(num,"../startrek/UI/plane_01/plane_%d.png",k);
+            al_destroy_bitmap(n.img);
             n.img=al_load_bitmap(num);
         }
         if(key_up){
@@ -363,6 +367,8 @@ void al_draw_pic(ALLEGRO_BITMAP *n,int x,int y)
     al_use_transform(&transform);
     al_draw_bitmap(n,0,0,0);
     al_identity_transform(&transform);
+    al_translate_transform(&transform,0,0);
+    al_use_transform(&transform);
 }
 
 int Distance(int x1,int y1,int x2,int y2)
