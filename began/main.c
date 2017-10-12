@@ -4,7 +4,7 @@ int main()
     allegro n;
     Init_Allegro(&n);
     game_width =960;
-    game_height =648;
+    game_height =640;
     Init_Display(&n);
     n.bitmap1 = al_load_bitmap("../startrek/UI/welcome/bg.jpg");
     n.bitmap2 = al_load_bitmap("../startrek/UI/setting/bg.jpg");
@@ -58,8 +58,8 @@ int main()
         img_x=1024;
         img_y=576;
     }
-    al_play_sample(n.sample2,1.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
     start=true;
+    if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
     al_start_timer(n.timer);
     while(1){
         ALLEGRO_EVENT ev;
@@ -70,7 +70,7 @@ int main()
             event_timer=false;
         }
         if(git>=5*checkout){
-            if(!quit)al_play_sample(n.sample1,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
+            if(!quit&&musicflag)al_play_sample(n.sample1,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
             quit=true;
             setting=false;
             load=false;
@@ -78,7 +78,7 @@ int main()
             start=false;
         }
         else if(git>=4*checkout){
-            if(!setting)al_play_sample(n.sample1,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
+            if(!setting&&musicflag)al_play_sample(n.sample1,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
             setting=true;
             quit=false;
             load=false;
@@ -86,7 +86,7 @@ int main()
             start=false;
         }
         else if(git>=3*checkout){
-            if(!list)al_play_sample(n.sample1,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
+            if(!list&&musicflag)al_play_sample(n.sample1,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
             list=true;
             quit=false;
             setting=false;
@@ -94,7 +94,7 @@ int main()
             start=false;
         }
         else if(git>=2*checkout){
-            if(!load)al_play_sample(n.sample1,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
+            if(!load&&musicflag)al_play_sample(n.sample1,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
             load=true;
             quit=false;
             setting=false;
@@ -102,7 +102,7 @@ int main()
             start=false;
         }
         else if(git>=checkout){
-            if(!start)al_play_sample(n.sample1,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
+            if(!start&&musicflag)al_play_sample(n.sample1,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
             start=true;
             quit=false;
             setting=false;
@@ -133,6 +133,9 @@ int main()
             if(start){
                 al_start(n);
                 al_flip_display();
+                n.sample2=al_load_sample("../startrek/UI/music/music2.wav");
+                if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+                else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
             }
             else if(load){
                 al_load(n);
@@ -140,11 +143,14 @@ int main()
             }
             else if(list){
                 al_list(n);
-                al_draw_startboard(n);
+                al_draw_listboard(n);
             }
             else if(setting){
                 al_setting(n);
                 al_draw_startboard(n);
+                n.sample2=al_load_sample("../startrek/UI/music/music2.wav");
+                if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+                else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
             }
             else if(quit)break;
         }
@@ -153,6 +159,9 @@ int main()
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
                 al_start(n);
                 al_draw_startboard(n);
+                n.sample2=al_load_sample("../startrek/UI/music/music2.wav");
+                if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+                else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
             }
         }
         if(judge_in(ev,0.35*game_width,0.35*game_height,0.65*game_width,0.45*game_height)){
@@ -183,6 +192,9 @@ int main()
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
                 al_setting(n);
                 al_draw_startboard(n);
+                n.sample2=al_load_sample("../startrek/UI/music/music2.wav");
+                if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+                else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
             }
         }
         if(judge_in(ev,0.35*game_width,0.8*game_height,0.65*game_width,0.9*game_height)){

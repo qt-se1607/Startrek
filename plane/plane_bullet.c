@@ -48,7 +48,6 @@ void Init_enemyplane(plane n[MAXSIZE])
         n[i].x2 = 0;
         n[i].y2 = 0;
         Init_Bullet(n[i].bull);
-
     }
 }
 
@@ -63,7 +62,7 @@ bool Draw_plane_bullet(allegro m)
     Init_Plane(&n);
     Init_enemyplane(enemy_plane);
     n.level = 1;
-    n.blood = 100;
+    n.blood = 10;
     n.live = true;
     char num[255];
     sprintf(num,"../startrek/UI/plane_01/plane_%d.png",k);
@@ -77,13 +76,14 @@ bool Draw_plane_bullet(allegro m)
     bool redraw = false;
     al_set_mouse_xy(m.display,0.5*game_width,game_height+1);
     while(1){
+        if(!n.live)exit(10);
         n.speed = n.level;
         plane_space = game_height / (5 + 2 * n.level);
         bullet_space = game_height / (5 + 2 * n.level);
         ALLEGRO_EVENT ev;
         al_wait_for_event(m.event_queue,&ev);
         if(ev.type == ALLEGRO_EVENT_TIMER)redraw = true;
-        if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE||ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)break;
+        if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE||ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)exit(99);
         if(redraw && al_is_event_queue_empty(m.event_queue)){
             //加入子弹
             if(bullet_num >= bullet_space){
@@ -104,7 +104,7 @@ bool Draw_plane_bullet(allegro m)
                     if(enemy_plane[i].live && enemy_plane[i].blood != 0){
                         enemy_plane[i].bull[enemy_plane[i].bullet_num].attack = enemy_plane[i].level;
                         enemy_plane[i].bull[enemy_plane[i].bullet_num].live = true;
-                        enemy_plane[i].bull[enemy_plane[i].bullet_num].img = al_load_bitmap("b1.png");
+                        enemy_plane[i].bull[enemy_plane[i].bullet_num].img = al_load_bitmap("../startrek/UI/enemy/b1.png");
                         enemy_plane[i].bull[enemy_plane[i].bullet_num].speed = 2 * enemy_plane[i].speed;
                         enemy_plane[i].bull[enemy_plane[i].bullet_num].x1 = enemy_plane[i].x1;
                         enemy_plane[i].bull[enemy_plane[i].bullet_num].y1 = enemy_plane[i].y1;
@@ -138,7 +138,7 @@ bool Draw_plane_bullet(allegro m)
                     enemy_plane[plane_num].img = al_load_bitmap("../startrek/UI/enemy/enemy1.png");
                 }
                 if(enemy_plane[plane_num].level == 3){
-                    enemy_plane[plane_num].img = al_load_bitmap("p2.png");
+                    enemy_plane[plane_num].img = al_load_bitmap("../startrek/UI/enemy/enemy1.png");
                 }
                 enemy_plane[plane_num].live = true;
                 enemy_plane[plane_num].form = 39;
@@ -220,17 +220,24 @@ bool Draw_plane_bullet(allegro m)
                     }
                 }
             }
-            if(n.blood==0){
-                Init_Bullet(n.bull);
+            if(n.blood<=0&&n.live){
+                sprintf(num,"boom_01_%d.png",n.form/10);
+                al_destroy_bitmap(n.img);
+                n.img=al_load_bitmap(num);
+                al_draw_pic(n.img,n.x1,n.y1);
+                n.form--;
+                if(n.form==0){
+                    n.live=false;
+                }
             }
             al_flip_display();
             redraw=false;
             }
         //飞机移动
         //mouse
-        if(ev.type==ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY){
+        /*if(ev.type==ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY){
             if(ev.mouse.x!=n.x1||ev.mouse.y!=n.y1)al_set_mouse_xy(m.display,n.x1,n.y1);
-        }
+        }*/
         //keyboard
         if(ev.type == ALLEGRO_EVENT_KEY_DOWN){
             switch(ev.keyboard.keycode){
@@ -343,11 +350,13 @@ void boom(plane *n,plane *m)
             }
         }
     }
-    for(int a=0;a<MAXSIZE;a++){
-        if(!m[a].live)continue;
-        if(Distance(n->x1,n->y1,m[a].x1,m[a].y1)<0.5*(m[a].size+n->size)){
-            n->blood--;
-            m[a].blood=0;
+    if(n->blood>0){
+        for(int a=0;a<MAXSIZE;a++){
+            if(!m[a].live)continue;
+            if(Distance(n->x1,n->y1,m[a].x1,m[a].y1)<0.5*(m[a].size+n->size)){
+                n->blood--;
+                m[a].blood=0;
+            }
         }
     }
 }
