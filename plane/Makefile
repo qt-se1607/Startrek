@@ -660,7 +660,8 @@ init.o: init.c init.h \
 plane_bullet.o: plane_bullet.c plane_bullet.h \
 		init.h \
 		variate.h \
-		color.h
+		color.h \
+		game.h
 	$(CC) -c $(CFLAGS) $(INCPATH) -o plane_bullet.o plane_bullet.c
 
 game.o: game.c game.h \
