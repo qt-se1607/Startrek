@@ -57,3 +57,16 @@ bool al_end_game(allegro n)
         return true;
     return false;
 }
+void al_pause(allegro n)
+{
+    bool redraw=false;
+    while(1){
+        ALLEGRO_EVENT ev;
+        al_wait_for_event(n.event_queue,&ev);
+        if(ev.type == ALLEGRO_EVENT_TIMER)redraw=true;
+        if(ev.keyboard.keycode==ALLEGRO_KEY_SPACE)break;
+        if(redraw&&al_is_event_queue_empty(n.event_queue)){
+            al_flip_display();
+        }
+    }
+}

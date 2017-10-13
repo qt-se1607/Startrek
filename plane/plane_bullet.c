@@ -1,4 +1,5 @@
 #include "plane_bullet.h"
+#include"game.h"
 
 int plane_space = 0;//飞机出现jian ge
 int bullet_space = 0;//子弹出现时间
@@ -80,6 +81,7 @@ bool Draw_plane_bullet(allegro m)
         al_wait_for_event(m.event_queue,&ev);
         if(ev.type == ALLEGRO_EVENT_TIMER)redraw = true;
         if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE||ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)exit(99);
+        if(ev.keyboard.keycode==ALLEGRO_KEY_SPACE)al_pause(m);
         if(redraw && al_is_event_queue_empty(m.event_queue)){
             //加入子弹
             if(bullet_num >= bullet_space){

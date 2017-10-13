@@ -6,5 +6,5 @@
 bool al_start_game(allegro n);
 bool al_join_game(allegro n);
 bool al_end_game(allegro n);
-
+void al_pause(allegro n);
 #endif // GAME_H
