@@ -70,7 +70,7 @@ bool Draw_plane_bullet(allegro m)
     int bullet_num = 0;
     int plane_rate = 0;
     bool redraw = false;
-    al_set_mouse_xy(m.display,0.5*game_width,game_height+1);
+    //al_set_mouse_xy(m.display,0.5*game_width,game_height+1);
     while(1){
         if(!n.live)exit(10);
         n.speed = n.level;

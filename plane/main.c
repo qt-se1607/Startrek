@@ -14,10 +14,8 @@ int main(int argc,char *argv[])
     srand((int)time(NULL));
     allegro n;
     Init_Allegro();
-    if(screenflag)al_set_new_display_flags(ALLEGRO_FULLSCREEN);
     Init_Display(&n);
     Init_Queue(&n);
-    sprintf(num,"../UI/plane/bg_%d.jpg",screen_width);
     n.bitmap=al_load_bitmap(num);
     if(!n.bitmap){
         fprintf(stderr, "failed to create bitmap!\n");
