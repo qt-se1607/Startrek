@@ -1,11 +1,12 @@
 #include "game.h"
 
+char num[MAXSIZE];
+
 bool al_start_game(allegro n)
 {
     ALLEGRO_BITMAP *p=NULL,*q=NULL;
     bool redraw=false;
     int i=85,bg_num=0,time_num=3;
-    char num[255];
     while(1){
         ALLEGRO_EVENT ev;
         al_wait_for_event(n.event_queue,&ev);
@@ -27,10 +28,10 @@ bool al_start_game(allegro n)
             al_clear_to_color(black);
             bg_num++;
             if(bg_num>35)continue;
-            sprintf(num,"../startrek/UI/photo/bg2/bg_%d.png",bg_num/6+1);
+            sprintf(num,"../UI/photo/bg2/bg_%d.png",bg_num/6+1);
             if(p)al_destroy_bitmap(p);
             p=al_load_bitmap(num);
-            sprintf(num,"../startrek/UI/photo/bg2/bg_%d.png",-(bg_num/6+1));
+            sprintf(num,"../UI/photo/bg2/bg_%d.png",-(bg_num/6+1));
             if(q)al_destroy_bitmap(q);
             q=al_load_bitmap(num);
             al_draw_pic(p,0.5*(game_width-al_get_bitmap_width(p)),0.5*game_height);

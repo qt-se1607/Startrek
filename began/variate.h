@@ -90,13 +90,15 @@ int Distance(int x1,int y1,int x2,int y2);
 bool judge_in(ALLEGRO_EVENT ev, int x1, int y1, int x2, int y2);
 void al_draw_startboard(allegro n);
 void al_setting(allegro n);
-void al_load(allegro n);
+void al_load(allegro n, bool score);
 void al_draw_settingboard(allegro n);
 void al_draw_loadboard(allegro n);
 void al_list(allegro n);
 void al_draw_listboard(allegro n);
 void al_turn(float x1,float y1,float x2,float y2,ALLEGRO_COLOR color);
 void al_execl(int fp);
-void al_wait();
+int al_wait();
 void al_start(allegro n);
+bool al_loadgame(int git);
+void al_archive(int git);
 #endif // ALLEGRO_H

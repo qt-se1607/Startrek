@@ -1,56 +1,4 @@
-#ifndef ALLEGRO_H
-#define ALLEGRO_H
-#include<stdio.h>
-#include<stdlib.h>
-#include<unistd.h>
-#include<fcntl.h>
-#include<time.h>
-#include<sys/types.h>
-#include<sys/stat.h>
-#include<sys/wait.h>
-#include<stdbool.h>
-#include"color.h"
-#include<math.h>
-#include<pthread.h>
-#include<dirent.h>
-#include<pwd.h>
-#include<grp.h>
-#include<allegro5/allegro.h>
-#include<allegro5/allegro5.h>
-#include<allegro5/allegro_primitives.h>
-#include<allegro5/allegro_image.h>
-#include<allegro5/allegro_color.h>
-#include<allegro5/allegro_ttf.h>
-#include<allegro5/allegro_font.h>
-#include<allegro5/allegro_audio.h>
-#include<allegro5/allegro_acodec.h>
-#define MAXSIZE 32
-typedef struct MY_ALLEGRO{
-    ALLEGRO_DISPLAY_MODE display_date;
-    ALLEGRO_DISPLAY *display;
-    ALLEGRO_TIMER *timer;
-    ALLEGRO_EVENT_QUEUE *event_queue;
-    ALLEGRO_FONT *font1;
-    ALLEGRO_FONT *font2;
-    ALLEGRO_BITMAP *bitmap1;
-    ALLEGRO_BITMAP *bitmap2;
-    ALLEGRO_BITMAP *bitmap3;
-    ALLEGRO_BITMAP *bitmap4;
-    ALLEGRO_BITMAP *bitmap5;
-    ALLEGRO_SAMPLE *sample1;
-    ALLEGRO_SAMPLE *sample2;
-    ALLEGRO_TRANSFORM transform;
-}allegro;
-void al_draw_startboard(allegro n);
-void al_setting(allegro n);
-void al_load(allegro n);
-void al_draw_settingboard(allegro n);
-void al_draw_loadboard(allegro n);
-void al_list(allegro n);
-void al_draw_listboard(allegro n);
-void al_turn(float x1,float y1,float x2,float y2,ALLEGRO_COLOR color);
-void al_execl(int fp);
-void al_start(allegro n);
+#include"variate.h"
 void Init_Allegro(allegro *n);
 void Init_Display(allegro *n);
 void Destroy_Allegro(allegro *n);
@@ -60,43 +8,144 @@ int Rand(int low,int high);
 int Distance(int x1,int y1,int x2,int y2);
 bool judge_inside(ALLEGRO_EVENT ev,ALLEGRO_BITMAP *bitmap);
 bool judge_in(ALLEGRO_EVENT ev,int x1,int y1,int x2,int y2);
-extern int word_size;//文字大小
-extern float FPS;//帧数
-extern int screen_width;//屏幕宽度
-extern int screen_height;//屏幕高度
-extern int game_width;//游戏屏幕宽度
-extern int game_height;//游戏屏幕高度
-extern int img_x;
-extern int img_y;
-extern bool key_enter;
-extern bool key_up;
-extern bool key_down;
-extern bool key_left;
-extern bool key_right;
-extern bool event_timer;
-extern bool start;
-extern bool load;
-extern bool list;
-extern bool setting;
-extern bool quit;
-extern bool screenflag;//全屏标志
-extern bool musicflag;//音乐标志
-extern bool screen;
-extern bool resolution;
-extern bool music;
-extern bool volume;
-extern bool save;
-extern bool set_back;
-extern bool recover;
-extern float volume_num;
-extern bool archive_1;
-extern bool archive_2;
-extern bool archive_3;
-extern bool archive_4;
-extern bool archive_5;
-extern bool archive_6;
-extern bool load_back;
-extern int list_num;
-extern char num[MAXSIZE];
-extern int number;
-#endif // ALLEGRO_H
+void Init_Allegro(allegro *n)
+{
+    srand((int)time(NULL));
+    if(!al_init()){
+       fprintf(stderr, "failed to initialize allegro!\n");
+       exit(1);
+    }
+    if(!al_install_mouse()){
+        printf("failed to initialize the mouse\n");
+        exit(1);
+    }
+    if(!al_install_keyboard()){
+        printf("failed to initialize the keyboard\n");
+        exit(1);
+    }
+    if(!al_init_font_addon()){
+        printf("failed to initialize the font_addon\n");
+        exit(1);
+    }
+    if(!al_init_ttf_addon()){
+        printf("failed to initialize the ttf_addon\n");
+        exit(1);
+    }
+    if(!al_init_image_addon()){
+        fprintf(stderr,"Failed to initialize al_init_image_addon!");
+        exit(1);
+    }
+    if(!al_install_audio()){
+        fprintf(stderr,"Failed to initialize al_install_audio!");
+        exit(1);
+    }
+    if(!al_init_acodec_addon()){
+        fprintf(stderr,"Failed to initialize al_init_acodec_addon!");
+        exit(1);
+    }
+    if(!al_reserve_samples(100)){
+        fprintf(stderr,"Failed to initialize al_reserve_samples!");
+        exit(1);
+    }
+    al_get_display_mode(0,&n->display_date);
+    screen_width = n->display_date.width;
+    screen_height = n->display_date.height;
+}
+void Destroy_Allegro(allegro *n)
+{
+    al_destroy_timer(n->timer);
+    al_destroy_display(n->display);
+    al_destroy_event_queue(n->event_queue);
+    al_destroy_font(n->font1);
+    al_destroy_font(n->font2);
+    al_destroy_bitmap(n->bitmap1);
+    al_destroy_bitmap(n->bitmap2);
+    al_destroy_bitmap(n->bitmap3);
+    al_destroy_sample(n->sample1);
+}
+void Init_Queue(allegro *n)
+{
+    al_register_event_source(n->event_queue,al_get_display_event_source(n->display));
+    al_register_event_source(n->event_queue,al_get_timer_event_source(n->timer));
+    al_register_event_source(n->event_queue,al_get_mouse_event_source());
+    al_register_event_source(n->event_queue,al_get_keyboard_event_source());
+}
+void Init_Display(allegro *n)
+{
+    n->bitmap1=NULL;
+    n->bitmap2=NULL;
+    n->bitmap3=NULL;
+    n->display=NULL;
+    n->event_queue=NULL;
+    n->font1=NULL;
+    n->font2=NULL;
+    n->timer=NULL;
+    word_size=0.05*game_height;
+    //al_set_new_display_flags(ALLEGRO_FULLSCREEN);
+    n->display = al_create_display(game_width,game_height);
+    if(!n->display){
+        fprintf(stderr, "failed to create display!\n");
+        Destroy_Allegro(n);
+        exit(1);
+    }
+    n->event_queue = al_create_event_queue();
+    if(!n->event_queue){
+        fprintf(stderr, "failed to create event_queue!\n");
+        Destroy_Allegro(n);
+        exit(1);
+    }
+    n->timer=al_create_timer(1.0/FPS);
+    if(!n->timer){
+        fprintf(stderr, "failed to create timer!\n");
+        Destroy_Allegro(n);
+        exit(1);
+    }
+    n->font1=al_load_font("a.ttf",word_size,0);
+    if(!n->font1){
+        fprintf(stderr, "failed to create font1!\n");
+        Destroy_Allegro(n);
+        exit(1);
+    }
+    n->font2=al_load_font("a.ttf",2*word_size,0);
+    if(!n->font2){
+        fprintf(stderr, "failed to create font2!\n");
+        Destroy_Allegro(n);
+        exit(1);
+    }
+    Init_Queue(n);
+}
+bool judge_inside(ALLEGRO_EVENT ev,ALLEGRO_BITMAP *bitmap)
+{
+    int mouse_x = ev.mouse.x;
+    int mouse_y = ev.mouse.y;
+    int x = al_get_bitmap_x(bitmap);
+    int y = al_get_bitmap_y(bitmap);
+    int width = al_get_bitmap_width(bitmap);
+    int height = al_get_bitmap_height(bitmap);
+    if(mouse_x < x)return false;
+    if(mouse_x > x + width)return false;
+    if(mouse_y < y)return false;
+    if(mouse_y > y + height)return false;
+    return true;
+}
+int Rand(int low,int high)
+{
+    int i=rand();
+    float m = i / ((float)RAND_MAX + 1);
+    m=m * (high - low + 1) + low;
+    return (int) m;
+}
+int Distance(int x1,int y1,int x2,int y2)
+{
+    return pow(pow(x1 - x2,2) + pow(y1 - y2,2),0.5);
+}
+bool judge_in(ALLEGRO_EVENT ev, int x1, int y1, int x2, int y2)
+{
+    int mouse_x = ev.mouse.x;
+    int mouse_y = ev.mouse.y;
+    if(mouse_x < x1)return false;
+    if(mouse_x > x2)return false;
+    if(mouse_y < y1)return false;
+    if(mouse_y > y2)return false;
+    return true;
+}

@@ -17,20 +17,18 @@ int main(int argc,char *argv[])
     if(screenflag)al_set_new_display_flags(ALLEGRO_FULLSCREEN);
     Init_Display(&n);
     Init_Queue(&n);
-
-    char num[MAXSIZE];
-    sprintf(num,"../startrek/UI/plane/bg_%d.jpg",screen_width);
+    sprintf(num,"../UI/plane/bg_%d.jpg",screen_width);
     n.bitmap=al_load_bitmap(num);
     if(!n.bitmap){
         fprintf(stderr, "failed to create bitmap!\n");
         exit(1);
     }
-    n.font1=al_load_ttf_font("../startrek/UI/a.ttf",word_size,128);
+    n.font1=al_load_ttf_font("../UI/a.ttf",word_size,128);
     if(!n.font1){
         fprintf(stderr, "failed to create font1!\n");
         exit(1);
     }
-    n.font2=al_load_ttf_font("../startrek/UI/a.ttf",4*word_size,128);
+    n.font2=al_load_ttf_font("../UI/a.ttf",4*word_size,128);
     if(!n.font2){
         fprintf(stderr, "failed to create font2!\n");
         exit(1);

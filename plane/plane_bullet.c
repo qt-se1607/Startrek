@@ -20,7 +20,6 @@ void Init_Plane(plane *n)
     n->y2 = 0;
     Init_Bullet(n->bull);
 }
-
 void Init_Bullet(bullet n[])
 {
     for(int i = 0;i < MAXSIZE;i++){
@@ -33,7 +32,6 @@ void Init_Bullet(bullet n[])
         n[i].speed = 0;
     }
 }
-
 void Init_enemyplane(plane n[MAXSIZE])
 {
     for(int i = 0; i < MAXSIZE;i++)
@@ -50,7 +48,6 @@ void Init_enemyplane(plane n[MAXSIZE])
         Init_Bullet(n[i].bull);
     }
 }
-
 bool Draw_plane_bullet(allegro m)
 {
     int k=0;
@@ -64,8 +61,7 @@ bool Draw_plane_bullet(allegro m)
     n.level = 1;
     n.blood = 10;
     n.live = true;
-    char num[255];
-    sprintf(num,"../startrek/UI/plane_01/plane_%d.png",k);
+    sprintf(num,"../UI/plane_01/plane_%d.png",k);
     n.img=al_load_bitmap(num);
     n.size = 0.9*al_get_bitmap_width(n.img);
     n.x1 = 0.5 * game_width - n.size;
@@ -92,7 +88,7 @@ bool Draw_plane_bullet(allegro m)
                     n.bull[n.bullet_num].attack = 1;
                     n.bull[n.bullet_num].form = 0;
                     n.bull[n.bullet_num].speed = 2 * n.speed;
-                    n.bull[n.bullet_num].img = al_load_bitmap("../startrek/UI/bullet_01/bullet_0.png");
+                    n.bull[n.bullet_num].img = al_load_bitmap("../UI/bullet_01/bullet_0.png");
                     n.bull[n.bullet_num].x1 = n.x1;
                     n.bull[n.bullet_num].y1 = n.y1;
                     n.bullet_num ++;
@@ -104,7 +100,7 @@ bool Draw_plane_bullet(allegro m)
                     if(enemy_plane[i].live && enemy_plane[i].blood != 0){
                         enemy_plane[i].bull[enemy_plane[i].bullet_num].attack = enemy_plane[i].level;
                         enemy_plane[i].bull[enemy_plane[i].bullet_num].live = true;
-                        enemy_plane[i].bull[enemy_plane[i].bullet_num].img = al_load_bitmap("../startrek/UI/enemy/b1.png");
+                        enemy_plane[i].bull[enemy_plane[i].bullet_num].img = al_load_bitmap("../UI/enemy/b1.png");
                         enemy_plane[i].bull[enemy_plane[i].bullet_num].speed = 2 * enemy_plane[i].speed;
                         enemy_plane[i].bull[enemy_plane[i].bullet_num].x1 = enemy_plane[i].x1;
                         enemy_plane[i].bull[enemy_plane[i].bullet_num].y1 = enemy_plane[i].y1;
@@ -132,13 +128,13 @@ bool Draw_plane_bullet(allegro m)
                 enemy_plane[plane_num].level = Rand(1,3);
                 enemy_plane[plane_num].blood = enemy_plane[plane_num].level;
                 if(enemy_plane[plane_num].level == 1){
-                    enemy_plane[plane_num].img = al_load_bitmap("../startrek/UI/enemy/enemy1.png");
+                    enemy_plane[plane_num].img = al_load_bitmap("../UI/enemy/enemy1.png");
                 }
                 if(enemy_plane[plane_num].level == 2){
-                    enemy_plane[plane_num].img = al_load_bitmap("../startrek/UI/enemy/enemy1.png");
+                    enemy_plane[plane_num].img = al_load_bitmap("../UI/enemy/enemy1.png");
                 }
                 if(enemy_plane[plane_num].level == 3){
-                    enemy_plane[plane_num].img = al_load_bitmap("../startrek/UI/enemy/enemy1.png");
+                    enemy_plane[plane_num].img = al_load_bitmap("../UI/enemy/enemy1.png");
                 }
                 enemy_plane[plane_num].live = true;
                 enemy_plane[plane_num].form = 39;
@@ -179,7 +175,7 @@ bool Draw_plane_bullet(allegro m)
             for(int i=0;i<MAXSIZE;i++){
                 if(!n.bull[i].live)continue;
                 n.bull[i].y1-=n.bull[i].speed;
-                sprintf(num,"../startrek/UI/bullet_01/bullet_%d.png",n.bull[i].form/5);
+                sprintf(num,"../UI/bullet_01/bullet_%d.png",n.bull[i].form/5);
                 al_destroy_bitmap(n.bull[i].img);
                 n.bull[i].img=al_load_bitmap(num);
                 n.bull[i].form++;
@@ -210,7 +206,7 @@ bool Draw_plane_bullet(allegro m)
             //爆炸效果
             for(int i=0;i<MAXSIZE;i++){
                 if(enemy_plane[i].blood==0 && enemy_plane[i].live){
-                    sprintf(num,"../startrek/UI/boom_01/boom_%d.png",enemy_plane[i].form/10);
+                    sprintf(num,"../UI/boom_01/boom_%d.png",enemy_plane[i].form/10);
                     al_destroy_bitmap(enemy_plane[i].img);
                     enemy_plane[i].img=al_load_bitmap(num);
                     al_draw_pic(enemy_plane[i].img,enemy_plane[i].x1,enemy_plane[i].y1);
@@ -221,7 +217,7 @@ bool Draw_plane_bullet(allegro m)
                 }
             }
             if(n.blood<=0&&n.live){
-                sprintf(num,"boom_01_%d.png",n.form/10);
+                sprintf(num,"../UI/boom_01/boom_%d.png",n.form/10);
                 al_destroy_bitmap(n.img);
                 n.img=al_load_bitmap(num);
                 al_draw_pic(n.img,n.x1,n.y1);
@@ -269,7 +265,7 @@ bool Draw_plane_bullet(allegro m)
         }
         if(key_left){
             if(k>-7)k--;
-            sprintf(num,"../startrek/UI/plane_01/plane_%d.png",k);
+            sprintf(num,"../UI/plane_01/plane_%d.png",k);
             al_destroy_bitmap(n.img);
             n.img=al_load_bitmap(num);
             n.x1-=n.speed;
@@ -277,13 +273,13 @@ bool Draw_plane_bullet(allegro m)
         }
         else{
             if(k<0)k++;
-            sprintf(num,"../startrek/UI/plane_01/plane_%d.png",k);
+            sprintf(num,"../UI/plane_01/plane_%d.png",k);
             al_destroy_bitmap(n.img);
             n.img=al_load_bitmap(num);
         }
         if(key_right){
             if(k<7)k++;
-            sprintf(num,"../startrek/UI/plane_01/plane_%d.png",k);
+            sprintf(num,"../UI/plane_01/plane_%d.png",k);
             al_destroy_bitmap(n.img);
             n.img=al_load_bitmap(num);
             n.x1+=n.speed;
@@ -291,7 +287,7 @@ bool Draw_plane_bullet(allegro m)
         }
         else{
             if(k>0)k--;
-            sprintf(num,"../startrek/UI/plane_01/plane_%d.png",k);
+            sprintf(num,"../UI/plane_01/plane_%d.png",k);
             al_destroy_bitmap(n.img);
             n.img=al_load_bitmap(num);
         }
