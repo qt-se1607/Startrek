@@ -1,7 +1,6 @@
 #include "game.h"
 
 char num[MAXSIZE];
-
 bool again = false;
 bool save = false;
 bool set_back = false;
@@ -46,9 +45,9 @@ bool al_start_game(allegro n)
     return true;
 }
 
-bool al_join_game(allegro n)
+bool al_join_game(allegro n,int file_num)
 {
-    Draw_plane_bullet(n);
+    Draw_plane_bullet(n,file_num);
     return true;
 }
 
@@ -61,59 +60,40 @@ bool al_end_game(allegro n)
         return true;
     return false;
 }
-
-void pause_game(allegro n)
+void al_pause(allegro n, plane my, plane enemy[MAXSIZE])
 {
-
-
-    bool redraw = false;
-
-    int checkout = 0.3 * 120;
+    int checkout = 0.3 *FPS;
     int git = 3*checkout;
-
+    bool redraw=false;
     while(1){
         ALLEGRO_EVENT ev;
         al_wait_for_event(n.event_queue,&ev);
-        if(ev.type == ALLEGRO_EVENT_TIMER)
-            redraw = true;
-        if(ev.keyboard.keycode == ALLEGRO_KEY_SPACE)
-            break;
-        if(redraw && al_is_event_queue_empty(n.event_queue))
-        {
-            al_draw_display(n);
+        if(ev.type == ALLEGRO_EVENT_TIMER)redraw=true;
+        if(redraw && al_is_event_queue_empty(n.event_queue)){
+            al_draw_pauseboard(n);
             redraw = false;
         }
-
-        again = false;
-        save = false;
-        set_back = false;
-
-        if(git>=3*checkout)
-        {
+        if(git>=3*checkout){
             again=true;
-            save = false;
-            set_back = false;
+            save =false;
+            set_back =false;
         }
-        else if(git>=2*checkout)
-        {
+        else if(git>=2*checkout){
             save=true;
-            again = false;
-            set_back =  false;
+            again =false;
+            set_back =false;
         }
-        else if(git>=checkout)
-        {
+        else if(git>=checkout){
             set_back=true;
-            again = false;
-            save = false;
+            again=false;
+            save=false;
         }
-
         if(ev.type == ALLEGRO_EVENT_KEY_DOWN){
             switch(ev.keyboard.keycode){
             case ALLEGRO_KEY_UP:key_up=true;break;
             case ALLEGRO_KEY_DOWN:key_down=true;break;
             }
         }
-
         if(ev.type == ALLEGRO_EVENT_KEY_UP){
             int i=git%checkout;
             if(key_down)git-=i;
@@ -124,105 +104,149 @@ void pause_game(allegro n)
             case ALLEGRO_KEY_DOWN:key_down=false;break;
             }
         }
-
         if(key_down)git--;
         if(key_up)git++;
         if(git<checkout)git=4*checkout;
         if(git>4*checkout)git=checkout;
 
-
-        if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
-            break;
-        }
-        if(judge_in(ev,0.4*game_width,0.3*game_height-0.2*word_size,
-                    0.6*game_width,0.3*game_height+0.8*word_size)){
-            git=3*checkout;
-            al_draw_display(n);
-            if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
-                break;
+        if(ev.type==ALLEGRO_EVENT_KEY_DOWN&&ev.keyboard.keycode==ALLEGRO_KEY_ENTER){
+            if(again)break;
+            if(save){
+                al_archive(my,enemy);
+                exit(0);
             }
-            if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP)
-                break;
+            if(set_back)exit(-1);
+        }
+        if(judge_in(ev,0.4*game_width,0.3*game_height-0.6*word_size,
+                    0.6*game_width,0.4*game_height+0.6*word_size)){
+            git=3*checkout;
+            if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
+                al_draw_pauseboard(n);
+            }
+            if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP)break;
         }
 
-        if(judge_in(ev,0.4*game_width,0.5*game_height-0.2*word_size,
-                    0.6*game_width,0.5*game_height+0.8*word_size)){
+        if(judge_in(ev,0.4*game_width,0.5*game_height-0.6*word_size,
+                    0.6*game_width,0.5*game_height+0.6*word_size)){
             git=2*checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
-                al_draw_display(n);
+                al_draw_pauseboard(n);
             }
-            if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP)
+            if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
+                al_archive(my,enemy);
                 exit(0);
-        }
-        if(judge_in(ev,0.4*game_width,0.7*game_height-0.2*word_size,
-                    0.6*game_width,0.7*game_height+0.8*word_size)){
-            git = checkout;
-            al_draw_display(n);
-            if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
-                al_draw_display(n);
             }
-            if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP)
-                exit(-1);
+        }
+        if(judge_in(ev,0.4*game_width,0.7*game_height-0.6*word_size,
+                    0.6*game_width,0.7*game_height+0.6*word_size)){
+            git = checkout;
+            if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
+                al_draw_pauseboard(n);
+            }
+            if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP)exit(-1);
         }
 
 
     }
 
 }
-
-
-void al_draw_display(allegro n)
+void al_archive(plane n, plane m[MAXSIZE])
 {
-
-    if(again)
-    {
-        al_draw_filled_rounded_rectangle(0.4*screen_width,0.3*screen_height-0.2*word_size,
-                                         0.6*screen_width,0.3*screen_height+0.8*word_size,
-                                         0.2*word_size,0.2*word_size,al_map_rgb(64,224,205));
+    int fp;
+    float i=0;
+    fp=open("../UI/load/load",O_CREAT|O_WRONLY);
+    write(fp,&score,sizeof(int));
+    i=(float)n.x1/game_width;
+    write(fp,&i,sizeof(float));
+    i=(float)n.y1/game_height;
+    write(fp,&i,sizeof(float));
+    write(fp,&n.x2,sizeof(int));
+    write(fp,&n.y2,sizeof(int));
+    write(fp,&n.level,sizeof(int));
+    write(fp,&n.speed,sizeof(int));
+    write(fp,&n.blood,sizeof(int));
+    write(fp,&n.form,sizeof(int));
+    write(fp,&n.size,sizeof(int));
+    write(fp,&n.bullet_num,sizeof(int));
+    write(fp,&n.live,sizeof(bool));
+    for(int a=0;a<MAXSIZE;a++){
+        i=(float)n.bull[a].x1/game_width;
+        write(fp,&i,sizeof(float));
+        i=(float)n.bull[a].y1/game_height;
+        write(fp,&i,sizeof(float));
+        write(fp,&n.bull[a].x2,sizeof(int));
+        write(fp,&n.bull[a].y2,sizeof(int));
+        write(fp,&n.bull[a].speed,sizeof(int));
+        write(fp,&n.bull[a].attack,sizeof(int));
+        write(fp,&n.bull[a].form,sizeof(int));
+        write(fp,&n.bull[a].live,sizeof(bool));
     }
-
+    for(int a=0;a<MAXSIZE;a++){
+        i=(float)m[a].x1/game_width;
+        write(fp,&i,sizeof(float));
+        i=(float)m[a].y1/game_height;
+        write(fp,&i,sizeof(float));
+        write(fp,&m[a].x2,sizeof(int));
+        write(fp,&m[a].y2,sizeof(int));
+        write(fp,&m[a].level,sizeof(int));
+        write(fp,&m[a].speed,sizeof(int));
+        write(fp,&m[a].blood,sizeof(int));
+        write(fp,&m[a].form,sizeof(int));
+        write(fp,&m[a].size,sizeof(int));
+        write(fp,&m[a].bullet_num,sizeof(int));
+        write(fp,&m[a].live,sizeof(bool));
+        for(int b=0;b<MAXSIZE;b++){
+            i=(float)m[a].bull[b].x1/game_width;
+            write(fp,&i,sizeof(float));
+            i=(float)m[a].bull[b].y1/game_height;
+            write(fp,&i,sizeof(float));
+            write(fp,&m[a].bull[b].x2,sizeof(float));
+            write(fp,&m[a].bull[b].y2,sizeof(float));
+            write(fp,&m[a].bull[b].speed,sizeof(int));
+            write(fp,&m[a].bull[b].attack,sizeof(int));
+            write(fp,&m[a].bull[b].form,sizeof(int));
+            write(fp,&m[a].bull[b].live,sizeof(bool));
+        }
+    }
+    close(fp);
+}
+void al_draw_pauseboard(allegro n)
+{
+    if(again){
+        al_draw_filled_rounded_rectangle(0.4*game_width,0.3*game_height-0.6*word_size,
+                                         0.6*game_width,0.3*game_height+0.6*word_size,
+                                         0.2*word_size,0.2*word_size,green_cyan);
+    }
     else{
-        al_draw_filled_rounded_rectangle(0.4*screen_width,0.3*screen_height-0.2*word_size,
-                                         0.6*screen_width,0.3*screen_height+0.8*word_size,
-                                         0.2*word_size,0.2*word_size,al_map_rgb(0,0,0));
+        al_draw_filled_rounded_rectangle(0.4*game_width,0.3*game_height-0.6*word_size,
+                                         0.6*game_width,0.3*game_height+0.6*word_size,
+                                         0.2*word_size,0.2*word_size,black);
     }
-
-    al_draw_text(n.font1, al_map_rgb(255,255,255), 0.5 * game_width,0.3*game_height,ALLEGRO_ALIGN_CENTRE, "继 续 游 戏");
-
-    if(save)
-    {
-        al_draw_filled_rounded_rectangle(0.4*game_width,0.5*game_height-0.2*word_size,
-                                         0.6*game_width,0.5*game_height+0.8*word_size,
-                                         0.2*word_size,0.2*word_size,al_map_rgb(64,224,205));
+    al_draw_text(n.font1,white,0.5*game_width,0.3*game_height-0.6*word_size,ALLEGRO_ALIGN_CENTRE,"继 续 游 戏");
+    if(save){
+        al_draw_filled_rounded_rectangle(0.4*game_width,0.5*game_height-0.6*word_size,
+                                         0.6*game_width,0.5*game_height+0.6*word_size,
+                                         0.2*word_size,0.2*word_size,green_cyan);
     }
-
-    else
-    {
-        al_draw_filled_rounded_rectangle(0.4*game_width,0.5*game_height-0.2*word_size,
-                                         0.6*game_width,0.5*game_height+0.8*word_size,
-                                         0.2*word_size,0.2*word_size,al_map_rgb(0,0,0));
+    else{
+        al_draw_filled_rounded_rectangle(0.4*game_width,0.5*game_height-0.6*word_size,
+                                         0.6*game_width,0.5*game_height+0.6*word_size,
+                                         0.2*word_size,0.2*word_size,black);
     }
-
-    al_draw_text(n.font1, al_map_rgb(255,255,255), 0.5 * game_width, 0.5*game_height,ALLEGRO_ALIGN_CENTRE, "存       档");
-
-    if(set_back)
-    {
-        al_draw_filled_rounded_rectangle(0.4*game_width,0.7*game_height-0.2*word_size,
-                                         0.6*game_width,0.7*game_height+0.8*word_size,
-                                                 0.2*word_size,0.2*word_size,al_map_rgb(64,224,205));
+    al_draw_text(n.font1,white,0.5*game_width,0.5*game_height-0.6*word_size,ALLEGRO_ALIGN_CENTRE,"存      档");
+    if(set_back){
+        al_draw_filled_rounded_rectangle(0.4*game_width,0.7*game_height-0.6*word_size,
+                                         0.6*game_width,0.7*game_height+0.6*word_size,
+                                         0.2*word_size,0.2*word_size,green_cyan);
     }
-    else
-    {
-        al_draw_filled_rounded_rectangle(0.4*game_width,0.7*game_height-0.2*word_size,
-                                         0.6*game_width,0.7*game_height+0.8*word_size,
-                                                 0.2*word_size,0.2*word_size,al_map_rgb(0,0,0));
+    else{
+        al_draw_filled_rounded_rectangle(0.4*game_width,0.7*game_height-0.6*word_size,
+                                         0.6*game_width,0.7*game_height+0.6*word_size,
+                                         0.2*word_size,0.2*word_size,black);
     }
-
-    al_draw_text(n.font1,al_map_rgb(255,255,255),0.5*game_width,0.7*game_height,ALLEGRO_ALIGN_CENTER,"退 出 游 戏");
-
+    al_draw_text(n.font1,white,0.5*game_width,0.7*game_height-0.6*word_size,ALLEGRO_ALIGN_CENTER,"退 出 游 戏");
     al_flip_display();
 }
-
 bool judge_in(ALLEGRO_EVENT ev, int x1, int y1, int x2, int y2)
 {
     int mouse_x = ev.mouse.x;

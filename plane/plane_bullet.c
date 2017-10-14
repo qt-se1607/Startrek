@@ -7,81 +7,133 @@ bool key_up=false;
 bool key_down=false;
 bool key_left=false;
 bool key_right=false;
+int score=0;
 
-void Init_Plane(plane *n)
+void Init_Plane(plane *n,int file_num)
 {
-    n->live = false;
-    n->img = NULL;
-    n->bullet_num = 0;
-    n->blood = 10;
-    n->level = 0;
-    n->x1 = 0;
-    n->y1 = 0;
-    n->x2 = 0;
-    n->y2 = 0;
-    Init_Bullet(n->bull);
+    float k=0;
+    if(file_num){
+        read(file_num,&k,sizeof(float));
+        n->x1=k*game_width;
+        read(file_num,&k,sizeof(float));
+        n->y1=k*game_height;
+        read(file_num,&n->x2,sizeof(int));
+        read(file_num,&n->y2,sizeof(int));
+        read(file_num,&n->level,sizeof(int));
+        read(file_num,&n->speed,sizeof(int));
+        read(file_num,&n->blood,sizeof(int));
+        read(file_num,&n->form,sizeof(int));
+        read(file_num,&n->size,sizeof(int));
+        read(file_num,&n->bullet_num,sizeof(int));
+        read(file_num,&n->live,sizeof(bool));
+        n->img =al_load_bitmap("../UI/plane_01/plane_0.png");
+    }
+    else{
+        n->level = 1;
+        n->blood = 10;
+        n->live = true;
+        sprintf(num,"../UI/plane_01/plane_0.png");
+        n->img=al_load_bitmap(num);
+        n->size = 0.9*al_get_bitmap_width(n->img);
+        n->x1 = 0.5 * game_width - n->size;
+        n->y1 = game_height - n->size;
+        n->bullet_num = 0;
+        n->x2 = 0;
+        n->y2 = 0;
+    }
+    Init_Bullet(n->bull,file_num);
 }
-void Init_Bullet(bullet n[])
+void Init_Bullet(bullet n[MAXSIZE],int file_num)
 {
-    for(int i = 0;i < MAXSIZE;i++){
-        n[i].live = false;
-        n[i].x1 = 0;
-        n[i].x2 = 0;
-        n[i].y1 = 0;
-        n[i].y2 = 0;
-        n[i].attack = 0;
-        n[i].speed = 0;
+    float k=0;
+    if(file_num){
+        for(int i = 0;i < MAXSIZE;i++){
+            n[i].img=al_load_bitmap("../UI/bullet_01/bullet_0.png");
+            read(file_num,&k,sizeof(float));
+            n[i].x1=k*game_width;
+            read(file_num,&k,sizeof(float));
+            n[i].y1=k*game_height;
+            read(file_num,&n[i].x2,sizeof(int));
+            read(file_num,&n[i].y2,sizeof(int));
+            read(file_num,&n[i].speed,sizeof(int));
+            read(file_num,&n[i].attack,sizeof(int));
+            read(file_num,&n[i].form,sizeof(int));
+            read(file_num,&n[i].live,sizeof(bool));
+        }
+    }
+    else{
+        for(int i = 0;i < MAXSIZE;i++){
+            n[i].live = false;
+            n[i].x1 = 0;
+            n[i].x2 = 0;
+            n[i].y1 = 0;
+            n[i].y2 = 0;
+            n[i].attack = 0;
+            n[i].speed = 0;
+        }
     }
 }
-void Init_enemyplane(plane n[MAXSIZE])
+void Init_enemyplane(plane n[MAXSIZE],int file_num)
 {
-    for(int i = 0; i < MAXSIZE;i++)
-    {
-        n[i].live = false;
-        n[i].img = NULL;
-        n[i].bullet_num = 0;
-        n[i].blood = 0;
-        n[i].level = 0;
-        n[i].x1 = 0;
-        n[i].y1 = 0;
-        n[i].x2 = 0;
-        n[i].y2 = 0;
-        Init_Bullet(n[i].bull);
+    float k=0;
+    if(file_num){
+        for(int i = 0; i < MAXSIZE;i++){
+            read(file_num,&k,sizeof(float));
+            n[i].x1=k*game_width;
+            read(file_num,&k,sizeof(float));
+            n[i].y1=k*game_height;
+            read(file_num,&n[i].x2,sizeof(int));
+            read(file_num,&n[i].y2,sizeof(int));
+            read(file_num,&n[i].level,sizeof(int));
+            read(file_num,&n[i].speed,sizeof(int));
+            read(file_num,&n[i].blood,sizeof(int));
+            read(file_num,&n[i].form,sizeof(int));
+            read(file_num,&n[i].size,sizeof(int));
+            read(file_num,&n[i].bullet_num,sizeof(int));
+            read(file_num,&n[i].live,sizeof(bool));
+            n[i].img=al_load_bitmap("../UI/enemy/enemy1.png");
+            Init_Bullet(n[i].bull,file_num);
+        }
+    }
+    else{
+        for(int i = 0; i < MAXSIZE;i++){
+            n[i].live = false;
+            n[i].img = NULL;
+            n[i].bullet_num = 0;
+            n[i].blood = 0;
+            n[i].level = 0;
+            n[i].x1 = 0;
+            n[i].y1 = 0;
+            n[i].x2 = 0;
+            n[i].y2 = 0;
+            Init_Bullet(n[i].bull,file_num);
+        }
     }
 }
-bool Draw_plane_bullet(allegro m)
+bool Draw_plane_bullet(allegro m,int file_num)
 {
     int k=0;
     img_x=0.5*game_width;
     img_y=game_height-0.5*al_get_bitmap_height(m.bitmap);
     plane n;
     plane enemy_plane[MAXSIZE];
-
-    Init_Plane(&n);
-    Init_enemyplane(enemy_plane);
-    n.level = 1;
-    n.blood = 10;
-    n.live = true;
-    sprintf(num,"../UI/plane_01/plane_%d.png",k);
-    n.img=al_load_bitmap(num);
-    n.size = 0.9*al_get_bitmap_width(n.img);
-    n.x1 = 0.5 * game_width - n.size;
-    n.y1 = game_height - n.size;
+    if(file_num)read(file_num,&score,sizeof(int));
+    Init_Plane(&n,file_num);
+    Init_enemyplane(enemy_plane,file_num);
     int plane_num = 0;
     int bullet_num = 0;
     int plane_rate = 0;
     bool redraw = false;
     //al_set_mouse_xy(m.display,0.5*game_width,game_height+1);
     while(1){
-        if(!n.live)exit(10);
+        if(!n.live)exit(score);
         n.speed = n.level;
         plane_space = game_height / (5 + 2 * n.level);
         bullet_space = game_height / (5 + 2 * n.level);
         ALLEGRO_EVENT ev;
         al_wait_for_event(m.event_queue,&ev);
         if(ev.type == ALLEGRO_EVENT_TIMER)redraw = true;
-        if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE||ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE)exit(99);
-        if(ev.keyboard.keycode==ALLEGRO_KEY_SPACE)pause_game(m);
+        if(ev.keyboard.keycode==ALLEGRO_KEY_ESCAPE)al_pause(m,n,enemy_plane);
         if(redraw && al_is_event_queue_empty(m.event_queue)){
             //加入子弹
             if(bullet_num >= bullet_space){
@@ -220,11 +272,11 @@ bool Draw_plane_bullet(allegro m)
             }
             if(n.blood<=0&&n.live){
                 sprintf(num,"../UI/boom_01/boom_%d.png",n.form/10);
-                al_destroy_bitmap(n.img);
+                if(n.img)al_destroy_bitmap(n.img);
                 n.img=al_load_bitmap(num);
                 al_draw_pic(n.img,n.x1,n.y1);
                 n.form--;
-                if(n.form==0){
+                if(n.form<=0){
                     n.live=false;
                 }
             }

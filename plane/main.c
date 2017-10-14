@@ -21,19 +21,19 @@ int main(int argc,char *argv[])
         fprintf(stderr, "failed to create bitmap!\n");
         exit(1);
     }
-    n.font1=al_load_ttf_font("../UI/a.ttf",0.5*word_size,128);
+    n.font1=al_load_ttf_font("../UI/a.ttf",word_size,128);
     if(!n.font1){
         fprintf(stderr, "failed to create font1!\n");
         exit(1);
     }
-    n.font2=al_load_ttf_font("../UI/a.ttf",4*word_size,128);
+    n.font2=al_load_ttf_font("../UI/a.ttf",305,0);
     if(!n.font2){
         fprintf(stderr, "failed to create font2!\n");
         exit(1);
     }
     al_start_timer(n.timer);
     if(al_start_game(n)){
-        if(al_join_game(n)){
+        if(al_join_game(n,file_num)){
             al_end_game(n);
         }
     }

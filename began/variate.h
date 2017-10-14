@@ -99,6 +99,6 @@ void al_turn(float x1,float y1,float x2,float y2,ALLEGRO_COLOR color);
 void al_execl(int fp);
 int al_wait();
 void al_start(allegro n);
-bool al_loadgame(int git);
+bool al_loadgame(int git, allegro n);
 void al_archive(int git);
 #endif // ALLEGRO_H

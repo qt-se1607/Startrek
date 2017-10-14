@@ -1,7 +1,7 @@
 #include "init.h"
 
-const int FPS = 120;
-int word_size =72;//文字大小
+const float FPS = 120;
+int word_size =0;//文字大小
 int screen_width=0;//屏幕宽度
 int screen_height=0;//屏幕高度
 int score_width=0;//记分板宽度
@@ -69,6 +69,7 @@ void Init_Display(allegro *n)
     game_height=screen_height;
     score_width=0.2*screen_width;
     score_height=screen_height;
+    word_size=0.04*screen_width;
     if(screenflag){
         int k=0;
         al_set_new_display_flags(ALLEGRO_FULLSCREEN);

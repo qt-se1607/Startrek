@@ -68,6 +68,7 @@ int main()
         al_wait_for_event(n.event_queue,&ev);
         if(ev.timer.type == ALLEGRO_EVENT_TIMER)event_timer = true;
         if(event_timer && al_is_event_queue_empty(n.event_queue)){
+            al_clear_to_color(black);
             al_destroy_bitmap(n.bitmap1);
             sprintf(string,"../UI/photo/bg3/bg_%d.png",p/2);
             n.bitmap1=al_load_bitmap(string);

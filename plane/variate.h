@@ -59,8 +59,9 @@ typedef struct MY_PLANE{//飞机
 
 ALLEGRO_TRANSFORM transform;
 
+extern int score;
 extern int word_size;
-//float FPS=120;//帧数
+extern const float FPS;//帧数
 extern int plane_space;//飞机出现jian ge
 extern int bullet_space;//子弹出现时间
 extern int screen_width;//屏幕宽度
@@ -79,5 +80,8 @@ extern bool screenflag;//全屏标志
 extern float volume_num;
 extern int file_num;
 extern char num[MAXSIZE];
+extern bool again;
+extern bool save;
+extern bool set_back;
 
 #endif // VARIATE_H
