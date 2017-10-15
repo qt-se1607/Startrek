@@ -38,6 +38,7 @@ typedef struct MY_BULLET{//子弹
     int speed;
     int attack;
     int form;
+    int size;
     bool live;
 }bullet;
 
@@ -83,5 +84,7 @@ extern char num[MAXSIZE];
 extern bool again;
 extern bool save;
 extern bool set_back;
+extern bool effect;
+extern int effect_time;
 
 #endif // VARIATE_H

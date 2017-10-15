@@ -8,6 +8,8 @@ bool key_down=false;
 bool key_left=false;
 bool key_right=false;
 int score=0;
+bool effect = false;
+int effect_time = 0;
 
 void Init_Plane(plane *n,int file_num)
 {
@@ -110,6 +112,21 @@ void Init_enemyplane(plane n[MAXSIZE],int file_num)
         }
     }
 }
+void Init_buff(bullet buff[MAXSIZE])
+{
+    for(int i = 0;i < MAXSIZE;i++){
+        buff[i].attack = 0;
+        buff[i].img = NULL;
+        buff[i].live = false;
+        buff[i].form = 0;
+        buff[i].x1 = 0;
+        buff[i].y1 = 0;
+        buff[i].x2 = 0;
+        buff[i].y2 = 0;
+        buff[i].speed = 0;
+    }
+}
+
 bool Draw_plane_bullet(allegro m,int file_num)
 {
     int k=0;
@@ -117,12 +134,18 @@ bool Draw_plane_bullet(allegro m,int file_num)
     img_y=game_height-0.5*al_get_bitmap_height(m.bitmap);
     plane n;
     plane enemy_plane[MAXSIZE];
+    bullet buff[MAXSIZE];
+
     if(file_num)read(file_num,&score,sizeof(int));
     Init_Plane(&n,file_num);
     Init_enemyplane(enemy_plane,file_num);
+    Init_buff(buff);
+    int buff_space;
     int plane_num = 0;
     int bullet_num = 0;
     int plane_rate = 0;
+    int buff_rate = 0;
+    int buff_num = 0;
     bool redraw = false;
     //al_set_mouse_xy(m.display,0.5*game_width,game_height+1);
     while(1){
@@ -130,10 +153,13 @@ bool Draw_plane_bullet(allegro m,int file_num)
         n.speed = n.level;
         plane_space = game_height / (5 + 2 * n.level);
         bullet_space = game_height / (5 + 2 * n.level);
+        buff_space = 500;
         ALLEGRO_EVENT ev;
         al_wait_for_event(m.event_queue,&ev);
         if(ev.type == ALLEGRO_EVENT_TIMER)redraw = true;
-        if(ev.keyboard.keycode==ALLEGRO_KEY_ESCAPE)al_pause(m,n,enemy_plane);
+        if(ev.keyboard.keycode==ALLEGRO_KEY_ESCAPE){
+            al_pause(m,n,enemy_plane);
+        }
         if(redraw && al_is_event_queue_empty(m.event_queue)){
             //加入子弹
             if(bullet_num >= bullet_space){
@@ -213,6 +239,28 @@ bool Draw_plane_bullet(allegro m,int file_num)
             }
             plane_rate++;
 
+            //join buff;
+            if(buff_rate >= buff_space){
+                buff[buff_num].attack = Rand(1,2);
+                if(buff[buff_num].attack == 1)buff[buff_num].form = 2;
+                if(buff[buff_num].attack == 2)buff[buff_num].form = 50;
+                buff[buff_num].live = true;
+                sprintf(num,"../UI/buff_%d/buff_0.png",buff[buff_num].attack);
+                buff[buff_num].img = al_load_bitmap(num);
+                buff[buff_num].size = al_get_bitmap_width(buff[buff_num].img);
+                buff[buff_num].x1 = Rand(buff[buff_num].size,game_width-buff[buff_num].size);
+                buff[buff_num].y1 = -0.5 * buff[buff_num].size;
+                buff[buff_num].speed = 1;
+                buff[buff_num].x2 = 0;
+                buff[buff_num].y2 = buff[buff_num].speed;
+                buff_num++;
+                if(buff_num >= MAXSIZE){
+                    buff_num = 0;
+                }
+                buff_rate = 0;
+            }
+            buff_rate++;
+
             //计算路径
             for(int i = 0;i < MAXSIZE;i++){
                 for(int a = 0;a < MAXSIZE;a++){
@@ -236,16 +284,47 @@ bool Draw_plane_bullet(allegro m,int file_num)
                 if(n.bull[i].form>74)n.bull[i].form=5;
             }
 
+            for(int i = 0;i<MAXSIZE;i++)
+            {
+                buff[i].x1 += buff[i].x2;
+                buff[i].y1 += buff[i].y2;
+            }
+
             img_y += 5;//背景滚动速度
             if(img_y>game_height+0.5*al_get_bitmap_height(m.bitmap))img_y=game_height-0.5*al_get_bitmap_height(m.bitmap);
 
             //判断事件
-            boom(&n,enemy_plane);
+            if(effect){
+                effect_time+=5;
+                if(effect_time>=800){
+                    effect_time = 0;
+                    effect = false;
+                }
+            }
+            boom(&n,enemy_plane,buff);
 
             //显示
             al_draw_pic(m.bitmap,img_x,img_y);
             al_draw_pic(m.bitmap,img_x,img_y-al_get_bitmap_height(m.bitmap));
             al_draw_pic(n.img,n.x1,n.y1);
+            al_draw_life(n);
+
+            for(int i=0;i<MAXSIZE;i++){
+                if(!buff[i].live)continue;
+                buff[i].form--;
+                if(buff[i].form<0){
+                    if(buff[i].attack==1)buff[i].form=2;
+                    if(buff[i].attack==2)buff[i].form=50;
+                }
+                sprintf(num,"../UI/buff_%d/buff_%d.png",buff[i].attack,buff[i].form/3);
+                buff[i].img = al_load_bitmap(num);
+                al_draw_pic(buff[i].img,buff[i].x1,buff[i].y1);
+
+            }
+
+            sprintf(num,"%4d",score);
+            al_draw_text(m.font1,white,0.05*game_width,
+                         0.02*game_height,ALLEGRO_ALIGN_CENTER,num);
             for(int i=0;i<MAXSIZE;i++)
                 if(n.bull[i].live)
                     al_draw_pic(n.bull[i].img,n.bull[i].x1,n.bull[i].y1);
@@ -267,6 +346,7 @@ bool Draw_plane_bullet(allegro m,int file_num)
                     enemy_plane[i].form--;
                     if(enemy_plane[i].form<0){
                         enemy_plane[i].live=false;
+                        score += 10;
                     }
                 }
             }
@@ -353,7 +433,7 @@ bool Draw_plane_bullet(allegro m,int file_num)
     return true;
 }
 
-void boom(plane *n,plane *m)
+void boom(plane *n,plane *m,bullet *buff)
 {
     for(int a=0;a<MAXSIZE;a++){
         for(int b=0;b<MAXSIZE;b++){//判断子弹是否出界
@@ -368,6 +448,14 @@ void boom(plane *n,plane *m)
         else if(m[a].x1>game_width+0.5*al_get_bitmap_width(m[a].img))m[a].live=false;
         else if(m[a].y1<-0.5*al_get_bitmap_height(m[a].img))m[a].live=false;
         else if(m[a].y1>game_height+0.5*al_get_bitmap_height(m[a].img))m[a].live=false;
+
+        if(!buff[a].live)continue;//判断buff是否出界
+        if(buff[a].x1<-0.5*al_get_bitmap_width(buff[a].img))buff[a].live=false;
+        else if(buff[a].x1>game_width
+                +0.5*al_get_bitmap_width(buff[a].img))buff[a].live=false;
+        else if(buff[a].y1<-0.5*al_get_bitmap_height(buff[a].img))buff[a].live=false;
+        else if(buff[a].y1>game_height
+                +0.5*al_get_bitmap_height(buff[a].img))buff[a].live=false;
     }
     for(int a=0;a>MAXSIZE;a++){
         if(!n->bull[a].live)continue;
@@ -376,7 +464,7 @@ void boom(plane *n,plane *m)
         else if(n->bull[a].y1<-0.5*al_get_bitmap_height(n->bull[a].img))n->bull[a].live=false;
         else if(n->bull[a].y1>game_height+0.5*al_get_bitmap_height(n->bull[a].img))n->bull[a].live=false;
     }
-    if(n->blood>0){//判断子弹是否命中
+    if(n->blood>0 && !effect){//判断子弹是否命中
         for(int a=0;a<MAXSIZE;a++){
             for(int b=0;b<MAXSIZE;b++){
                 if(!m[a].bull[b].live||n->blood==0)continue;
@@ -400,12 +488,26 @@ void boom(plane *n,plane *m)
             }
         }
     }
-    if(n->blood>0){
+    if(n->blood>0 && !effect){
         for(int a=0;a<MAXSIZE;a++){
             if(!m[a].live)continue;
             if(Distance(n->x1,n->y1,m[a].x1,m[a].y1)<0.5*(m[a].size+n->size)){
                 n->blood--;
                 m[a].blood=0;
+            }
+        }
+    }
+    if(n->blood>0){
+        for(int a = 0;a < MAXSIZE;a++){
+            if(!buff[a].live)continue;
+            if(Distance(n->x1,n->y1,buff[a].x1,buff[a].y1)<0.5*(buff[a].size+n->size)){
+                if(buff[a].attack == 1){
+                    n->blood++;
+                }
+                if(buff[a].attack == 2){
+                    effect = true;
+                }
+                buff[a].live = false;
             }
         }
     }
