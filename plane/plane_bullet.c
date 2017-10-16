@@ -245,11 +245,13 @@ bool Draw_plane_bullet(allegro m,int file_num)
                 if(buff[buff_num].attack == 1)buff[buff_num].form = 2;
                 if(buff[buff_num].attack == 2)buff[buff_num].form = 50;
                 buff[buff_num].live = true;
+                printf("aaa\n");
                 sprintf(num,"../UI/buff_%d/buff_0.png",buff[buff_num].attack);
                 buff[buff_num].img = al_load_bitmap(num);
                 buff[buff_num].size = al_get_bitmap_width(buff[buff_num].img);
                 buff[buff_num].x1 = Rand(buff[buff_num].size,game_width-buff[buff_num].size);
                 buff[buff_num].y1 = -0.5 * buff[buff_num].size;
+                printf("%d---------%d\n",buff[buff_num].attack,buff[buff_num].x1);
                 buff[buff_num].speed = 1;
                 buff[buff_num].x2 = 0;
                 buff[buff_num].y2 = buff[buff_num].speed;
