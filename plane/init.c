@@ -67,20 +67,24 @@ void Init_Display(allegro *n)
     }
     game_width=screen_width;
     game_height=screen_height;
+    if(screenflag){
+        al_set_new_display_flags(ALLEGRO_FULLSCREEN);
+        if(screen_width>1600){
+            screen_width=1920;
+        }
+        else if(screen_width>1280){
+            screen_width=1600;
+        }
+        else if(screen_width>1024){
+            screen_width=1280;
+        }
+        else screen_width=1024;
+    }
+    sprintf(num,"../UI/%d/bg.jpg",screen_width);
     score_width=0.2*screen_width;
     score_height=screen_height;
     word_size=0.04*screen_width;
-    if(screenflag){
-        int k=0;
-        al_set_new_display_flags(ALLEGRO_FULLSCREEN);
-        if(screen_width>1600)k=1920;
-        else if(screen_width>1280)k=1600;
-        else if(screen_width>1024)k=1280;
-        else k=1024;
-        sprintf(num,"../UI/plane/bg_%d.jpg",k);
-    }
-    else sprintf(num,"../UI/plane/bg_%d.jpg",screen_width);
-    n->display=al_create_display(screen_width,screen_height);
+    n->display=al_create_display(game_width,game_height);
     if(!n->display){
         fprintf(stderr, "failed to create display!\n");
         exit(1);

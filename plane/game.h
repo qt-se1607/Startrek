@@ -10,5 +10,4 @@ void al_pause(allegro n,plane my,plane enemy[MAXSIZE]);
 void al_draw_pauseboard(allegro n);
 bool judge_in(ALLEGRO_EVENT ev, int x1, int y1, int x2, int y2);
 void al_archive(plane n,plane m[MAXSIZE]);
-void al_draw_life(plane n);
 #endif // GAME_H
