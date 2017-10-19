@@ -7,7 +7,6 @@ bool set_back = false;
 
 bool al_start_game(allegro n)
 {
-    return true;
     ALLEGRO_BITMAP *p=NULL,*q=NULL;
     bool redraw=false;
     int i=85,bg_num=0,time_num=3;
@@ -19,7 +18,7 @@ bool al_start_game(allegro n)
             if(i==120){
                 al_clear_to_color(black);
                 sprintf(num,"%d",time_num--);
-                al_draw_text(n.font2,white,0.5*game_width,0.5*game_height-2*word_size,ALLEGRO_ALIGN_CENTER,num);
+                al_draw_text(n.font2,white,0.5*game_width,0.5*game_height-150,ALLEGRO_ALIGN_CENTER,num);
                 i=0;
                 bg_num=0;
             }
@@ -224,60 +223,86 @@ void al_archive(plane n, plane m)
 {
     int fp;
     float i=0;
+    int g=0;
     fp=open("../UI/load/load",O_CREAT|O_WRONLY);
     write(fp,&score,sizeof(int));
-    i=(float)n->x1/game_width;
+    i=n->x1/game_width;
     write(fp,&i,sizeof(float));
-    i=(float)n->y1/game_height;
+    i=n->y1/game_height;
     write(fp,&i,sizeof(float));
-    write(fp,&n->x2,sizeof(int));
-    write(fp,&n->y2,sizeof(int));
+    write(fp,&n->x2,sizeof(float));
+    write(fp,&n->y2,sizeof(float));
+    write(fp,&n->speed,sizeof(float));
     write(fp,&n->level,sizeof(int));
-    write(fp,&n->speed,sizeof(int));
     write(fp,&n->blood,sizeof(int));
     write(fp,&n->form,sizeof(int));
-    write(fp,&n->size,sizeof(int));
     write(fp,&n->live,sizeof(bool));
     q=n->bull;
+    g=0;
     while(q){
-        i=(float)q->x1/game_width;
+        g++;
+        q=q->next;
+    }
+    write(fp,&g,sizeof(int));
+    q=n->bull;
+    while(q){
+        i=q->x1/game_width;
         write(fp,&i,sizeof(float));
-        i=(float)q->y1/game_height;
+        i=q->y1/game_height;
         write(fp,&i,sizeof(float));
-        write(fp,&q->x2,sizeof(int));
-        write(fp,&q->y2,sizeof(int));
-        write(fp,&q->speed,sizeof(int));
+        write(fp,&q->x2,sizeof(float));
+        write(fp,&q->y2,sizeof(float));
+        write(fp,&q->speed,sizeof(float));
         write(fp,&q->attack,sizeof(int));
         write(fp,&q->form,sizeof(int));
         write(fp,&q->live,sizeof(bool));
+        sprintf(num,"bullet_1/bullet_0.png");
+        write(fp,num,sizeof(char)*MAXSIZE);
         q=q->next;
     }
     p=m;
+    g=0;
     while(p){
-        i=(float)p->x1/game_width;
+        g++;
+        p=p->next;
+    }
+    write(fp,&g,sizeof(int));
+    p=m;
+    while(p){
+        i=p->x1/game_width;
         write(fp,&i,sizeof(float));
-        i=(float)p->y1/game_height;
+        i=p->y1/game_height;
         write(fp,&i,sizeof(float));
-        write(fp,&p->x2,sizeof(int));
-        write(fp,&p->y2,sizeof(int));
+        write(fp,&p->x2,sizeof(float));
+        write(fp,&p->y2,sizeof(float));
+        write(fp,&p->speed,sizeof(float));
         write(fp,&p->level,sizeof(int));
-        write(fp,&p->speed,sizeof(int));
         write(fp,&p->blood,sizeof(int));
         write(fp,&p->form,sizeof(int));
-        write(fp,&p->size,sizeof(int));
         write(fp,&p->live,sizeof(bool));
+        sprintf(num,"enemy/enemy%d.png",p->level);
+        write(fp,num,sizeof(char)*MAXSIZE);
+        q=p->bull;
+        g=0;
+        while(q){
+            g++;
+            q=q->next;
+        }
+        write(fp,&g,sizeof(int));
         q=p->bull;
         while(q){
-            i=(float)q->x1/game_width;
+            i=q->x1/game_width;
             write(fp,&i,sizeof(float));
-            i=(float)q->y1/game_height;
+            i=q->y1/game_height;
             write(fp,&i,sizeof(float));
             write(fp,&q->x2,sizeof(float));
             write(fp,&q->y2,sizeof(float));
-            write(fp,&q->speed,sizeof(int));
+            write(fp,&q->speed,sizeof(float));
             write(fp,&q->attack,sizeof(int));
             write(fp,&q->form,sizeof(int));
             write(fp,&q->live,sizeof(bool));
+            sprintf(num,"enemy/b1.png");
+            write(fp,num,sizeof(char)*MAXSIZE);
             q=q->next;
         }
         p=p->next;

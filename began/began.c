@@ -61,9 +61,9 @@ int al_wait()
 {
     int score=0;
     wait(&score);//高八位
-    score=WEXITSTATUS(-score);//低八位
+    score=WEXITSTATUS(score);//低八位
     int fp;
-    if((fp=open("../UI/load/load",O_RDONLY))==-1)return 1;
+    if(!score&&(fp=open("../UI/load/load",O_RDONLY))==-1)return 1;
     if((fp=open("../UI/list/list",O_RDONLY))==-1){
         fp=open("../UI/list/list",O_CREAT|O_WRONLY);
         time_t temp;
@@ -208,6 +208,7 @@ void al_load(allegro n,bool score)
                 n.sample2=al_load_sample("../UI/music/music2.wav");
                 if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
                 else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+                if(!score)break;
             }
             else{
                 al_archive(git/checkout);
@@ -226,6 +227,7 @@ void al_load(allegro n,bool score)
                     n.sample2=al_load_sample("../UI/music/music2.wav");
                     if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
                     else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+                    if(!score)break;
                 }
                 else{
                     al_archive(git/checkout);
@@ -245,6 +247,7 @@ void al_load(allegro n,bool score)
                     n.sample2=al_load_sample("../UI/music/music2.wav");
                     if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
                     else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+                    if(!score)break;
                 }
                 else{
                     al_archive(git/checkout);
@@ -264,6 +267,7 @@ void al_load(allegro n,bool score)
                     n.sample2=al_load_sample("../UI/music/music2.wav");
                     if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
                     else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+                    if(!score)break;
                 }
                 else{
                     al_archive(git/checkout);
@@ -283,6 +287,7 @@ void al_load(allegro n,bool score)
                     n.sample2=al_load_sample("../UI/music/music2.wav");
                     if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
                     else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+                    if(!score)break;
                 }
                 else{
                     al_archive(git/checkout);
@@ -302,6 +307,7 @@ void al_load(allegro n,bool score)
                     n.sample2=al_load_sample("../UI/music/music2.wav");
                     if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
                     else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+                    if(!score)break;
                 }
                 else{
                     al_archive(git/checkout);
@@ -321,6 +327,7 @@ void al_load(allegro n,bool score)
                     n.sample2=al_load_sample("../UI/music/music2.wav");
                     if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
                     else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+                    if(!score)break;
                 }
                 else{
                     al_archive(git/checkout);
@@ -344,9 +351,14 @@ void al_load(allegro n,bool score)
 }
 void al_archive(int git)
 {
+    int fp;
     char oldname[MAXSIZE],newname[MAXSIZE];
     sprintf(oldname,"../UI/load/load");
     sprintf(newname,"../UI/load/archive_%d",git);
+    if((fp=open(newname,O_RDONLY))!=-1){
+        close(fp);
+        remove(newname);
+    }
     rename(oldname,newname);
 }
 

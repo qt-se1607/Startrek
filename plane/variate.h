@@ -44,12 +44,12 @@ typedef struct MY_BULLET{//子弹
 
 typedef struct MY_PLANE{//飞机
     ALLEGRO_BITMAP *img;
-    int x1;
-    int y1;
+    float x1;
+    float y1;
     float x2;
     float y2;
-    int level;
     float speed;
+    int level;
     int blood;
     int form;
     int size;
