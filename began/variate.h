@@ -100,5 +100,6 @@ void al_execl(int fp);
 int al_wait();
 void al_start(allegro n);
 bool al_loadgame(int git, allegro n);
+void al_draw_wait(allegro n, bool T);
 void al_archive(int git);
 #endif // ALLEGRO_H

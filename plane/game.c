@@ -18,7 +18,7 @@ bool al_start_game(allegro n)
             if(i==120){
                 al_clear_to_color(black);
                 sprintf(num,"%d",time_num--);
-                al_draw_text(n.font2,white,0.5*game_width,0.5*game_height-2*word_size,ALLEGRO_ALIGN_CENTER,num);
+                al_draw_text(n.font2,white,0.5*game_width,0.5*game_height-150,ALLEGRO_ALIGN_CENTER,num);
                 i=0;
                 bg_num=0;
             }
@@ -60,7 +60,7 @@ bool al_end_game(allegro n)
         return true;
     return false;
 }
-void al_pause(allegro n, plane my, plane enemy[MAXSIZE])
+void al_pause(allegro n,plane my,plane enemy)
 {
     int checkout = 0.3 *FPS;
     int git = 3*checkout;
@@ -113,12 +113,47 @@ void al_pause(allegro n, plane my, plane enemy[MAXSIZE])
             if(again)break;
             if(save){
                 al_archive(my,enemy);
+                p=enemy;
+                while(p){
+                    q=p->bull;
+                    while(q){
+                        bullet a=q;
+                        q=q->next;
+                        free(a);
+                    }
+                    plane b=p;
+                    p=p->next;
+                    free(b);
+                }
+                q=my->bull;
+                while(q){
+                    bullet a=q;q=q->next;
+                    free(a);
+                }
                 exit(0);
             }
-            if(set_back)exit(-1);
+            if(set_back){
+                p=enemy;
+                while(p){
+                    q=p->bull;
+                    while(q){
+                        bullet a=q;
+                        q=q->next;
+                        free(a);
+                    }
+                    plane b=p;
+                    p=p->next;
+                    free(b);
+                }
+                q=my->bull;
+                while(q){
+                    bullet a=q;q=q->next;
+                    free(a);
+                }
+                exit(-1);
+            }
         }
-        if(judge_in(ev,0.4*game_width,0.3*game_height-0.6*word_size,
-                    0.6*game_width,0.4*game_height+0.6*word_size)){
+        if(judge_in(ev,0.4*game_width,0.3*game_height-0.6*word_size,0.6*game_width,0.4*game_height+0.6*word_size)){
             git=3*checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
                 al_draw_pauseboard(n);
@@ -126,87 +161,151 @@ void al_pause(allegro n, plane my, plane enemy[MAXSIZE])
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP)break;
         }
 
-        if(judge_in(ev,0.4*game_width,0.5*game_height-0.6*word_size,
-                    0.6*game_width,0.5*game_height+0.6*word_size)){
+        if(judge_in(ev,0.4*game_width,0.5*game_height-0.6*word_size,0.6*game_width,0.5*game_height+0.6*word_size)){
             git=2*checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
                 al_draw_pauseboard(n);
             }
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
                 al_archive(my,enemy);
+                p=enemy;
+                while(p){
+                    q=p->bull;
+                    while(q){
+                        bullet a=q;
+                        q=q->next;
+                        free(a);
+                    }
+                    plane b=p;
+                    p=p->next;
+                    free(b);
+                }
+                q=my->bull;
+                while(q){
+                    bullet a=q;q=q->next;
+                    free(a);
+                }
                 exit(0);
             }
         }
-        if(judge_in(ev,0.4*game_width,0.7*game_height-0.6*word_size,
-                    0.6*game_width,0.7*game_height+0.6*word_size)){
+        if(judge_in(ev,0.4*game_width,0.7*game_height-0.6*word_size,0.6*game_width,0.7*game_height+0.6*word_size)){
             git = checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
                 al_draw_pauseboard(n);
             }
-            if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP)exit(-1);
+            if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
+                p=enemy;
+                while(p){
+                    q=p->bull;
+                    while(q){
+                        bullet a=q;
+                        q=q->next;
+                        free(a);
+                    }
+                    plane b=p;
+                    p=p->next;
+                    free(b);
+                }
+                q=my->bull;
+                while(q){
+                    bullet a=q;q=q->next;
+                    free(a);
+                }
+                exit(-1);
+            }
         }
 
 
     }
 
 }
-void al_archive(plane n, plane m[MAXSIZE])
+void al_archive(plane n, plane m)
 {
     int fp;
     float i=0;
+    int g=0;
     fp=open("../UI/load/load",O_CREAT|O_WRONLY);
     write(fp,&score,sizeof(int));
-    i=(float)n.x1/game_width;
+    i=n->x1/game_width;
     write(fp,&i,sizeof(float));
-    i=(float)n.y1/game_height;
+    i=n->y1/game_height;
     write(fp,&i,sizeof(float));
-    write(fp,&n.x2,sizeof(int));
-    write(fp,&n.y2,sizeof(int));
-    write(fp,&n.level,sizeof(int));
-    write(fp,&n.speed,sizeof(int));
-    write(fp,&n.blood,sizeof(int));
-    write(fp,&n.form,sizeof(int));
-    write(fp,&n.size,sizeof(int));
-    write(fp,&n.bullet_num,sizeof(int));
-    write(fp,&n.live,sizeof(bool));
-    for(int a=0;a<MAXSIZE;a++){
-        i=(float)n.bull[a].x1/game_width;
-        write(fp,&i,sizeof(float));
-        i=(float)n.bull[a].y1/game_height;
-        write(fp,&i,sizeof(float));
-        write(fp,&n.bull[a].x2,sizeof(int));
-        write(fp,&n.bull[a].y2,sizeof(int));
-        write(fp,&n.bull[a].speed,sizeof(int));
-        write(fp,&n.bull[a].attack,sizeof(int));
-        write(fp,&n.bull[a].form,sizeof(int));
-        write(fp,&n.bull[a].live,sizeof(bool));
+    write(fp,&n->x2,sizeof(float));
+    write(fp,&n->y2,sizeof(float));
+    write(fp,&n->speed,sizeof(float));
+    write(fp,&n->level,sizeof(int));
+    write(fp,&n->blood,sizeof(int));
+    write(fp,&n->form,sizeof(int));
+    write(fp,&n->live,sizeof(bool));
+    q=n->bull;
+    g=0;
+    while(q){
+        g++;
+        q=q->next;
     }
-    for(int a=0;a<MAXSIZE;a++){
-        i=(float)m[a].x1/game_width;
+    write(fp,&g,sizeof(int));
+    q=n->bull;
+    while(q){
+        i=q->x1/game_width;
         write(fp,&i,sizeof(float));
-        i=(float)m[a].y1/game_height;
+        i=q->y1/game_height;
         write(fp,&i,sizeof(float));
-        write(fp,&m[a].x2,sizeof(int));
-        write(fp,&m[a].y2,sizeof(int));
-        write(fp,&m[a].level,sizeof(int));
-        write(fp,&m[a].speed,sizeof(int));
-        write(fp,&m[a].blood,sizeof(int));
-        write(fp,&m[a].form,sizeof(int));
-        write(fp,&m[a].size,sizeof(int));
-        write(fp,&m[a].bullet_num,sizeof(int));
-        write(fp,&m[a].live,sizeof(bool));
-        for(int b=0;b<MAXSIZE;b++){
-            i=(float)m[a].bull[b].x1/game_width;
-            write(fp,&i,sizeof(float));
-            i=(float)m[a].bull[b].y1/game_height;
-            write(fp,&i,sizeof(float));
-            write(fp,&m[a].bull[b].x2,sizeof(float));
-            write(fp,&m[a].bull[b].y2,sizeof(float));
-            write(fp,&m[a].bull[b].speed,sizeof(int));
-            write(fp,&m[a].bull[b].attack,sizeof(int));
-            write(fp,&m[a].bull[b].form,sizeof(int));
-            write(fp,&m[a].bull[b].live,sizeof(bool));
+        write(fp,&q->x2,sizeof(float));
+        write(fp,&q->y2,sizeof(float));
+        write(fp,&q->speed,sizeof(float));
+        write(fp,&q->attack,sizeof(int));
+        write(fp,&q->form,sizeof(int));
+        write(fp,&q->live,sizeof(bool));
+        sprintf(num,"bullet_1/bullet_0.png");
+        write(fp,num,sizeof(char)*MAXSIZE);
+        q=q->next;
+    }
+    p=m;
+    g=0;
+    while(p){
+        g++;
+        p=p->next;
+    }
+    write(fp,&g,sizeof(int));
+    p=m;
+    while(p){
+        i=p->x1/game_width;
+        write(fp,&i,sizeof(float));
+        i=p->y1/game_height;
+        write(fp,&i,sizeof(float));
+        write(fp,&p->x2,sizeof(float));
+        write(fp,&p->y2,sizeof(float));
+        write(fp,&p->speed,sizeof(float));
+        write(fp,&p->level,sizeof(int));
+        write(fp,&p->blood,sizeof(int));
+        write(fp,&p->form,sizeof(int));
+        write(fp,&p->live,sizeof(bool));
+        sprintf(num,"enemy/enemy%d.png",p->level);
+        write(fp,num,sizeof(char)*MAXSIZE);
+        q=p->bull;
+        g=0;
+        while(q){
+            g++;
+            q=q->next;
         }
+        write(fp,&g,sizeof(int));
+        q=p->bull;
+        while(q){
+            i=q->x1/game_width;
+            write(fp,&i,sizeof(float));
+            i=q->y1/game_height;
+            write(fp,&i,sizeof(float));
+            write(fp,&q->x2,sizeof(float));
+            write(fp,&q->y2,sizeof(float));
+            write(fp,&q->speed,sizeof(float));
+            write(fp,&q->attack,sizeof(int));
+            write(fp,&q->form,sizeof(int));
+            write(fp,&q->live,sizeof(bool));
+            sprintf(num,"enemy/b1.png");
+            write(fp,num,sizeof(char)*MAXSIZE);
+            q=q->next;
+        }
+        p=p->next;
     }
     close(fp);
 }
@@ -248,24 +347,6 @@ void al_draw_pauseboard(allegro n)
     al_draw_text(n.font1,white,0.5*game_width,0.7*game_height-0.6*word_size,ALLEGRO_ALIGN_CENTER,"退 出 游 戏");
     al_flip_display();
 }
-
-void al_draw_life(plane n)
-{
-    bullet life;
-    life.img = al_load_bitmap("../UI/life/life.png");
-    life.x1 = 0.02*game_width;
-    life.y1 = 0.15*game_height;
-    life.x2 = 70;
-    life.y2 = 0;
-    for(int i = 0;i<n.blood;i++)
-    {
-        al_draw_pic(life.img,life.x1,life.y1);
-        life.x1 += life.x2;
-        life.y1 += life.y2;
-    }
-
-}
-
 bool judge_in(ALLEGRO_EVENT ev, int x1, int y1, int x2, int y2)
 {
     int mouse_x = ev.mouse.x;
