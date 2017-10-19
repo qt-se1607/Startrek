@@ -30,32 +30,33 @@ typedef struct MY_ALLEGRO{
 }allegro;
 
 typedef struct MY_BULLET{//子弹
-    int x1;
-    int y1;
-    int x2;
-    int y2;
+    float x1;
+    float y1;
+    float x2;
+    float y2;
     ALLEGRO_BITMAP *img;
-    int speed;
+    float speed;
     int attack;
     int form;
     bool live;
-}bullet;
+    struct MY_BULLET *next;
+}Bullet,*bullet;
 
 typedef struct MY_PLANE{//飞机
     ALLEGRO_BITMAP *img;
     int x1;
     int y1;
-    int x2;
-    int y2;
+    float x2;
+    float y2;
     int level;
-    int speed;
+    float speed;
     int blood;
     int form;
     int size;
-    int bullet_num;
-    bullet bull[MAXSIZE];
+    bullet bull;
     bool live;
-}plane;
+    struct MY_PLANE *next;
+}Plane,*plane;
 
 ALLEGRO_TRANSFORM transform;
 
@@ -83,5 +84,6 @@ extern char num[MAXSIZE];
 extern bool again;
 extern bool save;
 extern bool set_back;
-
+extern plane p;
+extern bullet q;
 #endif // VARIATE_H

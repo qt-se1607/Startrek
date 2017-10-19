@@ -80,7 +80,7 @@ void Init_Display(allegro *n)
         }
         else screen_width=1024;
     }
-    sprintf(num,"../UI/%d/bg.jpg",screen_width);
+    sprintf(num,"../UI/%d/bg_%d.jpg",screen_width,2);
     score_width=0.2*screen_width;
     score_height=screen_height;
     word_size=0.04*screen_width;

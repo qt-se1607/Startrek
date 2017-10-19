@@ -7,6 +7,7 @@ bool set_back = false;
 
 bool al_start_game(allegro n)
 {
+    return true;
     ALLEGRO_BITMAP *p=NULL,*q=NULL;
     bool redraw=false;
     int i=85,bg_num=0,time_num=3;
@@ -60,7 +61,7 @@ bool al_end_game(allegro n)
         return true;
     return false;
 }
-void al_pause(allegro n, plane my, plane enemy[MAXSIZE])
+void al_pause(allegro n,plane my,plane enemy)
 {
     int checkout = 0.3 *FPS;
     int git = 3*checkout;
@@ -113,9 +114,45 @@ void al_pause(allegro n, plane my, plane enemy[MAXSIZE])
             if(again)break;
             if(save){
                 al_archive(my,enemy);
+                p=enemy;
+                while(p){
+                    q=p->bull;
+                    while(q){
+                        bullet a=q;
+                        q=q->next;
+                        free(a);
+                    }
+                    plane b=p;
+                    p=p->next;
+                    free(b);
+                }
+                q=my->bull;
+                while(q){
+                    bullet a=q;q=q->next;
+                    free(a);
+                }
                 exit(0);
             }
-            if(set_back)exit(-1);
+            if(set_back){
+                p=enemy;
+                while(p){
+                    q=p->bull;
+                    while(q){
+                        bullet a=q;
+                        q=q->next;
+                        free(a);
+                    }
+                    plane b=p;
+                    p=p->next;
+                    free(b);
+                }
+                q=my->bull;
+                while(q){
+                    bullet a=q;q=q->next;
+                    free(a);
+                }
+                exit(-1);
+            }
         }
         if(judge_in(ev,0.4*game_width,0.3*game_height-0.6*word_size,0.6*game_width,0.4*game_height+0.6*word_size)){
             git=3*checkout;
@@ -132,6 +169,23 @@ void al_pause(allegro n, plane my, plane enemy[MAXSIZE])
             }
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
                 al_archive(my,enemy);
+                p=enemy;
+                while(p){
+                    q=p->bull;
+                    while(q){
+                        bullet a=q;
+                        q=q->next;
+                        free(a);
+                    }
+                    plane b=p;
+                    p=p->next;
+                    free(b);
+                }
+                q=my->bull;
+                while(q){
+                    bullet a=q;q=q->next;
+                    free(a);
+                }
                 exit(0);
             }
         }
@@ -140,70 +194,93 @@ void al_pause(allegro n, plane my, plane enemy[MAXSIZE])
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
                 al_draw_pauseboard(n);
             }
-            if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP)exit(-1);
+            if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
+                p=enemy;
+                while(p){
+                    q=p->bull;
+                    while(q){
+                        bullet a=q;
+                        q=q->next;
+                        free(a);
+                    }
+                    plane b=p;
+                    p=p->next;
+                    free(b);
+                }
+                q=my->bull;
+                while(q){
+                    bullet a=q;q=q->next;
+                    free(a);
+                }
+                exit(-1);
+            }
         }
 
 
     }
 
 }
-void al_archive(plane n, plane m[MAXSIZE])
+void al_archive(plane n, plane m)
 {
     int fp;
     float i=0;
     fp=open("../UI/load/load",O_CREAT|O_WRONLY);
     write(fp,&score,sizeof(int));
-    i=(float)n.x1/game_width;
+    i=(float)n->x1/game_width;
     write(fp,&i,sizeof(float));
-    i=(float)n.y1/game_height;
+    i=(float)n->y1/game_height;
     write(fp,&i,sizeof(float));
-    write(fp,&n.x2,sizeof(int));
-    write(fp,&n.y2,sizeof(int));
-    write(fp,&n.level,sizeof(int));
-    write(fp,&n.speed,sizeof(int));
-    write(fp,&n.blood,sizeof(int));
-    write(fp,&n.form,sizeof(int));
-    write(fp,&n.size,sizeof(int));
-    write(fp,&n.bullet_num,sizeof(int));
-    write(fp,&n.live,sizeof(bool));
-    for(int a=0;a<MAXSIZE;a++){
-        i=(float)n.bull[a].x1/game_width;
+    write(fp,&n->x2,sizeof(int));
+    write(fp,&n->y2,sizeof(int));
+    write(fp,&n->level,sizeof(int));
+    write(fp,&n->speed,sizeof(int));
+    write(fp,&n->blood,sizeof(int));
+    write(fp,&n->form,sizeof(int));
+    write(fp,&n->size,sizeof(int));
+    write(fp,&n->live,sizeof(bool));
+    q=n->bull;
+    while(q){
+        i=(float)q->x1/game_width;
         write(fp,&i,sizeof(float));
-        i=(float)n.bull[a].y1/game_height;
+        i=(float)q->y1/game_height;
         write(fp,&i,sizeof(float));
-        write(fp,&n.bull[a].x2,sizeof(int));
-        write(fp,&n.bull[a].y2,sizeof(int));
-        write(fp,&n.bull[a].speed,sizeof(int));
-        write(fp,&n.bull[a].attack,sizeof(int));
-        write(fp,&n.bull[a].form,sizeof(int));
-        write(fp,&n.bull[a].live,sizeof(bool));
+        write(fp,&q->x2,sizeof(int));
+        write(fp,&q->y2,sizeof(int));
+        write(fp,&q->speed,sizeof(int));
+        write(fp,&q->attack,sizeof(int));
+        write(fp,&q->form,sizeof(int));
+        write(fp,&q->live,sizeof(bool));
+        q=q->next;
     }
-    for(int a=0;a<MAXSIZE;a++){
-        i=(float)m[a].x1/game_width;
+    p=m;
+    while(p){
+        i=(float)p->x1/game_width;
         write(fp,&i,sizeof(float));
-        i=(float)m[a].y1/game_height;
+        i=(float)p->y1/game_height;
         write(fp,&i,sizeof(float));
-        write(fp,&m[a].x2,sizeof(int));
-        write(fp,&m[a].y2,sizeof(int));
-        write(fp,&m[a].level,sizeof(int));
-        write(fp,&m[a].speed,sizeof(int));
-        write(fp,&m[a].blood,sizeof(int));
-        write(fp,&m[a].form,sizeof(int));
-        write(fp,&m[a].size,sizeof(int));
-        write(fp,&m[a].bullet_num,sizeof(int));
-        write(fp,&m[a].live,sizeof(bool));
-        for(int b=0;b<MAXSIZE;b++){
-            i=(float)m[a].bull[b].x1/game_width;
+        write(fp,&p->x2,sizeof(int));
+        write(fp,&p->y2,sizeof(int));
+        write(fp,&p->level,sizeof(int));
+        write(fp,&p->speed,sizeof(int));
+        write(fp,&p->blood,sizeof(int));
+        write(fp,&p->form,sizeof(int));
+        write(fp,&p->size,sizeof(int));
+        write(fp,&p->live,sizeof(bool));
+        q=p->bull;
+        while(q){
+            i=(float)q->x1/game_width;
             write(fp,&i,sizeof(float));
-            i=(float)m[a].bull[b].y1/game_height;
+            i=(float)q->y1/game_height;
             write(fp,&i,sizeof(float));
-            write(fp,&m[a].bull[b].x2,sizeof(float));
-            write(fp,&m[a].bull[b].y2,sizeof(float));
-            write(fp,&m[a].bull[b].speed,sizeof(int));
-            write(fp,&m[a].bull[b].attack,sizeof(int));
-            write(fp,&m[a].bull[b].form,sizeof(int));
-            write(fp,&m[a].bull[b].live,sizeof(bool));
+            write(fp,&q->x2,sizeof(float));
+            write(fp,&q->y2,sizeof(float));
+            write(fp,&q->speed,sizeof(int));
+            write(fp,&q->attack,sizeof(int));
+            write(fp,&q->form,sizeof(int));
+            write(fp,&q->live,sizeof(bool));
+            q=q->next;
         }
+        p=p->next;
     }
     close(fp);
 }

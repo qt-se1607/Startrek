@@ -70,7 +70,7 @@ int main()
         if(event_timer && al_is_event_queue_empty(n.event_queue)){
             al_clear_to_color(black);
             al_destroy_bitmap(n.bitmap1);
-            sprintf(string,"../UI/photo/bg3/bg_%d.png",p/2);
+            sprintf(string,"../UI/photo/bg6/bg_%d.png",p/2);
             n.bitmap1=al_load_bitmap(string);
             p++;
             if(p>101)p=2;
@@ -162,7 +162,7 @@ int main()
             }
             else if(quit)break;
         }
-        if(judge_in(ev,0.35*game_width,0.2*game_height,0.65*game_width,0.3*game_height)){
+        if(judge_in(ev,0.35*game_width,0.41*game_height,0.65*game_width,0.51*game_height)){
             git=checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
                 al_start(n);
@@ -172,7 +172,7 @@ int main()
                 else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
             }
         }
-        if(judge_in(ev,0.35*game_width,0.35*game_height,0.65*game_width,0.45*game_height)){
+        if(judge_in(ev,0.35*game_width,0.52*game_height,0.65*game_width,0.62*game_height)){
             git=2*checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
                 al_draw_startboard(n);
@@ -182,7 +182,7 @@ int main()
                 al_draw_startboard(n);
             }
         }
-        if(judge_in(ev,0.35*game_width,0.5*game_height,0.65*game_width,0.6*game_height)){
+        if(judge_in(ev,0.35*game_width,0.63*game_height,0.65*game_width,0.73*game_height)){
             git=3*checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
                 al_draw_startboard(n);
@@ -192,7 +192,7 @@ int main()
                 al_draw_startboard(n);
             }
         }
-        if(judge_in(ev,0.35*game_width,0.65*game_height,0.65*game_width,0.75*game_height)){
+        if(judge_in(ev,0.35*game_width,0.74*game_height,0.65*game_width,0.84*game_height)){
             git=4*checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
                 al_draw_startboard(n);
@@ -205,7 +205,7 @@ int main()
                 else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
             }
         }
-        if(judge_in(ev,0.35*game_width,0.8*game_height,0.65*game_width,0.9*game_height)){
+        if(judge_in(ev,0.35*game_width,0.85*game_height,0.65*game_width,0.95*game_height)){
             git=5*checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
                 al_draw_startboard(n);
