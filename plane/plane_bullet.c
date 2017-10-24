@@ -284,8 +284,8 @@ bool Draw_plane_bullet(allegro n,int file_num)
 
             //join buff
             if(buff_rate >= buff_space){
-                Buff b = (Buff)malloc(sizeof(Buff));
-                b->level = 1;//Rand(1,2);
+                Buff b = (Buff)malloc(sizeof(BUFF));
+                b->level = Rand(1,2);
                 if(b->level == 1)b->form = 2;
                 if(b->level== 2)b->form = 50;
                 printf("%d...levl\n",b->level);
@@ -366,7 +366,7 @@ bool Draw_plane_bullet(allegro n,int file_num)
                     effect = false;
                 }
             }
-            boom(&my,&enemy_plane/*,buff*/);
+            boom(&my,&enemy_plane,&buff);
             //显示
             al_draw_pic(n.bitmap,img_x,img_y);
             al_draw_pic(n.bitmap,img_x,img_y-al_get_bitmap_height(n.bitmap));
@@ -383,9 +383,8 @@ bool Draw_plane_bullet(allegro n,int file_num)
                         if(z->level==2)z->form=50;
                     }
                     sprintf(num,"../UI/%d/buff_%d/buff_%d.png",screen_width,z->level,z->form/3);
-                    printf("../UI/%d/buff_%d/buff_%d.png\n",screen_width,z->level,z->form/3);
                     z->img=al_load_bitmap(num);
-                    if(z->img)al_destroy_bitmap(z->img);
+//                    if(z->img)al_destroy_bitmap(z->img);
                     al_draw_pic(z->img,z->x1,z->y1);
                     z->form--;
                 }
@@ -452,7 +451,7 @@ bool Draw_plane_bullet(allegro n,int file_num)
     return true;
 }
 
-void boom(plane n,plane *m/*,Buff b*/)
+void boom(plane n,plane *m,Buff *b)
 {
     p=*m;
     while(p){
@@ -471,15 +470,7 @@ void boom(plane n,plane *m/*,Buff b*/)
         else if(p->y1<-0.5*al_get_bitmap_height(p->img))p->live=false;
         else if(p->y1>game_height+0.5*al_get_bitmap_height(p->img))p->live=false;
         p=p->next;
-        //判断buff是否出界
-//        z = b;
-//        if(z->x1<-0.5*al_get_bitmap_width(z->img))z->live=false;
-//        else if(z->x1>game_width
-//                +0.5*al_get_bitmap_width(z->img))z->live=false;
-//        else if(z->y1<-0.5*al_get_bitmap_height(z->img))z->live=false;
-//        else if(z->y1>game_height
-//                +0.5*al_get_bitmap_height(z->img))z->live=false;
-//        z = z->next;
+
     }
     q=n->bull;
     while(q){
@@ -489,6 +480,19 @@ void boom(plane n,plane *m/*,Buff b*/)
         else if(q->y1>game_height+0.5*al_get_bitmap_height(q->img))q->live=false;
         q=q->next;
     }
+
+    //判断buff是否出界
+    z = *b;
+    while(z){
+        if(z->x1<-0.5*al_get_bitmap_width(z->img))z->live=false;
+        else if(z->x1>game_width
+                +0.5*al_get_bitmap_width(z->img))z->live=false;
+        else if(z->y1<-0.5*al_get_bitmap_height(z->img))z->live=false;
+        else if(z->y1>game_height
+                +0.5*al_get_bitmap_height(z->img))z->live=false;
+        z = z->next;
+    }
+
     if(n->blood>0&&!effect){//判断子弹是否命中
         p=*m;
         while(p){
@@ -535,23 +539,23 @@ void boom(plane n,plane *m/*,Buff b*/)
             p=p->next;
         }
     }
-//    if(n->blood>0){
-//        z = b;
-//        while(z){
-//            if(z->live){
-//                if(Distance(n->x1,n->y1,z->x1,z->y1)<0.5*(z->size+n->size)){
-//                    if(z->level == 1){
-//                        n->blood++;
-//                    }
-//                    if(z->level == 2){
-//                        effect = true;
-//                    }
-//                    z->live = false;
-//                }
-//            }
-//           z = z->next;
-//        }
-//    }
+    if(n->blood>0){
+        z = *b;
+        while(z){
+            if(z->live){
+                if(Distance(n->x1,n->y1,z->x1,z->y1)<0.5*(z->size+n->size)){
+                    if(z->level == 1){
+                        n->blood++;
+                    }
+                    if(z->level == 2){
+                        effect = true;
+                    }
+                    z->live = false;
+                }
+            }
+           z = z->next;
+        }
+    }
     p=*m;
     plane p1=*m;
     plane p2=NULL;
