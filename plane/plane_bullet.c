@@ -8,7 +8,7 @@ bool key_up=false;
 bool key_down=false;
 bool key_left=false;
 bool key_right=false;
-int score=0;
+int score=210;
 plane p=NULL;
 bullet q=NULL;
 Buff z = NULL;
@@ -125,6 +125,7 @@ void Init_enemyplane(plane *n,int file_num)
         }
     }
 }
+
 bool Draw_plane_bullet(allegro n,int file_num)
 {
     int k=0;
@@ -136,7 +137,6 @@ bool Draw_plane_bullet(allegro n,int file_num)
     if(file_num)read(file_num,&score,sizeof(int));
     Init_Plane(&my,file_num);
     Init_enemyplane(&enemy_plane,file_num);
-//    Init_buff(buff);
     int bullet_num = 0;
     int plane_rate = 0;
     int buff_rate = 0;
@@ -178,7 +178,7 @@ bool Draw_plane_bullet(allegro n,int file_num)
         if(ev.keyboard.keycode==ALLEGRO_KEY_SPACE)al_pause(n,&my,enemy_plane);
         if(redraw && al_is_event_queue_empty(n.event_queue)){
             //加入子弹
-            if(bullet_num >= bullet_space/4){
+            if(bullet_num >= bullet_space){
                 if(my.live){
                     bullet m=(bullet)malloc(sizeof(Bullet));
                     m->live = true;
@@ -188,9 +188,9 @@ bool Draw_plane_bullet(allegro n,int file_num)
                     m->speed =4*my.speed;
                     sprintf(num,"../UI/%d/bullet_1/bullet_0.png",screen_width);
                     m->img = al_load_bitmap(num);
-                    m->x1 = my.x1;
                     m->y1 = my.y1;
                     m->x2=0;
+                    m->x1 = my.x1;
                     m->y2=0;
                     if(!my.bull)my.bull=m;
                     else{
@@ -203,10 +203,10 @@ bool Draw_plane_bullet(allegro n,int file_num)
                 while(p){
                     if(p->blood!=0&&p->live){
                         bullet m=(bullet)malloc(sizeof(Bullet));
-                        m->attack = p->level;
+                        m->attack = p->level/3+1;
                         m->next=NULL;
                         m->live = true;
-                        sprintf(num,"../UI/%d/enemy/b1.png",screen_width);
+                        sprintf(num,"../UI/%d/enemy/b%d.png",screen_width,m->attack);
                         m->img = al_load_bitmap(num);
                         m->speed = 4*p->speed;
                         m->x1 = p->x1;
@@ -228,33 +228,44 @@ bool Draw_plane_bullet(allegro n,int file_num)
                         }
                     }
                     p=p->next;
-                 }
-                 bullet_num = 0;
+                }
+                bullet_num = 0;
             }
             bullet_num ++;
-            //加入di飞机
+            //加入敌方飞机
             if(plane_rate>= plane_space){
                 plane m=(plane)malloc(sizeof(Plane));
-                m->level = Rand(1,3);
+                if(score<60)m->level=Rand(0,2);
+                else if(score<130)m->level=Rand(3,5);
+                else if(score<210)m->level=Rand(6,8);
+                else m->level=9;
                 m->next=NULL;
                 m->bull=NULL;
-                m->blood = m->level;
+                m->blood = m->level/3+1;
                 sprintf(num,"../UI/%d/enemy/enemy%d.png",screen_width,m->level);
                 m->img = al_load_bitmap(num);
+                if(!m->img)printf("%s\n",num);
                 m->live = true;
                 m->form = 39;
-                m->speed =m->level;
-                m->size=al_get_bitmap_width(m->img);
+                m->speed =m->level/3+1;
+                m->size=al_get_bitmap_height(m->img);
                 m->x1= Rand(m->size,game_width-m->size);
-                m->y1=-0.5*al_get_bitmap_height(m->img);
-                if(m->level < 2){
+                m->y1=-0.5*m->size;
+                if(m->level==9){
+                    m->x1=0;
+                }
+                if(m->level <= 3){
                     m->x2 = 0;
                     m->y2 = m->speed;
                 }
-                else{
+                else if(m->level >3 && m->level<=8){
                     int distance=Distance(m->x1,m->y1,my.x1,my.y1);
                     m->x2=m->speed*(my.x1-m->x1)/distance;
                     m->y2=m->speed*(my.y1-m->y1)/distance;
+                }
+                else if(m->level==9){
+                    m->x2=1;
+                    m->y2=1;
                 }
                 if(!enemy_plane)enemy_plane=m;
                 else{
@@ -266,7 +277,7 @@ bool Draw_plane_bullet(allegro n,int file_num)
             }
             plane_rate++;
 
-            //join buff
+            //加入buff
             if(buff_rate >= buff_space){
                 Buff b = (Buff)malloc(sizeof(BUFF));
                 b->level = Rand(1,2);
@@ -308,10 +319,16 @@ bool Draw_plane_bullet(allegro n,int file_num)
                     }
                     q=q->next;
                 }
-                if(p->blood!=0&&p->live){
+                if(p->blood!=0&&p->live&&p->level!=9){
                     p->x1 += p->x2;
                     p->y1 += p->y2;
                 }
+                if(p->blood!=0&&p->live&&p->level==9){
+                    p->x1 += p->x2;
+                    p->y1=100+100*sin(6.28*(p->x1/game_width));
+                    if(p->x1>=game_width||p->x1==0)p->x2=-p->x2;
+                }
+                if(p->level==9)plane_rate--;
                 p=p->next;
             }
             q=my.bull;
@@ -353,8 +370,8 @@ bool Draw_plane_bullet(allegro n,int file_num)
             al_draw_pic(my.img,my.x1,my.y1);
             al_draw_life(my);
             sprintf(num,"%4d",score);
-            al_draw_text(n.font1,white,0.02*game_width,
-                         0.01*game_height,ALLEGRO_ALIGN_RIGHT,num);
+            al_draw_text(n.font1,white,0.1*game_width,
+                         0.02*game_height,ALLEGRO_ALIGN_RIGHT,num);
             z=buff;
             while(z){
                 if(z->live){
@@ -364,7 +381,6 @@ bool Draw_plane_bullet(allegro n,int file_num)
                     }
                     sprintf(num,"../UI/%d/buff_%d/buff_%d.png",screen_width,z->level,z->form/3);
                     z->img=al_load_bitmap(num);
-//                    if(z->img)al_destroy_bitmap(z->img);
                     al_draw_pic(z->img,z->x1,z->y1);
                     z->form--;
                 }
@@ -414,7 +430,7 @@ bool Draw_plane_bullet(allegro n,int file_num)
             }
             al_flip_display();
             redraw=false;
-            }
+        }
         //飞机移动
         //mouse
         if(ev.mouse.x>0.5*al_get_bitmap_width(my.img)&&ev.mouse.x<game_width-0.5*al_get_bitmap_width(my.img)&&
@@ -430,6 +446,7 @@ bool Draw_plane_bullet(allegro n,int file_num)
     }
     return true;
 }
+
 
 void boom(plane n,plane *m,Buff *b)
 {
@@ -533,7 +550,7 @@ void boom(plane n,plane *m,Buff *b)
                     z->live = false;
                 }
             }
-           z = z->next;
+            z = z->next;
         }
     }
     p=*m;
@@ -591,6 +608,19 @@ void boom(plane n,plane *m,Buff *b)
         bullet a=n->bull;
         n->bull=n->bull->next;
         free(a);
+    }
+    Buff z1=*b,z2 = NULL;
+    if(z1)z2=z1->next;
+    while(z2){
+        if(!z2->live){
+            z1->next=z2->next;
+            Buff a=z2;
+            z2=NULL;
+            free(a);
+        }
+        z1=z1->next;
+        if(!z1)break;
+        z2=z1->next;
     }
 }
 void al_move(ALLEGRO_EVENT ev, plane my,int *plane_num)
@@ -661,12 +691,12 @@ void al_move(ALLEGRO_EVENT ev, plane my,int *plane_num)
 int Rand(int low,int high)
 {
     int i=rand();
-    float m=i/((float)RAND_MAX+1);
+    double m=i/((double)RAND_MAX+1);
     m=m*(high-low+1)+low;
     return (int)m;
 }
 
-void al_draw_pic(ALLEGRO_BITMAP *n,int x,int y)
+void al_draw_pic(ALLEGRO_BITMAP *n,float x,float y)
 {
     al_identity_transform(&transform);
     al_translate_transform(&transform,x-0.5*al_get_bitmap_width(n),y-0.5*al_get_bitmap_height(n));

@@ -1,6 +1,6 @@
 #include "init.h"
 
-const float FPS = 200;
+const float FPS = 120;
 int word_size =0;//文字大小
 int screen_width=0;//屏幕宽度
 int screen_height=0;//屏幕高度
