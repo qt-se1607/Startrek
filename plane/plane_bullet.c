@@ -125,22 +125,7 @@ void Init_enemyplane(plane *n,int file_num)
         }
     }
 }
-//void Init_buff(Buff b)
-//{
-//    printf("in\n");
-//    b->live = false;
-//    b->img = NULL;
-//    b->size = 0;
-//    b->level = 0;
-//    b->x1 = 0;
-//    b->y1 = 0;
-//    b->x2 = 0;
-//    b->y2 = 0;
-//    b->form=39;
-//    b->speed = 0;
-//    b->next=NULL;
-//    printf("succed\n");
-//}
+
 bool Draw_plane_bullet(allegro n,int file_num)
 {
     int k=0;
@@ -152,7 +137,6 @@ bool Draw_plane_bullet(allegro n,int file_num)
     if(file_num)read(file_num,&score,sizeof(int));
     Init_Plane(&my,file_num);
     Init_enemyplane(&enemy_plane,file_num);
-//    Init_buff(buff);
     int bullet_num = 0;
     int plane_rate = 0;
     int buff_rate = 0;
@@ -204,9 +188,9 @@ bool Draw_plane_bullet(allegro n,int file_num)
                     m->speed =4*my.speed;
                     sprintf(num,"../UI/%d/bullet_1/bullet_0.png",screen_width);
                     m->img = al_load_bitmap(num);
-                    m->x1 = my.x1;
                     m->y1 = my.y1;
                     m->x2=0;
+                    m->x1 = my.x1;
                     m->y2=0;
                     if(!my.bull)my.bull=m;
                     else{
@@ -219,10 +203,10 @@ bool Draw_plane_bullet(allegro n,int file_num)
                 while(p){
                     if(p->blood!=0&&p->live){
                         bullet m=(bullet)malloc(sizeof(Bullet));
-                        m->attack = p->level;
+                        m->attack = p->level/3+1;
                         m->next=NULL;
                         m->live = true;
-                        sprintf(num,"../UI/%d/enemy/b1.png",screen_width);
+                        sprintf(num,"../UI/%d/enemy/b%d.png",screen_width,m->attack);
                         m->img = al_load_bitmap(num);
                         m->speed = 4*p->speed;
                         m->x1 = p->x1;
@@ -248,22 +232,26 @@ bool Draw_plane_bullet(allegro n,int file_num)
                  bullet_num = 0;
             }
             bullet_num ++;
-            //加入di飞机
+            //加入敌方飞机
             if(plane_rate>= plane_space){
                 plane m=(plane)malloc(sizeof(Plane));
-                m->level = 1;//Rand(1,3);
+                if(score<=50)m->level=Rand(0,2);
+                if(score>50&&score<=100)m->level=Rand(3,5);
+                if(score>100&&score<=200)m->level=Rand(6,8);
+//                if(score>=500)
                 m->next=NULL;
                 m->bull=NULL;
                 m->blood = m->level;
                 sprintf(num,"../UI/%d/enemy/enemy%d.png",screen_width,m->level);
                 m->img = al_load_bitmap(num);
+                if(!m->img)printf("%s\n",num);
                 m->live = true;
                 m->form = 39;
                 m->speed =m->level;
-                m->size=al_get_bitmap_width(m->img);
+                m->size=al_get_bitmap_height(m->img);
                 m->x1= Rand(m->size,game_width-m->size);
                 m->y1=-0.5*m->size;
-                if(m->level < 2){
+                if(m->level <= 3){
                     m->x2 = 0;
                     m->y2 = m->speed;
                 }
@@ -282,23 +270,19 @@ bool Draw_plane_bullet(allegro n,int file_num)
             }
             plane_rate++;
 
-            //join buff
+            //加入buff
             if(buff_rate >= buff_space){
                 Buff b = (Buff)malloc(sizeof(BUFF));
                 b->level = Rand(1,2);
                 if(b->level == 1)b->form = 2;
                 if(b->level== 2)b->form = 50;
-                printf("%d...levl\n",b->level);
                 b->live = true;
                 b->next = NULL;
-                printf("tupian\n");
                 sprintf(num,"../UI/%d/buff_%d/buff_0.png",screen_width,b->level);
-                printf("../UI/%d/buff_%d/buff_0.png\n",screen_width,b->level);
                 b->img = al_load_bitmap(num);
                 b->size = al_get_bitmap_width(b->img);
                 b->x1 = Rand(b->size,game_width-b->size);
                 b->y1 = -0.5 * b->size;
-                printf("%f-----  %f\n",b->x1,b->y1);
                 b->speed = 1;
                 b->x2 = 0;
                 b->y2 = b->speed;
@@ -384,7 +368,6 @@ bool Draw_plane_bullet(allegro n,int file_num)
                     }
                     sprintf(num,"../UI/%d/buff_%d/buff_%d.png",screen_width,z->level,z->form/3);
                     z->img=al_load_bitmap(num);
-//                    if(z->img)al_destroy_bitmap(z->img);
                     al_draw_pic(z->img,z->x1,z->y1);
                     z->form--;
                 }
@@ -612,6 +595,19 @@ void boom(plane n,plane *m,Buff *b)
         n->bull=n->bull->next;
         free(a);
     }
+    Buff z1=*b,z2 = NULL;
+    if(z1)z2=z1->next;
+    while(z2){
+        if(!z2->live){
+            z1->next=z2->next;
+            Buff a=z2;
+            z2=NULL;
+            free(a);
+        }
+        z1=z1->next;
+        if(!z1)break;
+        z2=z1->next;
+    }
 }
 void al_move(ALLEGRO_EVENT ev, plane my,int *plane_num)
 {
@@ -686,7 +682,7 @@ int Rand(int low,int high)
     return (int)m;
 }
 
-void al_draw_pic(ALLEGRO_BITMAP *n,int x,int y)
+void al_draw_pic(ALLEGRO_BITMAP *n,float x,float y)
 {
     al_identity_transform(&transform);
     al_translate_transform(&transform,x-0.5*al_get_bitmap_width(n),y-0.5*al_get_bitmap_height(n));

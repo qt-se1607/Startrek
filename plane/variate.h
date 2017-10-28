@@ -53,6 +53,7 @@ typedef struct MY_PLANE{//飞机
     int blood;
     int form;
     int size;
+    int kind;
     bullet bull;
     bool live;
     struct MY_PLANE *next;
