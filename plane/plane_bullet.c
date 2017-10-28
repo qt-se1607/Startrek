@@ -238,16 +238,15 @@ bool Draw_plane_bullet(allegro n,int file_num)
                 if(score<=50)m->level=Rand(0,2);
                 if(score>50&&score<=100)m->level=Rand(3,5);
                 if(score>100&&score<=200)m->level=Rand(6,8);
-//                if(score>=500)
                 m->next=NULL;
                 m->bull=NULL;
-                m->blood = m->level;
+                m->blood = m->level/3+1;
                 sprintf(num,"../UI/%d/enemy/enemy%d.png",screen_width,m->level);
                 m->img = al_load_bitmap(num);
                 if(!m->img)printf("%s\n",num);
                 m->live = true;
                 m->form = 39;
-                m->speed =m->level;
+                m->speed =m->level/3+1;
                 m->size=al_get_bitmap_height(m->img);
                 m->x1= Rand(m->size,game_width-m->size);
                 m->y1=-0.5*m->size;
@@ -562,7 +561,7 @@ void boom(plane n,plane *m,Buff *b)
             p2->bull=p2->bull->next;
             free(a);
         }
-        if(!p2->level&&!p2->bull){
+        if(!p2->live&&!p2->bull){
             p1->next=p2->next;
             plane a=p2;
             p2=NULL;
@@ -572,7 +571,7 @@ void boom(plane n,plane *m,Buff *b)
         if(!p1)break;
         p2=p1->next;
     }
-    if((*m)&&!(*m)->live){
+    if((*m)&&!(*m)->live&&!(*m)->bull){
         plane a=*m;
         *m=(*m)->next;
         free(a);
@@ -677,7 +676,7 @@ void al_move(ALLEGRO_EVENT ev, plane my,int *plane_num)
 int Rand(int low,int high)
 {
     int i=rand();
-    float m=i/((float)RAND_MAX+1);
+    double m=i/((double)RAND_MAX+1);
     m=m*(high-low+1)+low;
     return (int)m;
 }
