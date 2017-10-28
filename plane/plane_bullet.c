@@ -8,7 +8,7 @@ bool key_up=false;
 bool key_down=false;
 bool key_left=false;
 bool key_right=false;
-int score=0;
+int score=210;
 plane p=NULL;
 bullet q=NULL;
 Buff z = NULL;
@@ -228,16 +228,17 @@ bool Draw_plane_bullet(allegro n,int file_num)
                         }
                     }
                     p=p->next;
-                 }
-                 bullet_num = 0;
+                }
+                bullet_num = 0;
             }
             bullet_num ++;
             //加入敌方飞机
             if(plane_rate>= plane_space){
                 plane m=(plane)malloc(sizeof(Plane));
-                if(score<=50)m->level=Rand(0,2);
-                if(score>50&&score<=100)m->level=Rand(3,5);
-                if(score>100&&score<=200)m->level=Rand(6,8);
+                if(score<60)m->level=Rand(0,2);
+                else if(score<130)m->level=Rand(3,5);
+                else if(score<210)m->level=Rand(6,8);
+                else m->level=9;
                 m->next=NULL;
                 m->bull=NULL;
                 m->blood = m->level/3+1;
@@ -250,14 +251,21 @@ bool Draw_plane_bullet(allegro n,int file_num)
                 m->size=al_get_bitmap_height(m->img);
                 m->x1= Rand(m->size,game_width-m->size);
                 m->y1=-0.5*m->size;
+                if(m->level==9){
+                    m->x1=0;
+                }
                 if(m->level <= 3){
                     m->x2 = 0;
                     m->y2 = m->speed;
                 }
-                else{
+                else if(m->level >3 && m->level<=8){
                     int distance=Distance(m->x1,m->y1,my.x1,my.y1);
                     m->x2=m->speed*(my.x1-m->x1)/distance;
                     m->y2=m->speed*(my.y1-m->y1)/distance;
+                }
+                else if(m->level==9){
+                    m->x2=1;
+                    m->y2=1;
                 }
                 if(!enemy_plane)enemy_plane=m;
                 else{
@@ -311,10 +319,16 @@ bool Draw_plane_bullet(allegro n,int file_num)
                     }
                     q=q->next;
                 }
-                if(p->blood!=0&&p->live){
+                if(p->blood!=0&&p->live&&p->level!=9){
                     p->x1 += p->x2;
                     p->y1 += p->y2;
                 }
+                if(p->blood!=0&&p->live&&p->level==9){
+                    p->x1 += p->x2;
+                    p->y1=100+100*sin(6.28*(p->x1/game_width));
+                    if(p->x1>=game_width||p->x1==0)p->x2=-p->x2;
+                }
+                if(p->level==9)plane_rate--;
                 p=p->next;
             }
             q=my.bull;
@@ -416,7 +430,7 @@ bool Draw_plane_bullet(allegro n,int file_num)
             }
             al_flip_display();
             redraw=false;
-            }
+        }
         //飞机移动
         //mouse
         if(ev.mouse.x>0.5*al_get_bitmap_width(my.img)&&ev.mouse.x<game_width-0.5*al_get_bitmap_width(my.img)&&
@@ -432,6 +446,7 @@ bool Draw_plane_bullet(allegro n,int file_num)
     }
     return true;
 }
+
 
 void boom(plane n,plane *m,Buff *b)
 {
@@ -535,7 +550,7 @@ void boom(plane n,plane *m,Buff *b)
                     z->live = false;
                 }
             }
-           z = z->next;
+            z = z->next;
         }
     }
     p=*m;
