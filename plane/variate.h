@@ -58,6 +58,20 @@ typedef struct MY_PLANE{//飞机
     struct MY_PLANE *next;
 }Plane,*plane;
 
+typedef struct MY_BUFF{
+    ALLEGRO_BITMAP *img;
+    float x1;
+    float y1;
+    float x2;
+    float y2;
+    float speed;
+    bool live;
+    int size;
+    int form;
+    int level;
+    struct MY_BUFF *next;
+}BUFF,*Buff;
+
 ALLEGRO_TRANSFORM transform;
 
 extern int score;
@@ -86,4 +100,7 @@ extern bool save;
 extern bool set_back;
 extern plane p;
 extern bullet q;
+extern BUFF *z;
+extern bool effect;
+extern int effect_time;
 #endif // VARIATE_H

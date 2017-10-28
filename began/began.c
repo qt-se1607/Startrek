@@ -30,32 +30,28 @@ bool load_back=false;
 int list_num=7;
 char num[MAXSIZE];
 int number=0;
-void al_draw_wait(allegro n,bool T)
+circle click=NULL;
+void al_draw_wait(allegro n,bool T,int form)
 {
     bool redraw=false;
-    ALLEGRO_BITMAP *p=NULL;
     int i=0;
-    if(T)i=0;
-    else i=267;
+    if(!T)i=0;
+    else i=al_get_display_width(n.display);
     while(1){
         ALLEGRO_EVENT ev;
         al_wait_for_event(n.event_queue,&ev);
         if(ev.type==ALLEGRO_EVENT_TIMER)redraw=true;
-        if(T)i++;
-        else i--;
-        if(T&&i>266)break;
-        if(!T&&i<0)break;
-        sprintf(num,"../UI/photo/bg7/bg_%d.png",i/3);
-        if(p)al_destroy_bitmap(p);
-        p=al_load_bitmap(num);
-        al_clear_to_color(black);
-        al_draw_bitmap(p,0.5*(game_width-al_get_bitmap_width(p)),0,0);
-        if(redraw&&!al_is_event_queue_empty(n.event_queue)){
-            al_flip_display();
+        if(redraw&&al_is_event_queue_empty(n.event_queue)){
+            if(!T)i+=al_get_display_width(n.display)/FPS*3;
+            else i-=al_get_display_width(n.display)/FPS*3;
+            if(form==1)al_draw_loadboard(n,al_get_display_width(n.display)-i,0);
+            if(form==2)al_draw_listboard(n,al_get_display_width(n.display)-i,0);
+            if(form==3)al_draw_settingboard(n,al_get_display_width(n.display)-i,0);
+            al_draw_startboard(n,-i,0);
+            if(i>al_get_display_width(n.display)||i<0)break;
             redraw=false;
         }
     }
-    al_destroy_bitmap(p);
 }
 int al_wait()
 {
@@ -114,7 +110,6 @@ void al_start(allegro n)
 {
     int score;
     al_destroy_sample(n.sample2);
-    al_draw_wait(n,false);
     switch(fork()){
     case -1:perror("fork");break;
     case 0:al_execl(0);break;
@@ -134,11 +129,11 @@ void al_execl(int fp)
 }
 bool al_loadgame(int git,allegro n)
 {
-    al_destroy_sample(n.sample2);
     int score=1;
     sprintf(num,"../UI/load/archive_%d",git);
     int fp;
     if((fp=open(num,O_RDONLY))!=-1){
+        al_destroy_sample(n.sample2);
         switch(fork()){
         case -1:perror("fork");break;
         case 0:al_execl(fp);break;
@@ -155,7 +150,7 @@ void al_load(allegro n,bool score)
     key_left=false;
     key_right=false;
     key_up=false;
-    al_draw_wait(n,false);
+    al_draw_wait(n,false,1);
     bool event_timer = false;
     int checkout = 0.3*FPS;
     int git = checkout;
@@ -164,7 +159,7 @@ void al_load(allegro n,bool score)
         al_wait_for_event(n.event_queue,&ev);
         if(ev.timer.type == ALLEGRO_EVENT_TIMER)event_timer = true;
         if(event_timer && al_is_event_queue_empty(n.event_queue)){
-            al_draw_loadboard(n);
+            al_draw_loadboard(n,0,0);
             event_timer=false;
         }
         archive_1=false;
@@ -219,7 +214,7 @@ void al_load(allegro n,bool score)
         if(judge_in(ev,0.1*game_width,0.2*game_height,0.9*game_width,0.25*game_height)){
             git=checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
-                al_draw_loadboard(n);
+                al_draw_loadboard(n,0,0);
             }
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
                 if(!score){
@@ -239,7 +234,7 @@ void al_load(allegro n,bool score)
         if(judge_in(ev,0.1*game_width,0.3*game_height,0.9*game_width,0.35*game_height)){
             git=2*checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
-                al_draw_loadboard(n);
+                al_draw_loadboard(n,0,0);
             }
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
                 if(!score){
@@ -259,7 +254,7 @@ void al_load(allegro n,bool score)
         if(judge_in(ev,0.1*game_width,0.4*game_height,0.9*game_width,0.45*game_height)){
             git=3*checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
-                al_draw_loadboard(n);
+                al_draw_loadboard(n,0,0);
             }
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
                 if(!score){
@@ -279,7 +274,7 @@ void al_load(allegro n,bool score)
         if(judge_in(ev,0.1*game_width,0.5*game_height,0.9*game_width,0.55*game_height)){
             git=4*checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
-                al_draw_loadboard(n);
+                al_draw_loadboard(n,0,0);
             }
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
                 if(!score){
@@ -299,7 +294,7 @@ void al_load(allegro n,bool score)
         if(judge_in(ev,0.1*game_width,0.6*game_height,0.9*game_width,0.65*game_height)){
             git=5*checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
-                al_draw_loadboard(n);
+                al_draw_loadboard(n,0,0);
             }
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
                 if(!score){
@@ -319,7 +314,7 @@ void al_load(allegro n,bool score)
         if(judge_in(ev,0.1*game_width,0.7*game_height,0.9*game_width,0.75*game_height)){
             git=6*checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
-                al_draw_loadboard(n);
+                al_draw_loadboard(n,0,0);
             }
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
                 if(!score){
@@ -339,7 +334,7 @@ void al_load(allegro n,bool score)
         if(judge_in(ev,0.35*game_width,0.85*game_height,0.65*game_width,0.9*game_height)){
             git=7*checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
-                al_draw_loadboard(n);
+                al_draw_loadboard(n,0,0);
             }
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
                 if(score)remove("../UI/load/load");
@@ -347,7 +342,7 @@ void al_load(allegro n,bool score)
             }
         }
     }
-    al_draw_wait(n,true);
+    al_draw_wait(n,true,1);
 }
 void al_archive(int git)
 {
@@ -362,39 +357,39 @@ void al_archive(int git)
     rename(oldname,newname);
 }
 
-void al_draw_loadboard(allegro n)
+void al_draw_loadboard(allegro n,int x,int y)
 {
     ALLEGRO_BITMAP *p=al_load_bitmap("../UI/load/c1.png");
-    al_draw_bitmap(n.bitmap4,0,0,0);
+    al_draw_bitmap(n.bitmap4,x,y,0);
     if(archive_1){
-        al_draw_bitmap(p,0.05*game_width,0.2*game_height,0);
+        al_draw_bitmap(p,x+0.05*game_width,y+0.2*game_height,0);
     }
     if(archive_2){
-        al_draw_bitmap(p,0.05*game_width,0.3*game_height,0);
+        al_draw_bitmap(p,x+0.05*game_width,y+0.3*game_height,0);
     }
     if(archive_3){
-        al_draw_bitmap(p,0.05*game_width,0.4*game_height,0);
+        al_draw_bitmap(p,x+0.05*game_width,y+0.4*game_height,0);
     }
     if(archive_4){
-        al_draw_bitmap(p,0.05*game_width,0.5*game_height,0);
+        al_draw_bitmap(p,x+0.05*game_width,y+0.5*game_height,0);
     }
     if(archive_5){
-        al_draw_bitmap(p,0.05*game_width,0.6*game_height,0);
+        al_draw_bitmap(p,x+0.05*game_width,y+0.6*game_height,0);
     }
     if(archive_6){
-        al_draw_bitmap(p,0.05*game_width,0.7*game_height,0);
+        al_draw_bitmap(p,x+0.05*game_width,y+0.7*game_height,0);
     }
     if(load_back){
-        al_draw_filled_rounded_rectangle(0.35*game_width,0.85*game_height-0.1*word_size,
-                                         0.65*game_width,0.85*game_height+1.1*word_size,
+        al_draw_filled_rounded_rectangle(x+0.35*game_width,y+0.85*game_height-0.1*word_size,
+                                         x+0.65*game_width,y+0.85*game_height+1.1*word_size,
                                                  0.2*word_size,0.2*word_size,white);
-        al_draw_text(n.font1,black,0.5*game_width,0.85*game_height,ALLEGRO_ALIGN_CENTER,"返      回");
+        al_draw_text(n.font1,black,x+0.5*game_width,y+0.85*game_height,ALLEGRO_ALIGN_CENTER,"返      回");
     }
     else{
-        al_draw_filled_rounded_rectangle(0.35*game_width,0.85*game_height-0.1*word_size,
-                                         0.65*game_width,0.85*game_height+1.1*word_size,
+        al_draw_filled_rounded_rectangle(x+0.35*game_width,y+0.85*game_height-0.1*word_size,
+                                         x+0.65*game_width,y+0.85*game_height+1.1*word_size,
                                                  0.2*word_size,0.2*word_size,black);
-        al_draw_text(n.font1,white,0.5*game_width,0.85*game_height,ALLEGRO_ALIGN_CENTER,"返      回");
+        al_draw_text(n.font1,white,x+0.5*game_width,y+0.85*game_height,ALLEGRO_ALIGN_CENTER,"返      回");
     }
     int fd;
     if((fd=open("../UI/load/archive_1",O_RDONLY))!=-1){
@@ -402,7 +397,7 @@ void al_draw_loadboard(allegro n)
         if(stat("../UI/load/archive_1",&info)==-1)perror("archive_1");
         else{
             sprintf(num,"%s",ctime(&info.st_mtime));
-            al_draw_text(n.font1,white,0.5*game_width,0.2*game_height,0,num);
+            al_draw_text(n.font1,white,x+0.5*game_width,y+0.2*game_height,0,num);
         }
         close(fd);
     }
@@ -411,7 +406,7 @@ void al_draw_loadboard(allegro n)
         if(stat("../UI/load/archive_2",&info)==-1)perror("archive_3");
         else{
             sprintf(num,"%s",ctime(&info.st_mtime));
-            al_draw_text(n.font1,white,0.5*game_width,0.3*game_height,0,num);
+            al_draw_text(n.font1,white,x+0.5*game_width,y+0.3*game_height,0,num);
         }
         close(fd);
     }
@@ -420,7 +415,7 @@ void al_draw_loadboard(allegro n)
         if(stat("../UI/load/archive_3",&info)==-1)perror("archive_3");
         else{
             sprintf(num,"%s",ctime(&info.st_mtime));
-            al_draw_text(n.font1,white,0.5*game_width,0.4*game_height,0,num);
+            al_draw_text(n.font1,white,x+0.5*game_width,y+0.4*game_height,0,num);
         }
         close(fd);
     }
@@ -429,7 +424,7 @@ void al_draw_loadboard(allegro n)
         if(stat("../UI/load/archive_4",&info)==-1)perror("archive_4");
         else{
             sprintf(num,"%s",ctime(&info.st_mtime));
-            al_draw_text(n.font1,white,0.5*game_width,0.5*game_height,0,num);
+            al_draw_text(n.font1,white,x+0.5*game_width,y+0.5*game_height,0,num);
         }
         close(fd);
     }
@@ -438,7 +433,7 @@ void al_draw_loadboard(allegro n)
         if(stat("../UI/load/archive_5",&info)==-1)perror("archive_5");
         else{
             sprintf(num,"%s",ctime(&info.st_mtime));
-            al_draw_text(n.font1,white,0.5*game_width,0.6*game_height,0,num);
+            al_draw_text(n.font1,white,x+0.5*game_width,y+0.6*game_height,0,num);
         }
         close(fd);
     }
@@ -447,16 +442,16 @@ void al_draw_loadboard(allegro n)
         if(stat("../UI/load/archive_6",&info)==-1)perror("archive_6");
         else{
             sprintf(num,"%s",ctime(&info.st_mtime));
-            al_draw_text(n.font1,white,0.5*game_width,0.7*game_height,0,num);
+            al_draw_text(n.font1,white,x+0.5*game_width,y+0.7*game_height,0,num);
         }
         close(fd);
     }
-    al_draw_text(n.font1,white,0.1*game_width,0.2*game_height,0,"NO.1");
-    al_draw_text(n.font1,white,0.1*game_width,0.3*game_height,0,"NO.2");
-    al_draw_text(n.font1,white,0.1*game_width,0.4*game_height,0,"NO.3");
-    al_draw_text(n.font1,white,0.1*game_width,0.5*game_height,0,"NO.4");
-    al_draw_text(n.font1,white,0.1*game_width,0.6*game_height,0,"NO.5");
-    al_draw_text(n.font1,white,0.1*game_width,0.7*game_height,0,"NO.6");
+    al_draw_text(n.font1,white,x+0.1*game_width,y+0.2*game_height,0,"NO.1");
+    al_draw_text(n.font1,white,x+0.1*game_width,y+0.3*game_height,0,"NO.2");
+    al_draw_text(n.font1,white,x+0.1*game_width,y+0.4*game_height,0,"NO.3");
+    al_draw_text(n.font1,white,x+0.1*game_width,y+0.5*game_height,0,"NO.4");
+    al_draw_text(n.font1,white,x+0.1*game_width,y+0.6*game_height,0,"NO.5");
+    al_draw_text(n.font1,white,x+0.1*game_width,y+0.7*game_height,0,"NO.6");
     al_flip_display();
     al_destroy_bitmap(p);
 }
@@ -467,11 +462,11 @@ void al_setting(allegro n)
     key_left=false;
     key_right=false;
     key_up=false;
-    al_draw_wait(n,false);
     setting=false;
     int checkout = 0.3*FPS;
     int git = 7*checkout;
     bool event_timer = false;
+    al_draw_wait(n,false,3);
     while(1){
         ALLEGRO_EVENT ev;
         al_wait_for_event(n.event_queue,&ev);
@@ -493,7 +488,7 @@ void al_setting(allegro n)
                 img_x=1024;
                 img_y=576;
             }
-            al_draw_settingboard(n);
+            al_draw_settingboard(n,0,0);
             event_timer=false;
         }
         screen=false;
@@ -636,7 +631,7 @@ void al_setting(allegro n)
         if(judge_in(ev,0.4*game_width,0.65*game_height-0.1*word_size,0.6*game_width,0.65*game_height+1.1*word_size)){
             git=3*checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
-                al_draw_settingboard(n);
+                al_draw_settingboard(n,0,0);
             }
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
                 int fd;
@@ -653,7 +648,7 @@ void al_setting(allegro n)
         if(judge_in(ev,0.4*game_width,0.75*game_height-0.1*word_size,0.6*game_width,0.75*game_height+1.1*word_size)){
             git=2*checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
-                al_draw_settingboard(n);
+                al_draw_settingboard(n,0,0);
             }
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
                 int fd;
@@ -675,119 +670,134 @@ void al_setting(allegro n)
         if(judge_in(ev,0.4*game_width,0.85*game_height-0.1*word_size,0.6*game_width,0.85*game_height+1.1*word_size)){
             git=checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
-                al_draw_settingboard(n);
+                al_draw_settingboard(n,0,0);
             }
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP)break;
         }
     }
     al_destroy_sample(n.sample2);
-    al_draw_wait(n,true);
+    al_draw_wait(n,true,3);
 }
-void al_draw_settingboard(allegro n)
+void al_draw_settingboard(allegro n,int x,int y)
 {
-    al_draw_bitmap(n.bitmap2,0,0,0);
-    al_draw_text(n.font2,white,0.5*game_width,word_size,ALLEGRO_ALIGN_CENTER,"设   置");
+    al_draw_bitmap(n.bitmap2,x,y,0);
+    al_draw_text(n.font2,white,x+0.5*game_width,y+word_size,ALLEGRO_ALIGN_CENTER,"设   置");
 
     //screen
-    al_draw_text(n.font1,white,0.2*game_width,0.25*game_height,ALLEGRO_ALIGN_LEFT,"全     屏");
-    if(screen)al_turn(0.6*game_width,0.25*game_height-0.1*word_size,0.8*game_width,0.25*game_height+1.1*word_size,yellow_pink);
-    al_draw_filled_rectangle(0.6*game_width,0.25*game_height-0.1*word_size,0.8*game_width,0.25*game_height+1.1*word_size,green_cyan);
-    if(screenflag)al_draw_text(n.font1,white,0.7*game_width,0.25*game_height,ALLEGRO_ALIGN_CENTER,"开   启");
-    else al_draw_text(n.font1,white,0.7*game_width,0.25*game_height,ALLEGRO_ALIGN_CENTER,"关   闭");
+    al_draw_text(n.font1,white,x+0.2*game_width,y+0.25*game_height,ALLEGRO_ALIGN_LEFT,"全     屏");
+    if(screen)al_turn(x+0.6*game_width,y+0.25*game_height-0.1*word_size,x+0.8*game_width,y+0.25*game_height+1.1*word_size,yellow_pink);
+    al_draw_filled_rectangle(x+0.6*game_width,y+0.25*game_height-0.1*word_size,
+                             x+0.8*game_width,y+0.25*game_height+1.1*word_size,green_cyan);
+    if(screenflag)al_draw_text(n.font1,white,x+0.7*game_width,y+0.25*game_height,ALLEGRO_ALIGN_CENTER,"开   启");
+    else al_draw_text(n.font1,white,x+0.7*game_width,y+0.25*game_height,ALLEGRO_ALIGN_CENTER,"关   闭");
 
     //resolution
-    al_draw_text(n.font1,white,0.2*game_width,0.35*game_height,ALLEGRO_ALIGN_LEFT,"分 辨 率");
-    if(resolution)al_turn(0.6*game_width,0.35*game_height-0.1*word_size,0.8*game_width,0.35*game_height+1.1*word_size,yellow_pink);
-    al_draw_filled_rectangle(0.6*game_width,0.35*game_height-0.1*word_size,0.8*game_width,0.35*game_height+1.1*word_size,green_cyan);
+    al_draw_text(n.font1,white,x+0.2*game_width,y+0.35*game_height,ALLEGRO_ALIGN_LEFT,"分 辨 率");
+    if(resolution)al_turn(x+0.6*game_width,y+0.35*game_height-0.1*word_size,
+                          x+0.8*game_width,y+0.35*game_height+1.1*word_size,yellow_pink);
+    al_draw_filled_rectangle(x+0.6*game_width,y+0.35*game_height-0.1*word_size,
+                             x+0.8*game_width,y+0.35*game_height+1.1*word_size,green_cyan);
     sprintf(num,"%d x %d",img_x,img_y);
-    al_draw_text(n.font1,white,0.7*game_width,0.35*game_height,ALLEGRO_ALIGN_CENTER,num);
+    al_draw_text(n.font1,white,x+0.7*game_width,y+0.35*game_height,ALLEGRO_ALIGN_CENTER,num);
 
     //music
-    al_draw_text(n.font1,white,0.2*game_width,0.45*game_height,ALLEGRO_ALIGN_LEFT,"音   乐");
-    if(music)al_turn(0.6*game_width,0.45*game_height-0.1*word_size,0.8*game_width,0.45*game_height+1.1*word_size,yellow_pink);
-    al_draw_filled_rectangle(0.6*game_width,0.45*game_height-0.1*word_size,0.8*game_width,0.45*game_height+1.1*word_size,green_cyan);
-    if(musicflag)al_draw_text(n.font1,white,0.7*game_width,0.45*game_height,ALLEGRO_ALIGN_CENTER,"开   启");
-    else al_draw_text(n.font1,white,0.7*game_width,0.45*game_height,ALLEGRO_ALIGN_CENTER,"关   闭");
+    al_draw_text(n.font1,white,x+0.2*game_width,y+0.45*game_height,ALLEGRO_ALIGN_LEFT,"音   乐");
+    if(music)al_turn(x+0.6*game_width,y+0.45*game_height-0.1*word_size,
+                     x+0.8*game_width,y+0.45*game_height+1.1*word_size,yellow_pink);
+    al_draw_filled_rectangle(x+0.6*game_width,y+0.45*game_height-0.1*word_size,
+                             x+0.8*game_width,y+0.45*game_height+1.1*word_size,green_cyan);
+    if(musicflag)al_draw_text(n.font1,white,x+0.7*game_width,y+0.45*game_height,ALLEGRO_ALIGN_CENTER,"开   启");
+    else al_draw_text(n.font1,white,x+0.7*game_width,y+0.45*game_height,ALLEGRO_ALIGN_CENTER,"关   闭");
 
     //volume
-    al_draw_text(n.font1,white,0.2*game_width,0.55*game_height,ALLEGRO_ALIGN_LEFT,"音   量");
-    if(volume)al_turn(0.6*game_width,0.55*game_height-0.1*word_size,0.8*game_width,0.55*game_height+1.1*word_size,yellow_pink);
-    al_draw_filled_rectangle(0.6*game_width,0.55*game_height-0.1*word_size,0.8*game_width,0.55*game_height+1.1*word_size,green_cyan);
-    al_draw_filled_rectangle(0.6*game_width,0.55*game_height-0.1*word_size,
-                             0.6*game_width+0.2*game_width*(volume_num/100.0),0.55*game_height+1.1*word_size,
+    al_draw_text(n.font1,white,x+0.2*game_width,y+0.55*game_height,ALLEGRO_ALIGN_LEFT,"音   量");
+    if(volume)al_turn(x+0.6*game_width,y+0.55*game_height-0.1*word_size,
+                      x+0.8*game_width,y+0.55*game_height+1.1*word_size,yellow_pink);
+    al_draw_filled_rectangle(x+0.6*game_width,y+0.55*game_height-0.1*word_size,
+                             x+0.8*game_width,y+0.55*game_height+1.1*word_size,green_cyan);
+    al_draw_filled_rectangle(x+0.6*game_width,y+0.55*game_height-0.1*word_size,
+                             x+0.6*game_width+0.2*game_width*(volume_num/100.0),y+0.55*game_height+1.1*word_size,
                              red_cadmium);
     sprintf(num,"%d",(int)volume_num);
-    al_draw_text(n.font1,black,0.7*game_width,0.55*game_height,ALLEGRO_ALIGN_CENTER,num);
+    al_draw_text(n.font1,black,x+0.7*game_width,y+0.55*game_height,ALLEGRO_ALIGN_CENTER,num);
 
     //save
-    if(save)al_draw_filled_rounded_rectangle(0.4*game_width,0.65*game_height-0.1*word_size,0.6*game_width,0.65*game_height+1.1*word_size,
+    if(save)al_draw_filled_rounded_rectangle(x+0.4*game_width,y+0.65*game_height-0.1*word_size,
+                                             x+0.6*game_width,y+0.65*game_height+1.1*word_size,
                                      0.2*word_size,0.2*word_size,blue_manganic);
-    al_draw_text(n.font1,white,0.5*game_width,0.65*game_height,ALLEGRO_ALIGN_CENTER,"保存并返回");
+    al_draw_text(n.font1,white,x+0.5*game_width,y+0.65*game_height,ALLEGRO_ALIGN_CENTER,"保存并返回");
 
     //recover
-    if(recover)al_draw_filled_rounded_rectangle(0.4*game_width,0.75*game_height-0.1*word_size,0.6*game_width,0.75*game_height+1.1*word_size,
+    if(recover)al_draw_filled_rounded_rectangle(x+0.4*game_width,y+0.75*game_height-0.1*word_size,
+                                                x+0.6*game_width,y+0.75*game_height+1.1*word_size,
                                                 0.2*word_size,0.2*word_size,blue_manganic);
-    al_draw_text(n.font1,white,0.5*game_width,0.75*game_height,ALLEGRO_ALIGN_CENTER,"恢 复 默 认");
+    al_draw_text(n.font1,white,x+0.5*game_width,y+0.75*game_height,ALLEGRO_ALIGN_CENTER,"恢 复 默 认");
 
     //set_back
-    if(set_back)al_draw_filled_rounded_rectangle(0.4*game_width,0.85*game_height-0.1*word_size,0.6*game_width,0.85*game_height+1.1*word_size,
+    if(set_back)al_draw_filled_rounded_rectangle(x+0.4*game_width,y+0.85*game_height-0.1*word_size,
+                                                 x+0.6*game_width,y+0.85*game_height+1.1*word_size,
                                                  0.2*word_size,0.2*word_size,blue_manganic);
-    al_draw_text(n.font1,white,0.5*game_width,0.85*game_height,ALLEGRO_ALIGN_CENTER,"返      回");
+    al_draw_text(n.font1,white,x+0.5*game_width,y+0.85*game_height,ALLEGRO_ALIGN_CENTER,"返      回");
 
     al_flip_display();
 }
 
-void al_draw_startboard(allegro n)
+void al_draw_startboard(allegro n,int x,int y)
 {
     ALLEGRO_BITMAP *c1,*c2;
     c2=al_load_bitmap("../UI/welcome/c1.png");
     c1=al_load_bitmap("../UI/welcome/c2.png");
-    al_draw_bitmap(n.bitmap1,-0.5*al_get_bitmap_width(n.bitmap1),-100,0);
-    al_draw_bitmap(n.bitmap1,game_width-al_get_bitmap_width(n.bitmap1),-100,0);
+    al_draw_bitmap(n.bitmap1,x,y,0);
+    circle p=click;
+    while(p){
+        al_draw_circle(x+p->x,y+p->y,p->size,p->color,3.0);
+        p->size+=6;
+        p=p->next;
+    }
     //start
     if(!start){
-        al_draw_bitmap(c1,0.5*(game_width-al_get_bitmap_width(c1)),0.41*game_height,0);
-        al_draw_text(n.font1,blue_deep,0.5*game_width,0.46*game_height-0.5*word_size,ALLEGRO_ALIGN_CENTER,"新 的 游 戏");
+        al_draw_bitmap(c1,x+0.5*(game_width-al_get_bitmap_width(c1)),y+0.41*game_height,0);
+        al_draw_text(n.font1,blue_deep,x+0.5*game_width,y+0.46*game_height-0.5*word_size,ALLEGRO_ALIGN_CENTER,"新 的 游 戏");
     }
     else{
-        al_draw_bitmap(c2,0.5*(game_width-al_get_bitmap_width(c2)),0.41*game_height,0);
-        al_draw_text(n.font1,yellow_banana,0.5*game_width,0.46*game_height-0.5*word_size,ALLEGRO_ALIGN_CENTER,"新 的 游 戏");
+        al_draw_bitmap(c2,x+0.5*(game_width-al_get_bitmap_width(c2)),y+0.41*game_height,0);
+        al_draw_text(n.font1,yellow_banana,x+0.5*game_width,y+0.46*game_height-0.5*word_size,ALLEGRO_ALIGN_CENTER,"新 的 游 戏");
     }
     //load
     if(!load){
-        al_draw_bitmap(c1,0.5*(game_width-al_get_bitmap_width(c1)),0.52*game_height,0);
-        al_draw_text(n.font1,blue_deep,0.5*game_width,0.57*game_height-0.5*word_size,ALLEGRO_ALIGN_CENTER,"继 续 游 戏");
+        al_draw_bitmap(c1,x+0.5*(game_width-al_get_bitmap_width(c1)),y+0.52*game_height,0);
+        al_draw_text(n.font1,blue_deep,x+0.5*game_width,y+0.57*game_height-0.5*word_size,ALLEGRO_ALIGN_CENTER,"继 续 游 戏");
     }
     else{
-        al_draw_bitmap(c2,0.5*(game_width-al_get_bitmap_width(c2)),0.52*game_height,0);
-        al_draw_text(n.font1,yellow_banana,0.5*game_width,0.57*game_height-0.5*word_size,ALLEGRO_ALIGN_CENTER,"继 续 游 戏");
+        al_draw_bitmap(c2,x+0.5*(game_width-al_get_bitmap_width(c2)),y+0.52*game_height,0);
+        al_draw_text(n.font1,yellow_banana,x+0.5*game_width,y+0.57*game_height-0.5*word_size,ALLEGRO_ALIGN_CENTER,"继 续 游 戏");
     }
     //list
     if(!list){
-        al_draw_bitmap(c1,0.5*(game_width-al_get_bitmap_width(c1)),0.63*game_height,0);
-        al_draw_text(n.font1,blue_deep,0.5*game_width,0.68*game_height-0.5*word_size,ALLEGRO_ALIGN_CENTER,"排 行 榜");
+        al_draw_bitmap(c1,x+0.5*(game_width-al_get_bitmap_width(c1)),y+0.63*game_height,0);
+        al_draw_text(n.font1,blue_deep,x+0.5*game_width,y+0.68*game_height-0.5*word_size,ALLEGRO_ALIGN_CENTER,"排 行 榜");
     }
     else{
-        al_draw_bitmap(c2,0.5*(game_width-al_get_bitmap_width(c2)),0.63*game_height,0);
-        al_draw_text(n.font1,yellow_banana,0.5*game_width,0.68*game_height-0.5*word_size,ALLEGRO_ALIGN_CENTER,"排 行 榜");
+        al_draw_bitmap(c2,x+0.5*(game_width-al_get_bitmap_width(c2)),0.63*game_height,0);
+        al_draw_text(n.font1,yellow_banana,x+0.5*game_width,y+0.68*game_height-0.5*word_size,ALLEGRO_ALIGN_CENTER,"排 行 榜");
     }
     //setting
     if(!setting){
-        al_draw_bitmap(c1,0.5*(game_width-al_get_bitmap_width(c1)),0.74*game_height,0);
-        al_draw_text(n.font1,blue_deep,0.5*game_width,0.79*game_height-0.5*word_size,ALLEGRO_ALIGN_CENTER,"设     置");
+        al_draw_bitmap(c1,x+0.5*(game_width-al_get_bitmap_width(c1)),y+0.74*game_height,0);
+        al_draw_text(n.font1,blue_deep,x+0.5*game_width,y+0.79*game_height-0.5*word_size,ALLEGRO_ALIGN_CENTER,"设     置");
     }
     else{
-        al_draw_bitmap(c2,0.5*(game_width-al_get_bitmap_width(c2)),0.74*game_height,0);
-        al_draw_text(n.font1,yellow_banana,0.5*game_width,0.79*game_height-0.5*word_size,ALLEGRO_ALIGN_CENTER,"设     置");
+        al_draw_bitmap(c2,x+0.5*(game_width-al_get_bitmap_width(c2)),y+0.74*game_height,0);
+        al_draw_text(n.font1,yellow_banana,x+0.5*game_width,y+0.79*game_height-0.5*word_size,ALLEGRO_ALIGN_CENTER,"设     置");
     }
     //quit
     if(!quit){
-        al_draw_bitmap(c1,0.5*(game_width-al_get_bitmap_width(c1)),0.85*game_height,0);
-        al_draw_text(n.font1,blue_deep,0.5*game_width,0.9*game_height-0.5*word_size,ALLEGRO_ALIGN_CENTER,"退 出 游 戏");
+        al_draw_bitmap(c1,x+0.5*(game_width-al_get_bitmap_width(c1)),y+0.85*game_height,0);
+        al_draw_text(n.font1,blue_deep,x+0.5*game_width,y+0.9*game_height-0.5*word_size,ALLEGRO_ALIGN_CENTER,"退 出 游 戏");
     }
     else{
-        al_draw_bitmap(c2,0.5*(game_width-al_get_bitmap_width(c2)),0.85*game_height,0);
-        al_draw_text(n.font1,yellow_banana,0.5*game_width,0.9*game_height-0.5*word_size,ALLEGRO_ALIGN_CENTER,"退 出 游 戏");
+        al_draw_bitmap(c2,x+0.5*(game_width-al_get_bitmap_width(c2)),y+0.85*game_height,0);
+        al_draw_text(n.font1,yellow_banana,x+0.5*game_width,y+0.9*game_height-0.5*word_size,ALLEGRO_ALIGN_CENTER,"退 出 游 戏");
     }
     al_flip_display();
     al_destroy_bitmap(c1);
@@ -795,7 +805,6 @@ void al_draw_startboard(allegro n)
 }
 void al_list(allegro n)
 {
-    al_draw_wait(n,false);
     int fd;
     if((fd=open("../UI/list/list",O_RDONLY))==-1){
         fd=open("../UI/list/list",O_CREAT|O_WRONLY);
@@ -809,7 +818,8 @@ void al_list(allegro n)
         }
         close(fd);
     }
-    al_draw_listboard(n);
+    al_draw_wait(n,false,2);
+    al_draw_listboard(n,0,0);
     bool event_timer=false;
     while(1){
         ALLEGRO_EVENT ev;
@@ -820,34 +830,35 @@ void al_list(allegro n)
                 judge_in(ev,0.35*game_width,0.85*game_height,0.65*game_width,0.95*game_height))break;
         if(event_timer&&al_is_event_queue_empty(n.event_queue))al_flip_display();
     }
-    al_draw_wait(n,true);
+    al_draw_wait(n,true,2);
 }
-void al_draw_listboard(allegro n)
+void al_draw_listboard(allegro n,int x,int y)
 {
     ALLEGRO_BITMAP *bg1,*bg2,*bg3;
     bg1=al_load_bitmap("../UI/list/bg1.png");
     bg2=al_load_bitmap("../UI/list/bg2.png");
     bg3=al_load_bitmap("../UI/list/bg3.png");
-    al_draw_bitmap(n.bitmap3,0,0,0);
-    al_draw_bitmap(bg3,0.5*(game_width-al_get_bitmap_width(bg3)),0.1*game_height-0.5*word_size,0);
-    al_draw_bitmap(bg2,0.5*(game_width-al_get_bitmap_width(bg2)),0.2*game_height-0.5*word_size,0);
-    al_draw_bitmap(bg2,0.5*(game_width-al_get_bitmap_width(bg2)),0.3*game_height-0.5*word_size,0);
-    al_draw_bitmap(bg2,0.5*(game_width-al_get_bitmap_width(bg2)),0.4*game_height-0.5*word_size,0);
-    al_draw_bitmap(bg2,0.5*(game_width-al_get_bitmap_width(bg2)),0.5*game_height-0.5*word_size,0);
-    al_draw_bitmap(bg1,0.5*(game_width-al_get_bitmap_width(bg1)),0.6*game_height-0.5*word_size,0);
+    al_draw_bitmap(n.bitmap3,x,y,0);
+    al_draw_bitmap(bg3,x+0.5*(game_width-al_get_bitmap_width(bg3)),y+0.1*game_height-0.5*word_size,0);
+    al_draw_bitmap(bg2,x+0.5*(game_width-al_get_bitmap_width(bg2)),y+0.2*game_height-0.5*word_size,0);
+    al_draw_bitmap(bg2,x+0.5*(game_width-al_get_bitmap_width(bg2)),y+0.3*game_height-0.5*word_size,0);
+    al_draw_bitmap(bg2,x+0.5*(game_width-al_get_bitmap_width(bg2)),y+0.4*game_height-0.5*word_size,0);
+    al_draw_bitmap(bg2,x+0.5*(game_width-al_get_bitmap_width(bg2)),y+0.5*game_height-0.5*word_size,0);
+    al_draw_bitmap(bg1,x+0.5*(game_width-al_get_bitmap_width(bg1)),y+0.6*game_height-0.5*word_size,0);
     int fd=open("../UI/list/list",O_RDONLY);
     for(int i=0;i<list_num;i++){
         int socre_num=0;
         sprintf(num,"NO.%d",i+1);
-        al_draw_text(n.font1,white,0.15*game_width,0.1*(i+1)*game_height,ALLEGRO_ALIGN_CENTER,num);
+        al_draw_text(n.font1,white,x+0.15*game_width,y+0.1*(i+1)*game_height,ALLEGRO_ALIGN_CENTER,num);
         read(fd,&socre_num,sizeof(int));
         sprintf(num,"%6d",socre_num);
-        al_draw_text(n.font1,white,0.3*game_width,0.1*(i+1)*game_height,ALLEGRO_ALIGN_CENTER,num);
+        al_draw_text(n.font1,white,x+0.3*game_width,y+0.1*(i+1)*game_height,ALLEGRO_ALIGN_CENTER,num);
         read(fd,num,sizeof(char)*MAXSIZE);
-        al_draw_text(n.font1,white,0.7*game_width,0.1*(i+1)*game_height,ALLEGRO_ALIGN_CENTER,num);
+        al_draw_text(n.font1,white,x+0.7*game_width,y+0.1*(i+1)*game_height,ALLEGRO_ALIGN_CENTER,num);
     }
-    al_draw_filled_rounded_rectangle(0.35*game_width,0.85*game_height,0.65*game_width,0.95*game_height,0.05*game_width,0.05*game_height,black);
-    al_draw_text(n.font1,white,0.5*game_width,0.9*game_height-0.5*word_size,ALLEGRO_ALIGN_CENTER,"返     回");
+    al_draw_filled_rounded_rectangle(x+0.35*game_width,y+0.85*game_height,
+                                     x+0.65*game_width,y+0.95*game_height,0.05*game_width,0.05*game_height,black);
+    al_draw_text(n.font1,white,x+0.5*game_width,y+0.9*game_height-0.5*word_size,ALLEGRO_ALIGN_CENTER,"返     回");
     al_flip_display();
     al_destroy_bitmap(bg1);
     al_destroy_bitmap(bg2);

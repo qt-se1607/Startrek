@@ -80,7 +80,19 @@ void Init_Display(allegro *n)
     n->font2=NULL;
     n->timer=NULL;
     word_size=0.05*game_height;
-    //al_set_new_display_flags(ALLEGRO_FULLSCREEN);
+    /*
+     * ALLEGRO_WINDOWED                     可窗口化
+     * ALLEGRO_FULLSCREEN                   窗口内全屏
+     * ALLEGRO_OPENGL                       图形处理
+     * ALLEGRO_DIRECT3D_INTERNAL            内部3D构建
+     * ALLEGRO_RESIZABLE                    可修改大小
+     * ALLEGRO_FRAMELESS                    无边框
+     * ALLEGRO_NOFRAME                      无边框
+     * ALLEGRO_OPENGL_FORWARD_COMPATIBLE    兼容图形处理
+     * ALLEGRO_FULLSCREEN_WINDOW            全屏窗口
+     * ALLEGRO_MINIMIZED                    最小化
+    */
+    //al_set_new_display_flags(ALLEGRO_NOFRAME);
     n->display = al_create_display(game_width,game_height);
     if(!n->display){
         fprintf(stderr, "failed to create display!\n");

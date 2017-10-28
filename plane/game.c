@@ -313,8 +313,8 @@ void al_draw_pauseboard(allegro n)
 {
     al_clear_to_color(black);
     if(again){
-        al_draw_filled_rounded_rectangle(0.4*game_width,0.3*game_height-0.6*word_size,
-                                         0.6*game_width,0.3*game_height+0.6*word_size,
+        al_draw_filled_rounded_rectangle(0.5*game_width-3*word_size,0.3*game_height-0.6*word_size,
+                                         0.5*game_width+3*word_size,0.3*game_height+0.6*word_size,
                                          0.2*word_size,0.2*word_size,green_cyan);
     }
     else{
@@ -324,8 +324,8 @@ void al_draw_pauseboard(allegro n)
     }
     al_draw_text(n.font1,white,0.5*game_width,0.3*game_height-0.6*word_size,ALLEGRO_ALIGN_CENTRE,"继 续 游 戏");
     if(save){
-        al_draw_filled_rounded_rectangle(0.4*game_width,0.5*game_height-0.6*word_size,
-                                         0.6*game_width,0.5*game_height+0.6*word_size,
+        al_draw_filled_rounded_rectangle(0.4*game_width-1*word_size,0.5*game_height-0.6*word_size,
+                                         0.6*game_width+1*word_size,0.5*game_height+0.6*word_size,
                                          0.2*word_size,0.2*word_size,green_cyan);
     }
     else{
@@ -335,8 +335,8 @@ void al_draw_pauseboard(allegro n)
     }
     al_draw_text(n.font1,white,0.5*game_width,0.5*game_height-0.6*word_size,ALLEGRO_ALIGN_CENTRE,"存      档");
     if(set_back){
-        al_draw_filled_rounded_rectangle(0.4*game_width,0.7*game_height-0.6*word_size,
-                                         0.6*game_width,0.7*game_height+0.6*word_size,
+        al_draw_filled_rounded_rectangle(0.4*game_width-1*word_size,0.7*game_height-0.6*word_size,
+                                         0.6*game_width+1*word_size,0.7*game_height+0.6*word_size,
                                          0.2*word_size,0.2*word_size,green_cyan);
     }
     else{
@@ -356,4 +356,34 @@ bool judge_in(ALLEGRO_EVENT ev, int x1, int y1, int x2, int y2)
     if(mouse_y < y1)return false;
     if(mouse_y > y2)return false;
     return true;
+}
+
+void al_draw_life(Plane n)
+{
+    Bullet life;
+    life.img = al_load_bitmap("../UI/1920/life/life.png");
+    life.x1 = 0.02*game_width;
+    life.y1 = 0.12*game_height;
+    life.x2 = 70;
+    life.y2 = 0;
+    for(int i = 0;i<n.blood;i++)
+    {
+        if(i == 5)
+        {
+            life.x1 = 0.02*game_width;
+            life.y1 = 0.18*game_height;
+        }
+        if(i >= 5){
+            al_draw_pic(life.img,life.x1,life.y1);
+            life.x1 += life.x2;
+            life.y1 += life.y2;
+        }
+        else
+        {
+            al_draw_pic(life.img,life.x1,life.y1);
+            life.x1 += life.x2;
+            life.y1 += life.y2;
+        }
+    }
+
 }

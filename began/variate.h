@@ -41,6 +41,14 @@ typedef struct MY_ALLEGRO{
     ALLEGRO_SAMPLE *sample2;
     ALLEGRO_TRANSFORM transform;
 }allegro;
+typedef struct MY_CIRCLE{
+    float x;
+    float y;
+    ALLEGRO_COLOR color;
+    int size;
+    int form;
+    struct MY_CIRCLE *next;
+}Circle,*circle;
 extern int word_size;//文字大小
 extern float FPS;//帧数
 extern int screen_width;//屏幕宽度
@@ -80,6 +88,7 @@ extern bool load_back;
 extern int list_num;
 extern char num[MAXSIZE];
 extern int number;
+extern circle click;
 void Init_Allegro(allegro *n);
 void Destroy_Allegro(allegro *n);
 void Init_Queue(allegro *n);
@@ -88,18 +97,18 @@ bool judge_inside(ALLEGRO_EVENT ev,ALLEGRO_BITMAP *bitmap);
 int Rand(int low,int high);
 int Distance(int x1,int y1,int x2,int y2);
 bool judge_in(ALLEGRO_EVENT ev, int x1, int y1, int x2, int y2);
-void al_draw_startboard(allegro n);
+void al_draw_startboard(allegro n, int x, int y);
 void al_setting(allegro n);
 void al_load(allegro n, bool score);
-void al_draw_settingboard(allegro n);
-void al_draw_loadboard(allegro n);
+void al_draw_settingboard(allegro n, int x, int y);
+void al_draw_loadboard(allegro n, int x, int y);
 void al_list(allegro n);
-void al_draw_listboard(allegro n);
+void al_draw_listboard(allegro n, int x, int y);
 void al_turn(float x1,float y1,float x2,float y2,ALLEGRO_COLOR color);
 void al_execl(int fp);
 int al_wait();
 void al_start(allegro n);
 bool al_loadgame(int git, allegro n);
-void al_draw_wait(allegro n, bool T);
+void al_draw_wait(allegro n, bool T, int form);
 void al_archive(int git);
 #endif // ALLEGRO_H

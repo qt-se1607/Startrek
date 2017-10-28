@@ -6,7 +6,7 @@ int main()
     game_width =960;
     game_height =640;
     Init_Display(&n);
-    n.bitmap1 = al_load_bitmap("../UI/welcome/bg.jpg");
+    n.bitmap1 = al_load_bitmap("../UI/photo/bg6/bg.jpg");
     n.bitmap2 = al_load_bitmap("../UI/setting/bg.jpg");
     n.bitmap3 = al_load_bitmap("../UI/list/bg.jpg");
     n.bitmap4=al_load_bitmap("../UI/load/bg.jpg");
@@ -61,20 +61,12 @@ int main()
     start=true;
     if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
     al_start_timer(n.timer);
-    char string[MAXSIZE];
-    int p=2;
     while(1){
         ALLEGRO_EVENT ev;
         al_wait_for_event(n.event_queue,&ev);
         if(ev.timer.type == ALLEGRO_EVENT_TIMER)event_timer = true;
-        if(event_timer && al_is_event_queue_empty(n.event_queue)){
-            al_clear_to_color(black);
-            al_destroy_bitmap(n.bitmap1);
-            sprintf(string,"../UI/photo/bg6/bg_%d.png",p/2);
-            n.bitmap1=al_load_bitmap(string);
-            p++;
-            if(p>101)p=2;
-            al_draw_startboard(n);
+        if(event_timer&& al_is_event_queue_empty(n.event_queue)){
+            al_draw_startboard(n,0,0);
             event_timer=false;
         }
         if(git>=5*checkout){
@@ -147,26 +139,60 @@ int main()
             }
             else if(load){
                 al_load(n,false);
-                al_draw_startboard(n);
+                al_draw_startboard(n,0,0);
             }
             else if(list){
                 al_list(n);
-                al_draw_listboard(n);
+                al_draw_listboard(n,0,0);
             }
             else if(setting){
                 al_setting(n);
-                al_draw_startboard(n);
+                al_draw_startboard(n,0,0);
                 n.sample2=al_load_sample("../UI/music/music2.wav");
                 if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
                 else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
             }
             else if(quit)break;
         }
+        if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP||ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
+            circle p=click;
+            if(!p){
+                click=(circle)malloc(sizeof(Circle));
+                click->x=ev.mouse.x;
+                click->y=ev.mouse.y;
+                click->size=1;
+                click->color=al_map_rgb(Rand(0,255),Rand(0,255),Rand(0,255));
+                click->next=NULL;
+            }
+            else{
+                while(p->next)p=p->next;
+                p->next=(circle)malloc(sizeof(Circle));
+                p->next->x=ev.mouse.x;
+                p->next->y=ev.mouse.y;
+                p->next->size=1;
+                p->color=al_map_rgb(Rand(0,255),Rand(0,255),Rand(0,255));
+                p->next->next=NULL;
+            }
+        }
+        circle p1=click;
+        circle p2=NULL;
+        while(p2){
+            if(p2->size>al_get_display_width(n.display)){
+                p1->next=p2->next;
+                circle a=p2;
+                p2=NULL;
+                free(a);
+            }
+            p1=p1->next;
+            if(!p1)break;
+            p2=p1->next;
+        }
+        if(click&&click->size>al_get_display_width(n.display))click=click->next;
         if(judge_in(ev,0.35*game_width,0.41*game_height,0.65*game_width,0.51*game_height)){
             git=checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
                 al_start(n);
-                al_draw_startboard(n);
+                al_draw_startboard(n,0,0);
                 n.sample2=al_load_sample("../UI/music/music2.wav");
                 if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
                 else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
@@ -175,31 +201,31 @@ int main()
         if(judge_in(ev,0.35*game_width,0.52*game_height,0.65*game_width,0.62*game_height)){
             git=2*checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
-                al_draw_startboard(n);
+                al_draw_startboard(n,0,0);
             }
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
                 al_load(n,false);
-                al_draw_startboard(n);
+                al_draw_startboard(n,0,0);
             }
         }
         if(judge_in(ev,0.35*game_width,0.63*game_height,0.65*game_width,0.73*game_height)){
-            git=3*checkout;
+           git=3*checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
-                al_draw_startboard(n);
+                al_draw_startboard(n,0,0);
             }
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
                 al_list(n);
-                al_draw_startboard(n);
+                al_draw_startboard(n,0,0);
             }
         }
         if(judge_in(ev,0.35*game_width,0.74*game_height,0.65*game_width,0.84*game_height)){
             git=4*checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
-                al_draw_startboard(n);
+                al_draw_startboard(n,0,0);
             }
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
                 al_setting(n);
-                al_draw_startboard(n);
+                al_draw_startboard(n,0,0);
                 n.sample2=al_load_sample("../UI/music/music2.wav");
                 if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
                 else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
@@ -208,11 +234,16 @@ int main()
         if(judge_in(ev,0.35*game_width,0.85*game_height,0.65*game_width,0.95*game_height)){
             git=5*checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
-                al_draw_startboard(n);
+                al_draw_startboard(n,0,0);
             }
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP)break;
         }
     }
     Destroy_Allegro(&n);
+    while(click){
+        circle a=click;
+        click=click->next;
+        free(a);
+    }
     return 0;
 }
