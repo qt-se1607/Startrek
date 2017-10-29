@@ -368,6 +368,7 @@ bool Draw_plane_bullet(allegro n,int file_num)
             al_draw_pic(n.bitmap,img_x,img_y);
             al_draw_pic(n.bitmap,img_x,img_y-al_get_bitmap_height(n.bitmap));
             al_draw_pic(my.img,my.x1,my.y1);
+            al_draw_protect(my,effect);
             al_draw_life(my);
             sprintf(num,"%4d",score);
             al_draw_text(n.font1,white,0.1*game_width,
@@ -543,6 +544,8 @@ void boom(plane n,plane *m,Buff *b)
                 if(Distance(n->x1,n->y1,z->x1,z->y1)<0.5*(z->size+n->size)){
                     if(z->level == 1){
                         n->blood++;
+                        if(n->blood>=10)
+                            n->blood-=(n->blood-10);
                     }
                     if(z->level == 2){
                         effect = true;
@@ -712,4 +715,15 @@ int Distance(int x1,int y1,int x2,int y2)
     return pow(pow(x1-x2,2)+pow(y1-y2,2),0.5);
 }
 
+void al_draw_protect(Plane n,bool effect)
+{
+    if(effect){
+        Plane m;
+        sprintf(num,"../UI/%d/buff_0/buff_0.png",screen_width);
+        m.img=al_load_bitmap(num);
+        m.x1=n.x1;
+        m.y1=n.y1;
+        al_draw_pic(m.img,m.x1,m.y1);
+    }
 
+}
