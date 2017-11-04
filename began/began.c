@@ -60,49 +60,7 @@ int al_wait()
     score=WEXITSTATUS(score);//低八位
     int fp;
     if(!score&&(fp=open("../UI/load/load",O_RDONLY))==-1)return 1;
-    if((fp=open("../UI/list/list",O_RDONLY))==-1){
-        fp=open("../UI/list/list",O_CREAT|O_WRONLY);
-        time_t temp;
-        temp=time(&temp);
-        write(fp,&score,sizeof(int));
-        sprintf(num,"%s",ctime(&temp));
-        write(fp,num,sizeof(char)*MAXSIZE);
-        for(int i=1;i<list_num;i++){
-            int k=0;
-            temp=time(&temp);
-            write(fp,&k,sizeof(int));
-            sprintf(num,"%s",ctime(&temp));
-            write(fp,num,sizeof(char)*MAXSIZE);
-        }
-    }
-    else{
-        time_t temp;
-        temp=time(&temp);
-        int score_num[list_num];
-        char string[list_num][MAXSIZE];
-        for(int i=0;i<list_num;i++){
-            read(fp,&score_num[i],sizeof(int));
-            read(fp,string[i],sizeof(char)*MAXSIZE);
-        }
-        for(int i=0;i<list_num;i++){
-            if(score>score_num[i]){
-                for(int a=list_num-1;a>i;a--){
-                    score_num[a]=score_num[a-1];
-                    sprintf(string[a],"%s",string[a-1]);
-                }
-                score_num[i]=score;
-                sprintf(string[i],"%s",ctime(&temp));
-                break;
-            }
-        }
-        close(fp);
-        fp=open("../UI/list/list",O_CREAT|O_WRONLY);
-        for(int i=0;i<list_num;i++){
-            write(fp,&score_num[i],sizeof(int));
-            write(fp,string[i],sizeof(char)*MAXSIZE);
-        }
-        close(fp);
-    }
+    close(fp);
     return score;
 }
 

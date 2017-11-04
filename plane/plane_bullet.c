@@ -15,6 +15,55 @@ Buff z = NULL;
 bool effect = false;
 int effect_time = 0;
 
+void al_draw_list()
+{
+    int fp;
+    if((fp=open("../UI/list/list",O_RDONLY))==-1){
+        fp=open("../UI/list/list",O_CREAT|O_WRONLY);
+        time_t temp;
+        temp=time(&temp);
+        write(fp,&score,sizeof(int));
+        sprintf(num,"%s",ctime(&temp));
+        write(fp,num,sizeof(char)*MAXSIZE);
+        for(int i=1;i<7;i++){
+            int k=0;
+            temp=time(&temp);
+            write(fp,&k,sizeof(int));
+            sprintf(num,"%s",ctime(&temp));
+            write(fp,num,sizeof(char)*MAXSIZE);
+        }
+        close(fp);
+    }
+    else{
+        time_t temp;
+        temp=time(&temp);
+        int score_num[7];
+        char string[7][MAXSIZE];
+        for(int i=0;i<7;i++){
+            read(fp,&score_num[i],sizeof(int));
+            read(fp,string[i],sizeof(char)*MAXSIZE);
+        }
+        for(int i=0;i<7;i++){
+            if(score>score_num[i]){
+                for(int a=7-1;a>i;a--){
+                    score_num[a]=score_num[a-1];
+                    sprintf(string[a],"%s",string[a-1]);
+                }
+                score_num[i]=score;
+                sprintf(string[i],"%s",ctime(&temp));
+                break;
+            }
+        }
+        close(fp);
+        fp=open("../UI/list/list",O_CREAT|O_WRONLY);
+        for(int i=0;i<7;i++){
+            write(fp,&score_num[i],sizeof(int));
+            write(fp,string[i],sizeof(char)*MAXSIZE);
+        }
+        close(fp);
+    }
+}
+
 void Init_Plane(plane n,int file_num)
 {
     if(file_num){
@@ -166,6 +215,7 @@ bool Draw_plane_bullet(allegro n,int file_num)
                 z=z->next;
                 free(a);
             }
+            al_draw_list();
             exit(score);
         }
         my.speed = my.level;

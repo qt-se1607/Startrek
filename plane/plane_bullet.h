@@ -14,5 +14,6 @@ int Distance(int x1,int y1,int x2,int y2);
 void al_draw_pic(ALLEGRO_BITMAP *n, float x, float y);
 void al_move(ALLEGRO_EVENT ev, plane my, int *plane_num);
 void al_draw_protect(Plane n,bool effect);
+void al_draw_list();
 
 #endif // PLANE_BULLET_H

@@ -6,7 +6,7 @@ int main()
     game_width =960;
     game_height =640;
     Init_Display(&n);
-    n.bitmap1 = al_load_bitmap("../UI/photo/bg6/bg.jpg");
+    n.bitmap1 = al_load_bitmap("../UI/welcome/bg.jpg");
     n.bitmap2 = al_load_bitmap("../UI/setting/bg.jpg");
     n.bitmap3 = al_load_bitmap("../UI/list/bg.jpg");
     n.bitmap4=al_load_bitmap("../UI/load/bg.jpg");
