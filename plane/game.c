@@ -130,7 +130,7 @@ void al_pause(allegro n,plane my,plane enemy)
                     bullet a=q;q=q->next;
                     free(a);
                 }
-                exit(0);
+                exit(9);
             }
             if(set_back){
                 p=enemy;
@@ -150,7 +150,7 @@ void al_pause(allegro n,plane my,plane enemy)
                     bullet a=q;q=q->next;
                     free(a);
                 }
-                exit(-1);
+                exit(0);
             }
         }
         if(judge_in(ev,0.4*game_width,0.3*game_height-0.6*word_size,0.6*game_width,0.4*game_height+0.6*word_size)){
@@ -160,7 +160,6 @@ void al_pause(allegro n,plane my,plane enemy)
             }
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP)break;
         }
-
         if(judge_in(ev,0.4*game_width,0.5*game_height-0.6*word_size,0.6*game_width,0.5*game_height+0.6*word_size)){
             git=2*checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
@@ -182,10 +181,11 @@ void al_pause(allegro n,plane my,plane enemy)
                 }
                 q=my->bull;
                 while(q){
-                    bullet a=q;q=q->next;
+                    bullet a=q;
+                    q=q->next;
                     free(a);
                 }
-                exit(0);
+                exit(9);
             }
         }
         if(judge_in(ev,0.4*game_width,0.7*game_height-0.6*word_size,0.6*game_width,0.7*game_height+0.6*word_size)){
@@ -211,13 +211,10 @@ void al_pause(allegro n,plane my,plane enemy)
                     bullet a=q;q=q->next;
                     free(a);
                 }
-                exit(-1);
+                exit(0);
             }
         }
-
-
     }
-
 }
 void al_archive(plane n, plane m)
 {

@@ -133,9 +133,6 @@ int main()
             if(start){
                 al_start(n);
                 al_flip_display();
-                n.sample2=al_load_sample("../UI/music/music2.wav");
-                if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
-                else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
             }
             else if(load){
                 al_load(n,false);
@@ -148,7 +145,6 @@ int main()
             else if(setting){
                 al_setting(n);
                 al_draw_startboard(n,0,0);
-                n.sample2=al_load_sample("../UI/music/music2.wav");
                 if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
                 else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
             }
@@ -191,11 +187,11 @@ int main()
         if(judge_in(ev,0.35*game_width,0.41*game_height,0.65*game_width,0.51*game_height)){
             git=checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
+                al_draw_startboard(n,0,0);
+            }
+            if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
                 al_start(n);
                 al_draw_startboard(n,0,0);
-                n.sample2=al_load_sample("../UI/music/music2.wav");
-                if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
-                else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
             }
         }
         if(judge_in(ev,0.35*game_width,0.52*game_height,0.65*game_width,0.62*game_height)){
@@ -226,9 +222,6 @@ int main()
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
                 al_setting(n);
                 al_draw_startboard(n,0,0);
-                n.sample2=al_load_sample("../UI/music/music2.wav");
-                if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
-                else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
             }
         }
         if(judge_in(ev,0.35*game_width,0.85*game_height,0.65*game_width,0.95*game_height)){

@@ -216,7 +216,7 @@ bool Draw_plane_bullet(allegro n,int file_num)
                 free(a);
             }
             al_draw_list();
-            exit(score);
+            exit(0);
         }
         my.speed = my.level;
         plane_space = game_height / (5 + 2 * my.level);
@@ -674,6 +674,11 @@ void boom(plane n,plane *m,Buff *b)
         z1=z1->next;
         if(!z1)break;
         z2=z1->next;
+    }
+    if((*b)&&!(*b)->live){
+        Buff a=*b;
+        (*b)=(*b)->next;
+        free(a);
     }
 }
 void al_move(ALLEGRO_EVENT ev, plane my,int *plane_num)

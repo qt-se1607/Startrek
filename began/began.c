@@ -53,28 +53,29 @@ void al_draw_wait(allegro n,bool T,int form)
         }
     }
 }
+
 int al_wait()
 {
     int score=0;
     wait(&score);//高八位
     score=WEXITSTATUS(score);//低八位
-    int fp;
-    if(!score&&(fp=open("../UI/load/load",O_RDONLY))==-1)return 1;
-    close(fp);
     return score;
 }
 
 void al_start(allegro n)
 {
-    int score;
-    al_destroy_sample(n.sample2);
+    int score=0;
+    al_stop_samples();
     switch(fork()){
     case -1:perror("fork");break;
     case 0:al_execl(0);break;
     default:score=al_wait();break;
     }
-    if(!score)al_load(n,true);
+    if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+    else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+    if(score==9)al_load(n,true);
 }
+
 void al_execl(int fp)
 {
     char s[MAXSIZE],m[MAXSIZE],sw[MAXSIZE],sh[MAXSIZE];
@@ -85,22 +86,26 @@ void al_execl(int fp)
     sprintf(num,"%d",fp);
     execl("../plane/plane",s,sw,sh,m,num,NULL);
 }
+
 bool al_loadgame(int git,allegro n)
 {
-    int score=1;
+    int score=0;
     sprintf(num,"../UI/load/archive_%d",git);
     int fp;
     if((fp=open(num,O_RDONLY))!=-1){
-        al_destroy_sample(n.sample2);
+        al_stop_samples();
         switch(fork()){
         case -1:perror("fork");break;
         case 0:al_execl(fp);break;
         default:score=al_wait();break;
         }
+        if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+        else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
     }
-    if(score)return false;
-    else return true;
+    if(score==9)return true;
+    else return false;
 }
+
 void al_load(allegro n,bool score)
 {
     key_down=false;
@@ -158,9 +163,6 @@ void al_load(allegro n,bool score)
             if(load_back)break;
             if(!score){
                 score=al_loadgame(git/checkout,n);
-                n.sample2=al_load_sample("../UI/music/music2.wav");
-                if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
-                else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
                 if(!score)break;
             }
             else{
@@ -177,10 +179,7 @@ void al_load(allegro n,bool score)
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
                 if(!score){
                     score=al_loadgame(git/checkout,n);
-                    n.sample2=al_load_sample("../UI/music/music2.wav");
-                    if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
-                    else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
-                    if(!score)break;
+                    //if(!score)break;
                 }
                 else{
                     al_archive(git/checkout);
@@ -189,7 +188,7 @@ void al_load(allegro n,bool score)
                 }
             }
         }
-        if(judge_in(ev,0.1*game_width,0.3*game_height,0.9*game_width,0.35*game_height)){
+        else if(judge_in(ev,0.1*game_width,0.3*game_height,0.9*game_width,0.35*game_height)){
             git=2*checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
                 al_draw_loadboard(n,0,0);
@@ -197,10 +196,7 @@ void al_load(allegro n,bool score)
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
                 if(!score){
                     score=al_loadgame(git/checkout,n);
-                    n.sample2=al_load_sample("../UI/music/music2.wav");
-                    if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
-                    else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
-                    if(!score)break;
+                    //if(!score)break;
                 }
                 else{
                     al_archive(git/checkout);
@@ -209,7 +205,7 @@ void al_load(allegro n,bool score)
                 }
             }
         }
-        if(judge_in(ev,0.1*game_width,0.4*game_height,0.9*game_width,0.45*game_height)){
+        else if(judge_in(ev,0.1*game_width,0.4*game_height,0.9*game_width,0.45*game_height)){
             git=3*checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
                 al_draw_loadboard(n,0,0);
@@ -217,10 +213,7 @@ void al_load(allegro n,bool score)
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
                 if(!score){
                     score=al_loadgame(git/checkout,n);
-                    n.sample2=al_load_sample("../UI/music/music2.wav");
-                    if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
-                    else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
-                    if(!score)break;
+                    //if(!score)break;
                 }
                 else{
                     al_archive(git/checkout);
@@ -229,7 +222,7 @@ void al_load(allegro n,bool score)
                 }
             }
         }
-        if(judge_in(ev,0.1*game_width,0.5*game_height,0.9*game_width,0.55*game_height)){
+        else if(judge_in(ev,0.1*game_width,0.5*game_height,0.9*game_width,0.55*game_height)){
             git=4*checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
                 al_draw_loadboard(n,0,0);
@@ -237,10 +230,7 @@ void al_load(allegro n,bool score)
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
                 if(!score){
                     score=al_loadgame(git/checkout,n);
-                    n.sample2=al_load_sample("../UI/music/music2.wav");
-                    if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
-                    else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
-                    if(!score)break;
+                    //if(!score)break;
                 }
                 else{
                     al_archive(git/checkout);
@@ -249,7 +239,7 @@ void al_load(allegro n,bool score)
                 }
             }
         }
-        if(judge_in(ev,0.1*game_width,0.6*game_height,0.9*game_width,0.65*game_height)){
+        else if(judge_in(ev,0.1*game_width,0.6*game_height,0.9*game_width,0.65*game_height)){
             git=5*checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
                 al_draw_loadboard(n,0,0);
@@ -257,10 +247,7 @@ void al_load(allegro n,bool score)
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
                 if(!score){
                     score=al_loadgame(git/checkout,n);
-                    n.sample2=al_load_sample("../UI/music/music2.wav");
-                    if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
-                    else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
-                    if(!score)break;
+                    //if(!score)break;
                 }
                 else{
                     al_archive(git/checkout);
@@ -269,7 +256,7 @@ void al_load(allegro n,bool score)
                 }
             }
         }
-        if(judge_in(ev,0.1*game_width,0.7*game_height,0.9*game_width,0.75*game_height)){
+        else if(judge_in(ev,0.1*game_width,0.7*game_height,0.9*game_width,0.75*game_height)){
             git=6*checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
                 al_draw_loadboard(n,0,0);
@@ -277,10 +264,7 @@ void al_load(allegro n,bool score)
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
                 if(!score){
                     score=al_loadgame(git/checkout,n);
-                    n.sample2=al_load_sample("../UI/music/music2.wav");
-                    if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
-                    else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
-                    if(!score)break;
+                    //if(!score)break;
                 }
                 else{
                     al_archive(git/checkout);
@@ -289,7 +273,7 @@ void al_load(allegro n,bool score)
                 }
             }
         }
-        if(judge_in(ev,0.35*game_width,0.85*game_height,0.65*game_width,0.9*game_height)){
+        else if(judge_in(ev,0.35*game_width,0.85*game_height,0.65*game_width,0.9*game_height)){
             git=7*checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
                 al_draw_loadboard(n,0,0);
@@ -302,6 +286,7 @@ void al_load(allegro n,bool score)
     }
     al_draw_wait(n,true,1);
 }
+
 void al_archive(int git)
 {
     int fp;
@@ -319,24 +304,18 @@ void al_draw_loadboard(allegro n,int x,int y)
 {
     ALLEGRO_BITMAP *p=al_load_bitmap("../UI/load/c1.png");
     al_draw_bitmap(n.bitmap4,x,y,0);
-    if(archive_1){
-        al_draw_bitmap(p,x+0.05*game_width,y+0.2*game_height,0);
-    }
-    if(archive_2){
-        al_draw_bitmap(p,x+0.05*game_width,y+0.3*game_height,0);
-    }
-    if(archive_3){
-        al_draw_bitmap(p,x+0.05*game_width,y+0.4*game_height,0);
-    }
-    if(archive_4){
-        al_draw_bitmap(p,x+0.05*game_width,y+0.5*game_height,0);
-    }
-    if(archive_5){
-        al_draw_bitmap(p,x+0.05*game_width,y+0.6*game_height,0);
-    }
-    if(archive_6){
-        al_draw_bitmap(p,x+0.05*game_width,y+0.7*game_height,0);
-    }
+    if(archive_1)al_draw_bitmap(p,x+0.05*game_width,y+0.2*game_height,0);
+
+    if(archive_2)al_draw_bitmap(p,x+0.05*game_width,y+0.3*game_height,0);
+
+    if(archive_3)al_draw_bitmap(p,x+0.05*game_width,y+0.4*game_height,0);
+
+    if(archive_4)al_draw_bitmap(p,x+0.05*game_width,y+0.5*game_height,0);
+
+    if(archive_5)al_draw_bitmap(p,x+0.05*game_width,y+0.6*game_height,0);
+
+    if(archive_6)al_draw_bitmap(p,x+0.05*game_width,y+0.7*game_height,0);
+
     if(load_back){
         al_draw_filled_rounded_rectangle(x+0.35*game_width,y+0.85*game_height-0.1*word_size,
                                          x+0.65*game_width,y+0.85*game_height+1.1*word_size,
@@ -350,69 +329,24 @@ void al_draw_loadboard(allegro n,int x,int y)
         al_draw_text(n.font1,white,x+0.5*game_width,y+0.85*game_height,ALLEGRO_ALIGN_CENTER,"返      回");
     }
     int fd;
-    if((fd=open("../UI/load/archive_1",O_RDONLY))!=-1){
-        struct stat info;
-        if(stat("../UI/load/archive_1",&info)==-1)perror("archive_1");
-        else{
-            sprintf(num,"%s",ctime(&info.st_mtime));
-            al_draw_text(n.font1,white,x+0.5*game_width,y+0.2*game_height,0,num);
+    for(int i=1;i<list_num;i++){
+        sprintf(num,"../UI/load/archive_%d",i);
+        if((fd=open(num,O_RDONLY))!=-1){
+            struct stat info;
+            if(stat(num,&info)==-1)perror(num);
+            else{
+                sprintf(num,"%s",ctime(&info.st_mtime));
+                al_draw_text(n.font1,white,x+0.5*game_width,y+0.1*(i+1)*game_height,0,num);
+            }
+            close(fd);
         }
-        close(fd);
+        sprintf(num,"NO.%d",i);
+        al_draw_text(n.font1,white,x+0.1*game_width,y+0.1*(i+1)*game_height,0,num);
     }
-    if((fd=open("../UI/load/archive_2",O_RDONLY))!=-1){
-        struct stat info;
-        if(stat("../UI/load/archive_2",&info)==-1)perror("archive_3");
-        else{
-            sprintf(num,"%s",ctime(&info.st_mtime));
-            al_draw_text(n.font1,white,x+0.5*game_width,y+0.3*game_height,0,num);
-        }
-        close(fd);
-    }
-    if((fd=open("../UI/load/archive_3",O_RDONLY))!=-1){
-        struct stat info;
-        if(stat("../UI/load/archive_3",&info)==-1)perror("archive_3");
-        else{
-            sprintf(num,"%s",ctime(&info.st_mtime));
-            al_draw_text(n.font1,white,x+0.5*game_width,y+0.4*game_height,0,num);
-        }
-        close(fd);
-    }
-    if((fd=open("../UI/load/archive_4",O_RDONLY))!=-1){
-        struct stat info;
-        if(stat("../UI/load/archive_4",&info)==-1)perror("archive_4");
-        else{
-            sprintf(num,"%s",ctime(&info.st_mtime));
-            al_draw_text(n.font1,white,x+0.5*game_width,y+0.5*game_height,0,num);
-        }
-        close(fd);
-    }
-    if((fd=open("../UI/load/archive_5",O_RDONLY))!=-1){
-        struct stat info;
-        if(stat("../UI/load/archive_5",&info)==-1)perror("archive_5");
-        else{
-            sprintf(num,"%s",ctime(&info.st_mtime));
-            al_draw_text(n.font1,white,x+0.5*game_width,y+0.6*game_height,0,num);
-        }
-        close(fd);
-    }
-    if((fd=open("../UI/load/archive_6",O_RDONLY))!=-1){
-        struct stat info;
-        if(stat("../UI/load/archive_6",&info)==-1)perror("archive_6");
-        else{
-            sprintf(num,"%s",ctime(&info.st_mtime));
-            al_draw_text(n.font1,white,x+0.5*game_width,y+0.7*game_height,0,num);
-        }
-        close(fd);
-    }
-    al_draw_text(n.font1,white,x+0.1*game_width,y+0.2*game_height,0,"NO.1");
-    al_draw_text(n.font1,white,x+0.1*game_width,y+0.3*game_height,0,"NO.2");
-    al_draw_text(n.font1,white,x+0.1*game_width,y+0.4*game_height,0,"NO.3");
-    al_draw_text(n.font1,white,x+0.1*game_width,y+0.5*game_height,0,"NO.4");
-    al_draw_text(n.font1,white,x+0.1*game_width,y+0.6*game_height,0,"NO.5");
-    al_draw_text(n.font1,white,x+0.1*game_width,y+0.7*game_height,0,"NO.6");
     al_flip_display();
     al_destroy_bitmap(p);
 }
+
 void al_setting(allegro n)
 {
     key_down=false;
@@ -524,6 +458,9 @@ void al_setting(allegro n)
             }
             if(music){
                 musicflag=!musicflag;
+                al_stop_samples();
+                if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+                else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
             }
         }
         if(ev.type == ALLEGRO_EVENT_KEY_DOWN&&key_right){
@@ -534,6 +471,9 @@ void al_setting(allegro n)
             }
             if(music){
                 musicflag=!musicflag;
+                al_stop_samples();
+                if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+                else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
             }
         }
         if(key_left&&volume&&volume_num>=0)volume_num-=0.3;
@@ -555,17 +495,29 @@ void al_setting(allegro n)
             if(judge_in(ev,0.6*game_width-word_size,0.45*game_height-0.1*word_size,0.6*game_width,0.45*game_height+1.1*word_size)||
                     judge_in(ev,0.8*game_width,0.45*game_height-0.1*word_size,0.8*game_width+word_size,0.45*game_height+1.1*word_size)){
                 musicflag=!musicflag;
+                al_stop_samples();
+                if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+                else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
             }
             if(judge_in(ev,0.6*game_width-word_size,0.55*game_height-0.1*word_size,0.6*game_width,0.55*game_height+1.1*word_size)){
                 volume_num-=10;
                 if(volume_num<0)volume_num=0;
+                al_stop_samples();
+                if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+                else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
             }
             if(judge_in(ev,0.8*game_width,0.55*game_height-0.1*word_size,0.8*game_width+word_size,0.55*game_height+1.1*word_size)){
                 volume_num+=10;
                 if(volume_num>100)volume_num=100;
+                al_stop_samples();
+                if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+                else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
             }
             if(judge_in(ev,0.6*game_width,0.55*game_height-0.1*word_size,0.8*game_width,0.55*game_height+1.1*word_size)){
                 volume_num=(ev.mouse.x-0.6*game_width)/(0.2*game_width/100);
+                al_stop_samples();
+                if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+                else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
             }
         }
 
@@ -633,9 +585,9 @@ void al_setting(allegro n)
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP)break;
         }
     }
-    al_destroy_sample(n.sample2);
     al_draw_wait(n,true,3);
 }
+
 void al_draw_settingboard(allegro n,int x,int y)
 {
     al_draw_bitmap(n.bitmap2,x,y,0);
@@ -761,6 +713,7 @@ void al_draw_startboard(allegro n,int x,int y)
     al_destroy_bitmap(c1);
     al_destroy_bitmap(c2);
 }
+
 void al_list(allegro n)
 {
     int fd;
@@ -790,6 +743,7 @@ void al_list(allegro n)
     }
     al_draw_wait(n,true,2);
 }
+
 void al_draw_listboard(allegro n,int x,int y)
 {
     ALLEGRO_BITMAP *bg1,*bg2,*bg3;
@@ -822,6 +776,7 @@ void al_draw_listboard(allegro n,int x,int y)
     al_destroy_bitmap(bg2);
     al_destroy_bitmap(bg3);
 }
+
 void al_turn(float x1, float y1, float x2, float y2, ALLEGRO_COLOR color)
 {
     al_draw_filled_triangle(x1-0.1*word_size,y1,x1-word_size,y1+0.6*word_size,x1-0.1*word_size,y1+1.2*word_size,color);
