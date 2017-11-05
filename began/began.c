@@ -103,9 +103,12 @@ bool al_loadgame(int git,allegro n)
         }
         if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
         else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+        if(score==9){
+            score=0;
+            al_archive(git);
+        }
     }
-    if(score==9)return true;
-    else return false;
+    return false;
 }
 
 void al_load(allegro n,bool score)
