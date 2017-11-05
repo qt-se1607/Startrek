@@ -100,6 +100,7 @@ void Init_Plane(plane n,int file_num)
         n->bull=NULL;
     }
 }
+
 void Init_Bullet(bullet *n,int file_num)
 {
     char k[MAXSIZE];
@@ -135,6 +136,7 @@ void Init_Bullet(bullet *n,int file_num)
         }
     }
 }
+
 void Init_enemyplane(plane *n,int file_num)
 {
     int i=0;
@@ -225,10 +227,10 @@ bool Draw_plane_bullet(allegro n,int file_num)
         ALLEGRO_EVENT ev;
         al_wait_for_event(n.event_queue,&ev);
         if(ev.type == ALLEGRO_EVENT_TIMER)redraw = true;
-        if(ev.keyboard.keycode==ALLEGRO_KEY_SPACE)al_pause(n,&my,enemy_plane);
+        if(ev.keyboard.keycode==ALLEGRO_KEY_SPACE)al_pause(n,&my,enemy_plane,&buff);
         if(redraw && al_is_event_queue_empty(n.event_queue)){
             //加入子弹
-            if(bullet_num >= bullet_space){
+            if(bullet_num>=bullet_space){
                 if(my.live){
                     bullet m=(bullet)malloc(sizeof(Bullet));
                     m->live = true;
@@ -498,7 +500,6 @@ bool Draw_plane_bullet(allegro n,int file_num)
     return true;
 }
 
-
 void boom(plane n,plane *m,Buff *b)
 {
     p=*m;
@@ -681,6 +682,7 @@ void boom(plane n,plane *m,Buff *b)
         free(a);
     }
 }
+
 void al_move(ALLEGRO_EVENT ev, plane my,int *plane_num)
 {
     int k=*plane_num;
@@ -746,6 +748,7 @@ void al_move(ALLEGRO_EVENT ev, plane my,int *plane_num)
     }
     *plane_num=k;
 }
+
 int Rand(int low,int high)
 {
     int i=rand();

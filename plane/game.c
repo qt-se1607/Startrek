@@ -60,7 +60,8 @@ bool al_end_game(allegro n)
         return true;
     return false;
 }
-void al_pause(allegro n,plane my,plane enemy)
+
+void al_pause(allegro n,plane my,plane enemy,Buff buff)
 {
     int checkout = 0.3 *FPS;
     int git = 3*checkout;
@@ -112,7 +113,7 @@ void al_pause(allegro n,plane my,plane enemy)
         if(ev.type==ALLEGRO_EVENT_KEY_DOWN&&ev.keyboard.keycode==ALLEGRO_KEY_ENTER){
             if(again)break;
             if(save){
-                al_archive(my,enemy);
+                al_archive(my,enemy,buff);
                 p=enemy;
                 while(p){
                     q=p->bull;
@@ -127,7 +128,14 @@ void al_pause(allegro n,plane my,plane enemy)
                 }
                 q=my->bull;
                 while(q){
-                    bullet a=q;q=q->next;
+                    bullet a=q;
+                    q=q->next;
+                    free(a);
+                }
+                Buff z=buff;
+                while(z){
+                    Buff a=z;
+                    z=z->next;
                     free(a);
                 }
                 exit(9);
@@ -150,6 +158,12 @@ void al_pause(allegro n,plane my,plane enemy)
                     bullet a=q;q=q->next;
                     free(a);
                 }
+                Buff z=buff;
+                while(z){
+                    Buff a=z;
+                    z=z->next;
+                    free(a);
+                }
                 exit(0);
             }
         }
@@ -166,7 +180,7 @@ void al_pause(allegro n,plane my,plane enemy)
                 al_draw_pauseboard(n);
             }
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
-                al_archive(my,enemy);
+                al_archive(my,enemy,buff);
                 p=enemy;
                 while(p){
                     q=p->bull;
@@ -183,6 +197,12 @@ void al_pause(allegro n,plane my,plane enemy)
                 while(q){
                     bullet a=q;
                     q=q->next;
+                    free(a);
+                }
+                Buff z=buff;
+                while(z){
+                    Buff a=z;
+                    z=z->next;
                     free(a);
                 }
                 exit(9);
@@ -211,12 +231,19 @@ void al_pause(allegro n,plane my,plane enemy)
                     bullet a=q;q=q->next;
                     free(a);
                 }
+                Buff z=buff;
+                while(z){
+                    Buff a=z;
+                    z=z->next;
+                    free(a);
+                }
                 exit(0);
             }
         }
     }
 }
-void al_archive(plane n, plane m)
+
+void al_archive(plane n, plane m,Buff buff)
 {
     int fp;
     float i=0;
@@ -304,8 +331,29 @@ void al_archive(plane n, plane m)
         }
         p=p->next;
     }
+    Buff z=buff;
+    g=0;
+    while(z){
+        z=z->next;
+        g++;
+    }
+    write(fp,&g,sizeof(int));
+    z=buff;
+    while(z){
+        i=z->x1/game_width;
+        write(fp,&i,sizeof(float));
+        i=z->y1/game_height;
+        write(fp,&i,sizeof(float));
+        write(fp,&z->x2,sizeof(float));
+        write(fp,&z->y2,sizeof(float));
+        write(fp,&z->speed,sizeof(float));
+        write(fp,&z->form,sizeof(int));
+        write(fp,&z->live,sizeof(bool));
+        z=z->next;
+    }
     close(fp);
 }
+
 void al_draw_pauseboard(allegro n)
 {
     al_clear_to_color(black);
@@ -344,6 +392,7 @@ void al_draw_pauseboard(allegro n)
     al_draw_text(n.font1,white,0.5*game_width,0.7*game_height-0.6*word_size,ALLEGRO_ALIGN_CENTER,"退 出 游 戏");
     al_flip_display();
 }
+
 bool judge_in(ALLEGRO_EVENT ev, int x1, int y1, int x2, int y2)
 {
     int mouse_x = ev.mouse.x;

@@ -1,5 +1,6 @@
 #ifndef ALLEGRO_H
 #define ALLEGRO_H
+
 #include<stdio.h>
 #include<stdlib.h>
 #include<unistd.h>
@@ -24,7 +25,9 @@
 #include<allegro5/allegro_font.h>
 #include<allegro5/allegro_audio.h>
 #include<allegro5/allegro_acodec.h>
+
 #define MAXSIZE 32
+
 typedef struct MY_ALLEGRO{
     ALLEGRO_DISPLAY_MODE display_date;
     ALLEGRO_DISPLAY *display;
@@ -41,6 +44,7 @@ typedef struct MY_ALLEGRO{
     ALLEGRO_SAMPLE *sample2;
     ALLEGRO_TRANSFORM transform;
 }allegro;
+
 typedef struct MY_CIRCLE{
     float x;
     float y;
@@ -49,10 +53,9 @@ typedef struct MY_CIRCLE{
     int form;
     struct MY_CIRCLE *next;
 }Circle,*circle;
+
 extern int word_size;//文字大小
 extern float FPS;//帧数
-extern int screen_width;//屏幕宽度
-extern int screen_height;//屏幕高度
 extern int game_width;//游戏屏幕宽度
 extern int game_height;//游戏屏幕高度
 extern int img_x;
@@ -89,6 +92,7 @@ extern int list_num;
 extern char num[MAXSIZE];
 extern int number;
 extern circle click;
+
 void Init_Allegro(allegro *n);
 void Destroy_Allegro(allegro *n);
 void Init_Queue(allegro *n);
@@ -111,4 +115,5 @@ void al_start(allegro n);
 bool al_loadgame(int git, allegro n);
 void al_draw_wait(allegro n, bool T, int form);
 void al_archive(int git);
+
 #endif // ALLEGRO_H

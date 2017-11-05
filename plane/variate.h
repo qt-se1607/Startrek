@@ -104,4 +104,5 @@ extern bullet q;
 extern BUFF *z;
 extern bool effect;
 extern int effect_time;
+
 #endif // VARIATE_H

@@ -1,4 +1,5 @@
 #include "variate.h"
+
 bool key_enter=false;
 bool key_up=false;
 bool key_down=false;
@@ -31,6 +32,7 @@ int list_num=7;
 char num[MAXSIZE];
 int number=0;
 circle click=NULL;
+
 void al_draw_wait(allegro n,bool T,int form)
 {
     bool redraw=false;

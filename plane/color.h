@@ -9,6 +9,7 @@
  * #define cyan al_map_rgb(0,255,255)//青色
  * #define blue al_map_rgb(0,0,255)//蓝色
 */
+
 #define black al_map_rgb(0,0,0)//黑色
 #define white al_map_rgb(255,255,255)//白色
 #define ivories_black al_map_rgb(88,87,86)//象牙黑
@@ -55,6 +56,5 @@
 #define purple_simple al_map_rgb(218,112,214)//淡紫色
 #define purple_violet al_map_rgb(138,43,226)//紫罗兰
 #define purple_lavender al_map_rgb(153,51,250)//胡紫色
-
 
 #endif // COLOR_H

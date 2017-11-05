@@ -1,4 +1,5 @@
 #include "variate.h"
+
 int main()
 {
     allegro n;
