@@ -61,7 +61,7 @@ bool al_end_game(allegro n)
     return false;
 }
 
-void al_pause(allegro n,plane my,plane enemy,Buff buff)
+void al_pause(allegro n,plane my,plane enemy,buff my_buff)
 {
     int checkout = 0.3 *FPS;
     int git = 3*checkout;
@@ -113,7 +113,7 @@ void al_pause(allegro n,plane my,plane enemy,Buff buff)
         if(ev.type==ALLEGRO_EVENT_KEY_DOWN&&ev.keyboard.keycode==ALLEGRO_KEY_ENTER){
             if(again)break;
             if(save){
-                al_archive(my,enemy,buff);
+                al_archive(my,enemy,my_buff);
                 p=enemy;
                 while(p){
                     q=p->bull;
@@ -132,10 +132,10 @@ void al_pause(allegro n,plane my,plane enemy,Buff buff)
                     q=q->next;
                     free(a);
                 }
-                Buff z=buff;
-                while(z){
-                    Buff a=z;
-                    z=z->next;
+                r=my_buff;
+                while(r){
+                    buff a=r;
+                    r=r->next;
                     free(a);
                 }
                 exit(9);
@@ -158,10 +158,10 @@ void al_pause(allegro n,plane my,plane enemy,Buff buff)
                     bullet a=q;q=q->next;
                     free(a);
                 }
-                Buff z=buff;
-                while(z){
-                    Buff a=z;
-                    z=z->next;
+                r=my_buff;
+                while(r){
+                    buff a=r;
+                    r=r->next;
                     free(a);
                 }
                 exit(0);
@@ -180,7 +180,7 @@ void al_pause(allegro n,plane my,plane enemy,Buff buff)
                 al_draw_pauseboard(n);
             }
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
-                al_archive(my,enemy,buff);
+                al_archive(my,enemy,my_buff);
                 p=enemy;
                 while(p){
                     q=p->bull;
@@ -199,10 +199,10 @@ void al_pause(allegro n,plane my,plane enemy,Buff buff)
                     q=q->next;
                     free(a);
                 }
-                Buff z=buff;
-                while(z){
-                    Buff a=z;
-                    z=z->next;
+                r=my_buff;
+                while(r){
+                    buff a=r;
+                    r=r->next;
                     free(a);
                 }
                 exit(9);
@@ -228,13 +228,14 @@ void al_pause(allegro n,plane my,plane enemy,Buff buff)
                 }
                 q=my->bull;
                 while(q){
-                    bullet a=q;q=q->next;
+                    bullet a=q;
+                    q=q->next;
                     free(a);
                 }
-                Buff z=buff;
-                while(z){
-                    Buff a=z;
-                    z=z->next;
+                r=my_buff;
+                while(r){
+                    buff a=r;
+                    r=r->next;
                     free(a);
                 }
                 exit(0);
@@ -243,7 +244,7 @@ void al_pause(allegro n,plane my,plane enemy,Buff buff)
     }
 }
 
-void al_archive(plane n, plane m,Buff buff)
+void al_archive(plane n, plane m,buff my_buff)
 {
     int fp;
     float i=0;
@@ -274,9 +275,10 @@ void al_archive(plane n, plane m,Buff buff)
         write(fp,&i,sizeof(float));
         i=q->y1/game_height;
         write(fp,&i,sizeof(float));
-        write(fp,&q->x2,sizeof(float));
-        write(fp,&q->y2,sizeof(float));
-        write(fp,&q->speed,sizeof(float));
+        i=q->x2/q->speed;
+        write(fp,&i,sizeof(float));
+        i=q->y2/q->speed;
+        write(fp,&i,sizeof(float));
         write(fp,&q->attack,sizeof(int));
         write(fp,&q->form,sizeof(int));
         write(fp,&q->live,sizeof(bool));
@@ -297,9 +299,10 @@ void al_archive(plane n, plane m,Buff buff)
         write(fp,&i,sizeof(float));
         i=p->y1/game_height;
         write(fp,&i,sizeof(float));
-        write(fp,&p->x2,sizeof(float));
-        write(fp,&p->y2,sizeof(float));
-        write(fp,&p->speed,sizeof(float));
+        i=p->x2/p->speed;
+        write(fp,&i,sizeof(float));
+        i=p->y2/p->speed;
+        write(fp,&i,sizeof(float));
         write(fp,&p->level,sizeof(int));
         write(fp,&p->blood,sizeof(int));
         write(fp,&p->form,sizeof(int));
@@ -319,9 +322,10 @@ void al_archive(plane n, plane m,Buff buff)
             write(fp,&i,sizeof(float));
             i=q->y1/game_height;
             write(fp,&i,sizeof(float));
-            write(fp,&q->x2,sizeof(float));
-            write(fp,&q->y2,sizeof(float));
-            write(fp,&q->speed,sizeof(float));
+            i=q->x2/q->speed;
+            write(fp,&i,sizeof(float));
+            i=q->y2/q->speed;
+            write(fp,&i,sizeof(float));
             write(fp,&q->attack,sizeof(int));
             write(fp,&q->form,sizeof(int));
             write(fp,&q->live,sizeof(bool));
@@ -331,25 +335,25 @@ void al_archive(plane n, plane m,Buff buff)
         }
         p=p->next;
     }
-    Buff z=buff;
+    r=my_buff;
     g=0;
-    while(z){
-        z=z->next;
+    while(r){
+        r=r->next;
         g++;
     }
     write(fp,&g,sizeof(int));
-    z=buff;
-    while(z){
-        i=z->x1/game_width;
+    r=my_buff;
+    while(r){
+        i=r->x1/game_width;
         write(fp,&i,sizeof(float));
-        i=z->y1/game_height;
+        i=r->y1/game_height;
         write(fp,&i,sizeof(float));
-        write(fp,&z->x2,sizeof(float));
-        write(fp,&z->y2,sizeof(float));
-        write(fp,&z->speed,sizeof(float));
-        write(fp,&z->form,sizeof(int));
-        write(fp,&z->live,sizeof(bool));
-        z=z->next;
+        write(fp,&r->x2,sizeof(float));
+        write(fp,&r->y2,sizeof(float));
+        write(fp,&r->speed,sizeof(float));
+        write(fp,&r->form,sizeof(int));
+        write(fp,&r->live,sizeof(bool));
+        r=r->next;
     }
     close(fp);
 }

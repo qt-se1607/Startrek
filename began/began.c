@@ -66,6 +66,8 @@ int al_wait()
 
 void al_start(allegro n)
 {
+    al_clear_to_color(black);
+    al_flip_display();
     int score=0;
     al_stop_samples();
     switch(fork()){

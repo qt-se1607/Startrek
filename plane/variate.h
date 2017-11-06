@@ -71,7 +71,7 @@ typedef struct MY_BUFF{
     int form;
     int level;
     struct MY_BUFF *next;
-}BUFF,*Buff;
+}Buff,*buff;
 
 ALLEGRO_TRANSFORM transform;
 
@@ -101,7 +101,7 @@ extern bool save;
 extern bool set_back;
 extern plane p;
 extern bullet q;
-extern BUFF *z;
+extern buff r;
 extern bool effect;
 extern int effect_time;
 
