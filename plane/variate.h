@@ -102,7 +102,7 @@ extern bool set_back;
 extern plane p;
 extern bullet q;
 extern buff r;
-extern bool effect;
+extern int effect_protection;
 extern int effect_time;
 
 #endif // VARIATE_H

@@ -12,7 +12,7 @@ int score=0;
 plane p=NULL;
 bullet q=NULL;
 buff r= NULL;
-bool effect = false;
+int effect_protection = 0;
 int effect_time = 0;
 
 void al_draw_list()
@@ -438,11 +438,11 @@ bool Draw_plane_bullet(allegro n,int file_num)
             if(img_y>game_height+0.5*al_get_bitmap_height(n.bitmap))img_y=game_height-0.5*al_get_bitmap_height(n.bitmap);
 
             //判断事件
-            if(effect){
-                effect_time+=5;
-                if(effect_time>=800){
+            if(effect_protection==80){
+                effect_time+=2;
+                if(effect_time>=2000){
                     effect_time = 0;
-                    effect = false;
+                    effect_protection = 0;
                 }
             }
             boom(&my,&enemy_plane,&my_buff);
@@ -450,7 +450,7 @@ bool Draw_plane_bullet(allegro n,int file_num)
             al_draw_pic(n.bitmap,img_x,img_y);
             al_draw_pic(n.bitmap,img_x,img_y-al_get_bitmap_height(n.bitmap));
             al_draw_pic(my.img,my.x1,my.y1);
-            al_draw_protect(my,effect);
+            al_draw_protect(my);
             al_draw_life(my);
             sprintf(num,"%4d",score);
             al_draw_text(n.font1,white,0.1*game_width,
@@ -574,7 +574,7 @@ void boom(plane n,plane *m,buff *b)
         r = r->next;
     }
 
-    if(n->blood>0&&!effect){//判断子弹是否命中
+    if(n->blood>0&&effect_protection==0){//判断子弹是否命中
         p=*m;
         while(p){
             q=p->bull;
@@ -608,7 +608,7 @@ void boom(plane n,plane *m,buff *b)
             q=q->next;
         }
     }
-    if(n->blood>0&& !effect){
+    if(n->blood>0&& effect_protection==0){
         p=*m;
         while(p){
             if(p->blood!=0&&p->live){
@@ -631,7 +631,7 @@ void boom(plane n,plane *m,buff *b)
                             n->blood-=(n->blood-10);
                     }
                     if(r->level == 2){
-                        effect = true;
+                        effect_protection =360;
                     }
                     r->live = false;
                 }
@@ -805,15 +805,14 @@ int Distance(int x1,int y1,int x2,int y2)
     return pow(pow(x1-x2,2)+pow(y1-y2,2),0.5);
 }
 
-void al_draw_protect(Plane n,bool effect)
+void al_draw_protect(Plane n)
 {
-    if(effect){
-        Plane m;
-        sprintf(num,"../UI/%d/buff_0/buff_0.png",screen_width);
-        m.img=al_load_bitmap(num);
-        m.x1=n.x1;
-        m.y1=n.y1;
-        al_draw_pic(m.img,m.x1,m.y1);
+    ALLEGRO_BITMAP *p=NULL;
+    if(effect_protection>0){
+        sprintf(num,"../UI/%d/buff_0/buff_%d.png",screen_width,effect_protection%60/6);
+        p=al_load_bitmap(num);
+        al_draw_pic(p,n.x1,n.y1);
+        effect_protection--;
     }
-
+    al_destroy_bitmap(p);
 }

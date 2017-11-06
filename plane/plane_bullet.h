@@ -13,7 +13,7 @@ int Rand(int ,int );
 int Distance(int ,int ,int ,int );
 void al_draw_pic(ALLEGRO_BITMAP *,float ,float );
 void al_move(ALLEGRO_EVENT ,plane , int *);
-void al_draw_protect(Plane ,bool );
+void al_draw_protect(Plane );
 void al_draw_list();
 
 #endif // PLANE_BULLET_H
