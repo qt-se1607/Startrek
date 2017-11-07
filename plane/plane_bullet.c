@@ -466,7 +466,7 @@ bool Draw_plane_bullet(allegro n,int file_num)
             while(r){
                 if(r->live){
                     if(r->form<0){
-                        if(r->level==1)r->form=2;
+                        if(r->level==1)r->form=29;
                         if(r->level==2)r->form=50;
                     }
                     sprintf(num,"../UI/%d/buff_%d/buff_%d.png",screen_width,r->level,r->form/3);
@@ -582,7 +582,7 @@ void boom(plane n,plane *m,buff *b)
         r = r->next;
     }
 
-    if(n->blood>0&&effect_protection==0){//判断子弹是否命中
+    if(n->blood>0){//判断子弹是否命中
         p=*m;
         while(p){
             q=p->bull;
@@ -590,7 +590,7 @@ void boom(plane n,plane *m,buff *b)
                 if(q->live&&n->blood!=0){
                     if(Distance(q->x1,q->y1,n->x1,n->y1)<0.5*(n->size+al_get_bitmap_width(q->img))){
                         q->live=false;
-                        n->blood--;
+                        if(effect_protection==0)n->blood--;
                     }
                 }
                 q=q->next;
@@ -616,12 +616,12 @@ void boom(plane n,plane *m,buff *b)
             q=q->next;
         }
     }
-    if(n->blood>0&& effect_protection==0){
+    if(n->blood>0){
         p=*m;
         while(p){
             if(p->blood!=0&&p->live){
                 if(Distance(n->x1,n->y1,p->x1,p->y1)<0.5*(p->size+n->size)){
-                    n->blood--;
+                    if(effect_protection==0)n->blood--;
                     p->blood=0;
                 }
             }
