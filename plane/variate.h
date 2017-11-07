@@ -103,5 +103,7 @@ extern plane p;
 extern bullet q;
 extern buff r;
 extern int effect_protection;
+extern int effect_craze;
+extern int effect_speed;
 
 #endif // VARIATE_H

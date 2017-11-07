@@ -13,6 +13,8 @@ plane p=NULL;
 bullet q=NULL;
 buff r= NULL;
 int effect_protection = 0;
+int effect_craze=0;
+int effect_speed=0;
 
 void al_draw_list()
 {
@@ -91,8 +93,8 @@ void Init_Plane(plane n,int file_num)
         n->size = 0.9*al_get_bitmap_width(n->img);
         n->x1 = 0.5 * game_width - n->size;
         n->y1 = game_height - n->size;
-        n->x2 = 0;
-        n->y2 = 0;
+        n->x2 = n->x1;
+        n->y2 = n->y1;
         n->form=39;
         n->next=NULL;
         n->bull=NULL;
@@ -258,7 +260,7 @@ void al_join_plane(plane *n, Plane M)
         m->y2 = m->speed;
     }
     else if(m->level >3 && m->level<=8){
-        int distance=Distance(m->x1,m->y1,M.x1,M.y1);
+        float distance=Distance(m->x1,m->y1,M.x1,M.y1);
         m->x2=m->speed*(m->x1-M.x1)/distance;
         m->y2=m->speed*(m->y1-M.y1)/distance;
     }
@@ -351,7 +353,7 @@ bool Draw_plane_bullet(allegro n,int file_num)
             al_draw_list();
             exit(0);
         }
-        my.speed=my.level;
+        my.speed=2*my.level;
         plane_space = game_height / (5 + 2 * my.level);
         bullet_space = game_height / (5 + 2 * my.level);
         buff_space = 500;
@@ -378,7 +380,7 @@ bool Draw_plane_bullet(allegro n,int file_num)
                             q->y2 = q->speed;
                         }
                         else{
-                            int distance = pow(pow((p->y1-my.y1),2)+pow((p->x1-my.x1),2),0.5);
+                            float distance = pow(pow((p->y1-my.y1),2)+pow((p->x1-my.x1),2),0.5);
                             q->x2 = q->speed * (my.x1-q->x1) /distance;
                             q->y2 = q->speed * (my.y1-q->y1) /distance;
                         }
@@ -455,7 +457,7 @@ bool Draw_plane_bullet(allegro n,int file_num)
             al_draw_pic(n.bitmap,img_x,img_y);
             al_draw_pic(n.bitmap,img_x,img_y-al_get_bitmap_height(n.bitmap));
             al_draw_pic(my.img,my.x1,my.y1);
-            al_draw_protect(my);
+            al_draw_protect(&my);
             al_draw_life(my);
             sprintf(num,"%4d",score);
             al_draw_text(n.font1,white,0.1*game_width,
@@ -524,14 +526,15 @@ bool Draw_plane_bullet(allegro n,int file_num)
         //mouse
         if(ev.mouse.x>0&&ev.mouse.x<game_width&&ev.mouse.y>0&&ev.mouse.y<game_height){
             if(Distance(my.x1,my.y1,ev.mouse.x,ev.mouse.y)>my.size)al_set_mouse_xy(n.display,my.x1,my.y1);
-            else{
-                my.x1=ev.mouse.x;
-                my.y1=ev.mouse.y;
-                if(ev.mouse.x<0.5*al_get_bitmap_width(my.img))my.x1=0.5*al_get_bitmap_width(my.img);
-                if(ev.mouse.y<0.5*al_get_bitmap_height(my.img))my.y1=0.5*al_get_bitmap_height(my.img);
-                if(ev.mouse.x>game_width-0.5*al_get_bitmap_width(my.img))my.x1=game_width-0.5*al_get_bitmap_width(my.img);
-                if(ev.mouse.y>game_height-0.5*al_get_bitmap_height(my.img))my.y1=game_height-0.5*al_get_bitmap_height(my.img);
-            }
+            my.x2=ev.mouse.x;
+            my.y2=ev.mouse.y;
+        }
+        if(my.x1!=my.x2||my.y1!=my.y2){
+            float distance = pow(pow((my.y2-my.y1),2)+pow((my.x2-my.x1),2),0.5);
+            float dx=my.speed * (my.x2-my.x1) /distance;
+            float dy=my.speed * (my.y2-my.y1) /distance;
+            my.x1+=dx;
+            my.y1+=dy;
         }
         //keyboard
         al_move(ev,&my,&k);
@@ -783,6 +786,8 @@ void al_move(ALLEGRO_EVENT ev, plane my,int *plane_num)
         my->y1-=my->speed;
         if(my->y1<0.5*my->size)my->y1=0.5*my->size;
     }
+    my->x2=my->x1;
+    my->y2=my->y1;
     *plane_num=k;
 }
 
@@ -810,14 +815,21 @@ int Distance(int x1,int y1,int x2,int y2)
     return pow(pow(x1-x2,2)+pow(y1-y2,2),0.5);
 }
 
-void al_draw_protect(Plane n)
+void al_draw_protect(plane n)
 {
-    ALLEGRO_BITMAP *p=NULL;
     if(effect_protection>0){
+        ALLEGRO_BITMAP *p=NULL;
         sprintf(num,"../UI/%d/buff_0/buff_%d.png",screen_width,effect_protection%60/6);
         p=al_load_bitmap(num);
-        al_draw_pic(p,n.x1,n.y1);
+        al_draw_pic(p,n->x1,n->y1);
         effect_protection--;
+        al_destroy_bitmap(p);
     }
-    al_destroy_bitmap(p);
+    if(effect_craze>0){
+        effect_craze--;
+    }
+    if(effect_speed>0){
+        n->speed=100;
+        effect_speed--;
+    }
 }
