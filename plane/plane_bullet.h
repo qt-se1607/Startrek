@@ -15,5 +15,8 @@ void al_draw_pic(ALLEGRO_BITMAP *,float ,float );
 void al_move(ALLEGRO_EVENT ,plane , int *);
 void al_draw_protect(Plane );
 void al_draw_list();
+void al_join_bullet(bullet *, Plane );
+void al_join_plane(plane  *, Plane );
+void al_join_buff(buff *);
 
 #endif // PLANE_BULLET_H

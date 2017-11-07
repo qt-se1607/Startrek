@@ -103,6 +103,5 @@ extern plane p;
 extern bullet q;
 extern buff r;
 extern int effect_protection;
-extern int effect_time;
 
 #endif // VARIATE_H

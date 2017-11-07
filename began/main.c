@@ -22,7 +22,7 @@ int main()
             screenflag=false;
             musicflag=true;
             volume_num=50.0;
-            number=1;
+            number=4;
             fp=open("../UI/setting/setting_R",O_CREAT|O_WRONLY);
             write(fp,&screenflag,sizeof(bool));
             write(fp,&number,sizeof(int));
