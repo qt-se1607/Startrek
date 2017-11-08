@@ -10,7 +10,7 @@ void Init_Bullet(bullet *,int );
 void Init_buff(buff *);
 void boom(plane ,plane *,buff *);
 int Rand(int ,int );
-int Distance(int ,int ,int ,int );
+float Distance(float ,float ,float ,float );
 void al_draw_pic(ALLEGRO_BITMAP *,float ,float );
 void al_move(ALLEGRO_EVENT ,plane , int *);
 void al_draw_protect(plane );

@@ -78,8 +78,6 @@ ALLEGRO_TRANSFORM transform;
 extern int score;
 extern int word_size;
 extern const float FPS;//帧数
-extern int plane_space;//飞机出现jian ge
-extern int bullet_space;//子弹出现时间
 extern int screen_width;//屏幕宽度
 extern int screen_height;//屏幕高度
 extern int score_width;//记分板宽度
@@ -105,5 +103,15 @@ extern buff r;
 extern int effect_protection;
 extern int effect_craze;
 extern int effect_speed;
+
+extern int plane_space;//飞机发射子弹间隔
+extern int enemy_space;//敌机出现间隔
+extern int bullet_space;//敌机发射子弹间隔
+extern int buff_space;//buff出现间隔
+
+extern int enemy_rate;
+extern int bullet_rate;
+extern int plane_rate;
+extern int buff_rate;
 
 #endif // VARIATE_H

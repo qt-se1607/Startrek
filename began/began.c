@@ -44,8 +44,8 @@ void al_draw_wait(allegro n,bool T,int form)
         al_wait_for_event(n.event_queue,&ev);
         if(ev.type==ALLEGRO_EVENT_TIMER)redraw=true;
         if(redraw&&al_is_event_queue_empty(n.event_queue)){
-            if(!T)i+=al_get_display_width(n.display)/FPS*3;
-            else i-=al_get_display_width(n.display)/FPS*3;
+            if(!T)i+=al_get_display_width(n.display)/FPS*5;
+            else i-=al_get_display_width(n.display)/FPS*5;
             if(form==1)al_draw_loadboard(n,al_get_display_width(n.display)-i,0);
             if(form==2)al_draw_listboard(n,al_get_display_width(n.display)-i,0);
             if(form==3)al_draw_settingboard(n,al_get_display_width(n.display)-i,0);
@@ -435,8 +435,21 @@ void al_setting(allegro n)
                 write(fd,&musicflag,sizeof(bool));
                 write(fd,&volume_num,sizeof(int));
                 close(fd);
+                break;
             }
-            if(set_back||save)break;
+            if(set_back){
+                int fd;
+                fd=open("../UI/setting/setting",O_RDONLY);
+                read(fd,&screenflag,sizeof(bool));
+                read(fd,&number,sizeof(int));
+                read(fd,&musicflag,sizeof(bool));
+                read(fd,&volume_num,sizeof(int));
+                close(fd);
+                al_stop_samples();
+                if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+                else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+                break;
+            }
             if(recover){
                 int fd;
                 fd=open("../UI/setting/setting_R",O_RDONLY);
@@ -589,7 +602,19 @@ void al_setting(allegro n)
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
                 al_draw_settingboard(n,0,0);
             }
-            if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP)break;
+            if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
+                int fd;
+                fd=open("../UI/setting/setting",O_RDONLY);
+                read(fd,&screenflag,sizeof(bool));
+                read(fd,&number,sizeof(int));
+                read(fd,&musicflag,sizeof(bool));
+                read(fd,&volume_num,sizeof(int));
+                close(fd);
+                al_stop_samples();
+                if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+                else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+                break;
+            }
         }
     }
     al_draw_wait(n,true,3);
