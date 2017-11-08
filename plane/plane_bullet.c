@@ -283,9 +283,11 @@ void al_join_plane(plane *n, Plane M)
 void al_join_buff(buff *n)
 {
     buff b=(buff)malloc(sizeof(Buff));
-    b->level = Rand(1,2);
+    b->level = Rand(1,4);
     if(b->level == 1)b->form = 2;
-    if(b->level== 2)b->form = 50;
+    if(b->level == 2)b->form = 50;
+    if(b->level == 3)b->form = 59;
+    if(b->level == 4)b->form = 38;
     b->live = true;
     b->next = NULL;
     sprintf(num,"../UI/%d/buff_%d/buff_0.png",screen_width,b->level);
@@ -355,8 +357,8 @@ bool Draw_plane_bullet(allegro n,int file_num)
         }
         my.speed=2*my.level;
         plane_space = game_height / (5 + 2 * my.level);
-        bullet_space = game_height / (5 + 2 * my.level);
-        buff_space = 500;
+        bullet_space = /*game_height / (5 + 2 * my.level)*/100;
+        buff_space = 100;
         ALLEGRO_EVENT ev;
         al_wait_for_event(n.event_queue,&ev);
         if(ev.type == ALLEGRO_EVENT_TIMER)redraw = true;
@@ -468,6 +470,8 @@ bool Draw_plane_bullet(allegro n,int file_num)
                     if(r->form<0){
                         if(r->level==1)r->form=29;
                         if(r->level==2)r->form=50;
+                        if(r->level==3)r->form=59;//the buff of 'S'
+                        if(r->level==4)r->form=38;
                     }
                     sprintf(num,"../UI/%d/buff_%d/buff_%d.png",screen_width,r->level,r->form/3);
                     if(r->img)al_destroy_bitmap(r->img);
