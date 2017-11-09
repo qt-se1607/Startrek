@@ -261,6 +261,14 @@ void al_archive(plane n, plane m,buff my_buff)
     int g=0;
     fp=open("../UI/load/load",O_CREAT|O_WRONLY);
     write(fp,&score,sizeof(int));
+    write(fp,&gate,sizeof(int));
+    write(fp,&effect_protection,sizeof(int));
+    write(fp,&effect_craze,sizeof(int));
+    write(fp,&effect_speed,sizeof(int));
+    write(fp,&plane_rate,sizeof(int));
+    write(fp,&enemy_rate,sizeof(int));
+    write(fp,&bullet_rate,sizeof(int));
+    write(fp,&buff_rate,sizeof(int));
     i=n->x1/game_width;
     write(fp,&i,sizeof(float));
     i=n->y1/game_height;
@@ -285,15 +293,12 @@ void al_archive(plane n, plane m,buff my_buff)
         write(fp,&i,sizeof(float));
         i=q->y1/game_height;
         write(fp,&i,sizeof(float));
-        i=q->x2/q->speed;
-        write(fp,&i,sizeof(float));
-        i=q->y2/q->speed;
-        write(fp,&i,sizeof(float));
+        write(fp,&q->x2,sizeof(float));
+        write(fp,&q->y2,sizeof(float));
+        write(fp,&q->speed,sizeof(float));
         write(fp,&q->attack,sizeof(int));
         write(fp,&q->form,sizeof(int));
         write(fp,&q->live,sizeof(bool));
-        sprintf(num,"bullet_1/bullet_0.png");
-        write(fp,num,sizeof(char)*MAXSIZE);
         q=q->next;
     }
     p=m;
@@ -330,12 +335,11 @@ void al_archive(plane n, plane m,buff my_buff)
             write(fp,&i,sizeof(float));
             i=q->y1/game_height;
             write(fp,&i,sizeof(float));
-            i=q->x2/q->speed;
-            write(fp,&i,sizeof(float));
-            i=q->y2/q->speed;
-            write(fp,&i,sizeof(float));
+            write(fp,&q->x2,sizeof(float));
+            write(fp,&q->y2,sizeof(float));
+            write(fp,&q->speed,sizeof(float));
             write(fp,&q->attack,sizeof(int));
-            write(fp,&q->form,sizeof(int));
+            write(fp,&p->level,sizeof(int));
             write(fp,&q->live,sizeof(bool));
             q=q->next;
         }
@@ -357,6 +361,7 @@ void al_archive(plane n, plane m,buff my_buff)
         write(fp,&r->x2,sizeof(float));
         write(fp,&r->y2,sizeof(float));
         write(fp,&r->speed,sizeof(float));
+        write(fp,&r->level,sizeof(int));
         write(fp,&r->form,sizeof(int));
         write(fp,&r->live,sizeof(bool));
         r=r->next;

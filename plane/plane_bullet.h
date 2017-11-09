@@ -7,7 +7,7 @@ void Init_Plane(plane ,int );
 bool Draw_plane_bullet(allegro ,int );
 void Init_enemyplane(plane *,int );
 void Init_Bullet(bullet *,int );
-void Init_buff(buff *);
+void Init_buff(buff *, int );
 void boom(allegro , plane , plane *, buff *);
 int Rand(int ,int );
 float Distance(float ,float ,float ,float );

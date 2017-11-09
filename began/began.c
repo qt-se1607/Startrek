@@ -425,6 +425,11 @@ void al_setting(allegro n)
             case ALLEGRO_KEY_RIGHT:key_right=false;break;
             case ALLEGRO_KEY_ENTER:key_enter=false;break;
             }
+            if(volume&&!key_right&&!key_left){
+                al_stop_samples();
+                if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+                else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+            }
         }
         if(key_enter){
             if(save){

@@ -115,4 +115,6 @@ extern int bullet_rate;
 extern int plane_rate;
 extern int buff_rate;
 
+extern int gate;
+
 #endif // VARIATE_H

@@ -12,8 +12,8 @@ int main(int argc,char *argv[])
     sscanf(argv[3],"%f",&volume_num);
     if(argv[4])sscanf(argv[4],"%d",&file_num);
     /*screenflag=false;
-    screen_width=1024;
-    screen_height=576;
+    screen_width=1600;
+    screen_height=900;
     volume_num=0;
     file_num=open("../UI/load/archive_1",O_RDONLY);*/
     srand((int)time(NULL));
