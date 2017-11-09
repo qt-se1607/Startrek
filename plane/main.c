@@ -36,6 +36,11 @@ int main(int argc,char *argv[])
         fprintf(stderr, "failed to create font2!\n");
         exit(1);
     }
+    n.bg=al_load_sample("../UI/music/gamebg0.wav");
+    if(!n.bg){
+        fprintf(stderr, "failed to create bg!\n");
+        exit(1);
+    }
     al_start_timer(n.timer);
     if(al_start_game(n)){
         if(al_join_game(n,file_num)){

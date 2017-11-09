@@ -318,6 +318,7 @@ void al_join_buff(buff *n)
 
 bool Draw_plane_bullet(allegro n,int file_num)
 {
+    al_stop_timer(n.timer);
     int k=0;
     img_x=0.5*game_width;
     img_y=game_height-0.5*al_get_bitmap_height(n.bitmap);
@@ -329,6 +330,8 @@ bool Draw_plane_bullet(allegro n,int file_num)
     Init_enemyplane(&enemy_plane,file_num);
     Init_buff(&my_buff);
     bool redraw = false;
+    al_play_sample(n.bg,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+    al_start_timer(n.timer);
     while(1){
         if(!my.live){
             p=enemy_plane;
@@ -503,7 +506,6 @@ bool Draw_plane_bullet(allegro n,int file_num)
             while(p){
                 if(p->blood==0&&p->live){
                     sprintf(num,"../UI/%d/boom_01/boom_%d.png",screen_width,p->form/10);
-
                     if(p->img)al_destroy_bitmap(p->img);
                     p->img=al_load_bitmap(num);
                     al_draw_pic(p->img,p->x1,p->y1);
@@ -530,14 +532,19 @@ bool Draw_plane_bullet(allegro n,int file_num)
         //飞机移动
         //mouse
         if(ev.mouse.x>0&&ev.mouse.x<game_width&&ev.mouse.y>0&&ev.mouse.y<game_height){
-            if(Distance(my.x1,my.y1,ev.mouse.x,ev.mouse.y)>my.size)al_set_mouse_xy(n.display,my.x1,my.y1);
+            if(Distance(my.x1,my.y1,ev.mouse.x,ev.mouse.y)>my.size){
+                float distance = pow(pow((ev.mouse.y-my.y1),2)+pow((ev.mouse.x-my.x1),2),0.5);
+                float dx=my.size*(ev.mouse.x-my.x1) /distance;
+                float dy=my.size*(ev.mouse.y-my.y1) /distance;
+                al_set_mouse_xy(n.display,my.x1+dx,my.y1+dy);
+            }
             my.x2=ev.mouse.x;
             my.y2=ev.mouse.y;
         }
         if(my.x1!=my.x2||my.y1!=my.y2){
             float distance = pow(pow((my.y2-my.y1),2)+pow((my.x2-my.x1),2),0.5);
-            float dx=my.speed * (my.x2-my.x1) /distance;
-            float dy=my.speed * (my.y2-my.y1) /distance;
+            float dx=2*my.speed * (my.x2-my.x1) /distance;
+            float dy=2*my.speed * (my.y2-my.y1) /distance;
             my.x1+=dx;
             my.y1+=dy;
         }
@@ -806,6 +813,7 @@ int Rand(int low,int high)
 
 void al_draw_pic(ALLEGRO_BITMAP *n,float x,float y)
 {
+    ALLEGRO_TRANSFORM transform;
     al_identity_transform(&transform);
     al_translate_transform(&transform,x-0.5*al_get_bitmap_width(n),y-0.5*al_get_bitmap_height(n));
     al_use_transform(&transform);
@@ -831,11 +839,11 @@ void al_draw_protect(plane n)
         al_destroy_bitmap(p);
     }
     if(effect_craze>0){
-        plane_rate+=2;
+        plane_rate+=20;
         effect_craze--;
     }
     if(effect_speed>0){
-        n->speed=2*n->speed;
+        n->speed=4*n->speed;
         effect_speed--;
         if(effect_speed==0)n->speed=n->speed/2;
     }

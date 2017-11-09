@@ -26,7 +26,7 @@ typedef struct MY_ALLEGRO{
     ALLEGRO_FONT *font1;
     ALLEGRO_FONT *font2;
     ALLEGRO_BITMAP *bitmap;
-    ALLEGRO_TRANSFORM transform;
+    ALLEGRO_SAMPLE *bg;
 }allegro;
 
 typedef struct MY_BULLET{//子弹
@@ -44,7 +44,6 @@ typedef struct MY_BULLET{//子弹
 
 typedef struct MY_PLANE{//飞机
     ALLEGRO_BITMAP *img;
-    ALLEGRO_SAMPLE *audio_crashed;
     float x1;
     float y1;
     float x2;
@@ -62,7 +61,6 @@ typedef struct MY_PLANE{//飞机
 
 typedef struct MY_BUFF{
     ALLEGRO_BITMAP *img;
-    ALLEGRO_SAMPLE *audio_eaten;
     float x1;
     float y1;
     float x2;
@@ -74,8 +72,6 @@ typedef struct MY_BUFF{
     int level;
     struct MY_BUFF *next;
 }Buff,*buff;
-
-ALLEGRO_TRANSFORM transform;
 
 extern int score;
 extern int word_size;

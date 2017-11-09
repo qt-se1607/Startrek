@@ -14,8 +14,8 @@ int img_y=0;
 void Init_Allegro()
 {
     if(!al_init()){
-        fprintf(stderr, "failed to initialize allegro!\n");
-        exit(1);
+       fprintf(stderr, "failed to initialize allegro!\n");
+       exit(1);
     }
     if(!al_install_mouse()){
         printf("failed to initialize the mouse\n");
@@ -39,11 +39,15 @@ void Init_Allegro()
         exit(1);
     }
     if(!al_install_audio()){
-        fprintf(stderr,"Failed to initialize audio!");
+        fprintf(stderr,"Failed to initialize al_install_audio!");
         exit(1);
     }
     if(!al_init_acodec_addon()){
-        fprintf(stderr,"Failed to initialize audio codecs!");
+        fprintf(stderr,"Failed to initialize al_init_acodec_addon!");
+        exit(1);
+    }
+    if(!al_reserve_samples(100)){
+        fprintf(stderr,"Failed to initialize al_reserve_samples!");
         exit(1);
     }
 }
@@ -64,10 +68,6 @@ void Init_Queue(allegro *n)
     al_register_event_source(n->event_queue,al_get_timer_event_source(n->timer));
     al_register_event_source(n->event_queue,al_get_mouse_event_source());
     al_register_event_source(n->event_queue,al_get_keyboard_event_source());
-}
-void Init_Audio(allegro *n)
-{
-
 }
 
 void Init_Display(allegro *n)

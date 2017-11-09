@@ -7,9 +7,13 @@ bool set_back = false;
 
 bool al_start_game(allegro n)
 {
+    al_stop_timer(n.timer);
     ALLEGRO_BITMAP *p=NULL,*q=NULL;
+    ALLEGRO_SAMPLE *music=NULL;
+    music=al_load_sample("../UI/music/time.wav");
     bool redraw=false;
     int i=85,bg_num=0,time_num=3;
+    al_start_timer(n.timer);
     while(1){
         ALLEGRO_EVENT ev;
         al_wait_for_event(n.event_queue,&ev);
@@ -19,6 +23,7 @@ bool al_start_game(allegro n)
                 al_clear_to_color(black);
                 sprintf(num,"%d",time_num--);
                 al_draw_text(n.font2,white,0.5*game_width,0.5*game_height-150,ALLEGRO_ALIGN_CENTER,num);
+                al_play_sample(music,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
                 i=0;
                 bg_num=0;
             }
@@ -41,6 +46,7 @@ bool al_start_game(allegro n)
             redraw=false;
         }
     }
+    al_destroy_sample(music);
     al_destroy_bitmap(p);
     return true;
 }
@@ -63,9 +69,12 @@ bool al_end_game(allegro n)
 
 void al_pause(allegro n,plane my,plane enemy,buff my_buff)
 {
+    al_stop_samples();
+    al_stop_timer(n.timer);
     int checkout = 0.3 *FPS;
     int git = 3*checkout;
     bool redraw=false;
+    al_start_timer(n.timer);
     while(1){
         ALLEGRO_EVENT ev;
         al_wait_for_event(n.event_queue,&ev);
@@ -242,6 +251,7 @@ void al_pause(allegro n,plane my,plane enemy,buff my_buff)
             }
         }
     }
+    al_play_sample(n.bg,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
 }
 
 void al_archive(plane n, plane m,buff my_buff)
