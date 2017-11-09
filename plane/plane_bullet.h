@@ -8,7 +8,7 @@ bool Draw_plane_bullet(allegro ,int );
 void Init_enemyplane(plane *,int );
 void Init_Bullet(bullet *,int );
 void Init_buff(buff *);
-void boom(plane ,plane *,buff *);
+void boom(allegro , plane , plane *, buff *);
 int Rand(int ,int );
 float Distance(float ,float ,float ,float );
 void al_draw_pic(ALLEGRO_BITMAP *,float ,float );

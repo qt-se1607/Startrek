@@ -91,7 +91,7 @@ void Init_Plane(plane n,int file_num)
         Init_Bullet(&n->bull,file_num);
     }
     else{
-        n->level = 1;
+        n->level = 2;
         n->blood = 10;
         n->live = true;
         sprintf(num,"../UI/%d/plane_01/plane_0.png",screen_width);
@@ -222,7 +222,7 @@ void al_join_bullet(bullet *n, Plane M)
     m->next=NULL;
     m->attack = M.level/3+1;
     m->form = 0;
-    m->x1=M.x1-0.4*al_get_bitmap_width(M.img);
+    m->x1=M.x1;
     m->y1=M.y1;
     m->x2=0;
     m->y2=0;
@@ -265,10 +265,10 @@ void al_join_plane(plane *n, Plane M)
         m->x2 = 0;
         m->y2 = m->speed;
     }
-    else if(m->level >3 && m->level<=8){
+    else if(m->level<=8){
         float distance=Distance(m->x1,m->y1,M.x1,M.y1);
-        m->x2=m->speed*(m->x1-M.x1)/distance;
-        m->y2=m->speed*(m->y1-M.y1)/distance;
+        m->x2=m->speed*(M.x1-m->x1)/distance;
+        m->y2=m->speed*(M.y1-m->y1)/distance;
     }
     else if(m->level==9){
         m->x2=1;
@@ -372,9 +372,18 @@ bool Draw_plane_bullet(allegro n,int file_num)
         if(redraw && al_is_event_queue_empty(n.event_queue)){
             //加入子弹
             if(plane_rate>=plane_space&&my.live){
-                al_join_bullet(&my.bull,my);
-                sprintf(num,"../UI/%d/bullet_1/bullet_0.png",screen_width);
-                q->img = al_load_bitmap(num);
+                //al_play_sample(n.biu,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
+                for(int i=0;i<my.level;i++){
+                    al_join_bullet(&my.bull,my);
+                    sprintf(num,"../UI/%d/bullet_1/bullet_%d.png",screen_width,i%2);
+                    q->img = al_load_bitmap(num);
+                    if(my.level==1)q->y1-=0.5*al_get_bitmap_height(my.img);
+                    if(my.level>1){
+                        if(i==0)q->x1-=0.4*al_get_bitmap_width(my.img);
+                        if(i==1)q->x1+=0.4*al_get_bitmap_width(my.img);
+                        if(i==2)q->y1-=0.5*al_get_bitmap_height(my.img);
+                    }
+                }
                 plane_rate=0;
             }
             //加入敌方飞机
@@ -385,9 +394,9 @@ bool Draw_plane_bullet(allegro n,int file_num)
             if(bullet_rate>=bullet_space){
                 p=enemy_plane;
                 while(p){
-                    if(p->blood!=0&&p->live){
+                    if(p->blood!=0&&p->live&&p->level!=0){
                         al_join_bullet(&p->bull,*p);
-                        sprintf(num,"../UI/%d/enemy/b%d.png",screen_width,q->attack);
+                        sprintf(num,"../UI/%d/enemy/b%d.png",screen_width,p->level);
                         q->img = al_load_bitmap(num);
                         if(p->level<2){
                             q->x2 = 0;
@@ -438,14 +447,7 @@ bool Draw_plane_bullet(allegro n,int file_num)
             }
             q=my.bull;
             while(q){
-                if(q->live){
-                    q->y1-=q->speed;
-                    sprintf(num,"../UI/%d/bullet_1/bullet_%d.png",screen_width,q->form/5);
-                    if(q->img)al_destroy_bitmap(q->img);
-                    q->img=al_load_bitmap(num);
-                    q->form++;
-                    if(q->form>74)q->form=5;
-                }
+                if(q->live)q->y1-=q->speed;
                 q=q->next;
             }
             r=my_buff;
@@ -460,7 +462,7 @@ bool Draw_plane_bullet(allegro n,int file_num)
             if(img_y>game_height+0.5*al_get_bitmap_height(n.bitmap))img_y=game_height-0.5*al_get_bitmap_height(n.bitmap);
 
             //判断事件
-            boom(&my,&enemy_plane,&my_buff);
+            boom(n,&my,&enemy_plane,&my_buff);
             //显示
             al_draw_pic(n.bitmap,img_x,img_y);
             al_draw_pic(n.bitmap,img_x,img_y-al_get_bitmap_height(n.bitmap));
@@ -505,6 +507,7 @@ bool Draw_plane_bullet(allegro n,int file_num)
             p=enemy_plane;
             while(p){
                 if(p->blood==0&&p->live){
+                    if(p->form==39)al_play_sample(n.shoot,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
                     sprintf(num,"../UI/%d/boom_01/boom_%d.png",screen_width,p->form/10);
                     if(p->img)al_destroy_bitmap(p->img);
                     p->img=al_load_bitmap(num);
@@ -554,7 +557,7 @@ bool Draw_plane_bullet(allegro n,int file_num)
     return true;
 }
 
-void boom(plane n,plane *m,buff *b)
+void boom(allegro music,plane n,plane *m,buff *b)
 {
     p=*m;
     while(p){
@@ -645,6 +648,7 @@ void boom(plane n,plane *m,buff *b)
         while(r){
             if(r->live){
                 if(Distance(n->x1,n->y1,r->x1,r->y1)<0.4*(r->size+n->size)){
+                    al_play_sample(music.effect,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
                     if(r->level==1&&n->blood<10)n->blood++;
                     if(r->level == 2)effect_protection =360;
                     if(r->level==3)effect_craze=360;

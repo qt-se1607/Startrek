@@ -27,6 +27,9 @@ typedef struct MY_ALLEGRO{
     ALLEGRO_FONT *font2;
     ALLEGRO_BITMAP *bitmap;
     ALLEGRO_SAMPLE *bg;
+    ALLEGRO_SAMPLE *shoot;
+    ALLEGRO_SAMPLE *effect;
+    ALLEGRO_SAMPLE *biu;
 }allegro;
 
 typedef struct MY_BULLET{//子弹

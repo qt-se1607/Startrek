@@ -317,8 +317,6 @@ void al_archive(plane n, plane m,buff my_buff)
         write(fp,&p->blood,sizeof(int));
         write(fp,&p->form,sizeof(int));
         write(fp,&p->live,sizeof(bool));
-        sprintf(num,"enemy/enemy%d.png",p->level);
-        write(fp,num,sizeof(char)*MAXSIZE);
         q=p->bull;
         g=0;
         while(q){
@@ -339,8 +337,6 @@ void al_archive(plane n, plane m,buff my_buff)
             write(fp,&q->attack,sizeof(int));
             write(fp,&q->form,sizeof(int));
             write(fp,&q->live,sizeof(bool));
-            sprintf(num,"enemy/b1.png");
-            write(fp,num,sizeof(char)*MAXSIZE);
             q=q->next;
         }
         p=p->next;

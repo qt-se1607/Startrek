@@ -41,6 +41,21 @@ int main(int argc,char *argv[])
         fprintf(stderr, "failed to create bg!\n");
         exit(1);
     }
+    n.shoot=al_load_sample("../UI/music/shoot.wav");
+    if(!n.shoot){
+        fprintf(stderr, "failed to create shoot!\n");
+        exit(1);
+    }
+    n.effect=al_load_sample("../UI/music/effect.wav");
+    if(!n.effect){
+        fprintf(stderr, "failed to create effect!\n");
+        exit(1);
+    }
+    n.biu=al_load_sample("../UI/music/touch.wav");
+    if(!n.biu){
+        fprintf(stderr, "failed to create biu!\n");
+        exit(1);
+    }
     al_start_timer(n.timer);
     if(al_start_game(n)){
         if(al_join_game(n,file_num)){

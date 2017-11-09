@@ -60,6 +60,10 @@ void Destroy_Allegro(allegro *n)
     al_destroy_font(n->font1);
     al_destroy_font(n->font2);
     al_destroy_bitmap(n->bitmap);
+    al_destroy_sample(n->bg);
+    al_destroy_sample(n->shoot);
+    al_destroy_sample(n->effect);
+    al_destroy_sample(n->biu);
 }
 
 void Init_Queue(allegro *n)
