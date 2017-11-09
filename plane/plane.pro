@@ -21,6 +21,7 @@ LIBS+=-L/usr/lib -lallegro_physfs
 LIBS+=-L/usr/lib -lallegro_primitives
 LIBS+=-L/usr/lib -lallegro_ttf
 LIBS+=-L/usr/lib -lallegro_video
+LIBS+=-L/usr/lib -lallegro_audio
 
 HEADERS += \
     color.h \

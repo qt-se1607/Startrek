@@ -12,7 +12,7 @@ int main()
     n.bitmap3 = al_load_bitmap("../UI/list/bg.jpg");
     n.bitmap4=al_load_bitmap("../UI/load/bg.jpg");
     n.sample1=al_load_sample("../UI/music/music1.wav");
-    n.sample2=al_load_sample("../UI/music/music2.wav");
+    n.sample2=al_load_sample("../UI/music/start_options.ogg");
     bool event_timer = false;
     int checkout = 0.3*FPS;
     int git = checkout;

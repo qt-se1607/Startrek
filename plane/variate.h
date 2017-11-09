@@ -44,6 +44,7 @@ typedef struct MY_BULLET{//子弹
 
 typedef struct MY_PLANE{//飞机
     ALLEGRO_BITMAP *img;
+    ALLEGRO_SAMPLE *audio_crashed;
     float x1;
     float y1;
     float x2;
@@ -61,6 +62,7 @@ typedef struct MY_PLANE{//飞机
 
 typedef struct MY_BUFF{
     ALLEGRO_BITMAP *img;
+    ALLEGRO_SAMPLE *audio_eaten;
     float x1;
     float y1;
     float x2;

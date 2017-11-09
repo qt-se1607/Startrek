@@ -503,6 +503,7 @@ bool Draw_plane_bullet(allegro n,int file_num)
             while(p){
                 if(p->blood==0&&p->live){
                     sprintf(num,"../UI/%d/boom_01/boom_%d.png",screen_width,p->form/10);
+
                     if(p->img)al_destroy_bitmap(p->img);
                     p->img=al_load_bitmap(num);
                     al_draw_pic(p->img,p->x1,p->y1);
