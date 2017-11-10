@@ -10,6 +10,6 @@ void al_pause(allegro ,plane ,plane ,buff );
 void al_draw_pauseboard(allegro );
 bool judge_in(ALLEGRO_EVENT ,int ,int ,int ,int );
 void al_archive(plane ,plane ,buff );
-void al_draw_life(Plane );
+void al_draw_life(allegro , Plane );
 
 #endif // GAME_H

@@ -419,32 +419,13 @@ bool judge_in(ALLEGRO_EVENT ev, int x1, int y1, int x2, int y2)
     return true;
 }
 
-void al_draw_life(Plane n)
+void al_draw_life(allegro n,Plane m)
 {
-    Bullet life;
-    life.img = al_load_bitmap("../UI/1920/life/life.png");
-    life.x1 = 0.02*game_width;
-    life.y1 = 0.12*game_height;
-    life.x2 = 70;
-    life.y2 = 0;
-    for(int i = 0;i<n.blood;i++)
-    {
-        if(i == 5)
-        {
-            life.x1 = 0.02*game_width;
-            life.y1 = 0.18*game_height;
-        }
-        if(i >= 5){
-            al_draw_pic(life.img,life.x1,life.y1);
-            life.x1 += life.x2;
-            life.y1 += life.y2;
-        }
-        else
-        {
-            al_draw_pic(life.img,life.x1,life.y1);
-            life.x1 += life.x2;
-            life.y1 += life.y2;
-        }
-    }
-
+    ALLEGRO_BITMAP *life;
+    life = al_load_bitmap("../UI/1920/life/life.png");
+    for(int i = 0;i<m.blood;i++)
+        al_draw_pic(life,al_get_bitmap_width(life)*(i%5+1),al_get_bitmap_height(life)*(i/5+1));
+    sprintf(num,"%-10d",score);
+    al_draw_text(n.font1,white,al_get_bitmap_width(life)*5,al_get_bitmap_height(life)*3,ALLEGRO_ALIGN_RIGHT,num);
+    al_destroy_bitmap(life);
 }
