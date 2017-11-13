@@ -421,11 +421,12 @@ bool judge_in(ALLEGRO_EVENT ev, int x1, int y1, int x2, int y2)
 
 void al_draw_life(allegro n,Plane m)
 {
-    ALLEGRO_BITMAP *life;
-    life = al_load_bitmap("../UI/1920/life/life.png");
+    ALLEGRO_BITMAP *life = NULL;
+    sprintf(num,"../UI/%d/life/life.png",screen_width);
+    life = al_load_bitmap(num);
     for(int i = 0;i<m.blood;i++)
         al_draw_pic(life,al_get_bitmap_width(life)*(i%5+1),al_get_bitmap_height(life)*(i/5+1));
-    sprintf(num,"%-10d",score);
+    sprintf(num,"%10d",score);
     al_draw_text(n.font1,white,al_get_bitmap_width(life)*5,al_get_bitmap_height(life)*3,ALLEGRO_ALIGN_RIGHT,num);
     al_destroy_bitmap(life);
 }
