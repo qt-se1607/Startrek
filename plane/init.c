@@ -14,8 +14,8 @@ int img_y=0;
 void Init_Allegro()
 {
     if(!al_init()){
-       fprintf(stderr, "failed to initialize allegro!\n");
-       exit(1);
+        fprintf(stderr, "failed to initialize allegro!\n");
+        exit(1);
     }
     if(!al_install_mouse()){
         printf("failed to initialize the mouse\n");

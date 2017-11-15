@@ -414,15 +414,17 @@ bool Draw_plane_bullet(allegro n,int file_num)
                         al_join_bullet(&p->bull,*p);
                         sprintf(num,"../UI/%d/enemy/b%d.png",screen_width,p->level);
                         q->img = al_load_bitmap(num);
-                        q->y1+=0.5*al_get_bitmap_height(p->img);
                         if(p->level<2){
                             q->x2 = 0;
                             q->y2 = q->speed;
+                            q->y1+=0.5*al_get_bitmap_height(p->img);
                         }
                         else{
                             float distance = pow(pow((q->y1-my.y1),2)+pow((q->x1-my.x1),2),0.5);
                             q->x2 = q->speed * (my.x1-q->x1) /distance;
                             q->y2 = q->speed * (my.y1-q->y1) /distance;
+                            q->y1+=0.5*al_get_bitmap_height(p->img)* (my.y1-q->y1) /distance;
+                            q->x1+=0.5*al_get_bitmap_width(p->img)* (my.x1-q->x1) /distance;
                         }
                     }
                     p=p->next;

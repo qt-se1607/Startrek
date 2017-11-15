@@ -206,7 +206,7 @@ int main()
             }
         }
         if(judge_in(ev,0.35*game_width,0.63*game_height,0.65*game_width,0.73*game_height)){
-           git=3*checkout;
+            git=3*checkout;
             if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
                 al_draw_startboard(n,0,0);
             }

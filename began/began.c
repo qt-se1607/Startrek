@@ -326,13 +326,13 @@ void al_draw_loadboard(allegro n,int x,int y)
     if(load_back){
         al_draw_filled_rounded_rectangle(x+0.35*game_width,y+0.85*game_height-0.1*word_size,
                                          x+0.65*game_width,y+0.85*game_height+1.1*word_size,
-                                                 0.2*word_size,0.2*word_size,white);
+                                         0.2*word_size,0.2*word_size,white);
         al_draw_text(n.font1,black,x+0.5*game_width,y+0.85*game_height,ALLEGRO_ALIGN_CENTER,"返      回");
     }
     else{
         al_draw_filled_rounded_rectangle(x+0.35*game_width,y+0.85*game_height-0.1*word_size,
                                          x+0.65*game_width,y+0.85*game_height+1.1*word_size,
-                                                 0.2*word_size,0.2*word_size,black);
+                                         0.2*word_size,0.2*word_size,black);
         al_draw_text(n.font1,white,x+0.5*game_width,y+0.85*game_height,ALLEGRO_ALIGN_CENTER,"返      回");
     }
     int fd;
@@ -671,7 +671,7 @@ void al_draw_settingboard(allegro n,int x,int y)
     //save
     if(save)al_draw_filled_rounded_rectangle(x+0.4*game_width,y+0.65*game_height-0.1*word_size,
                                              x+0.6*game_width,y+0.65*game_height+1.1*word_size,
-                                     0.2*word_size,0.2*word_size,blue_manganic);
+                                             0.2*word_size,0.2*word_size,blue_manganic);
     al_draw_text(n.font1,white,x+0.5*game_width,y+0.65*game_height,ALLEGRO_ALIGN_CENTER,"保存并返回");
 
     //recover
