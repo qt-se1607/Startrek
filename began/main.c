@@ -146,8 +146,6 @@ int main()
             else if(setting){
                 al_setting(n);
                 al_draw_startboard(n,0,0);
-                if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
-                else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
             }
             else if(quit)break;
         }

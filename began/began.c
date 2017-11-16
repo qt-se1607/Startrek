@@ -418,17 +418,22 @@ void al_setting(allegro n)
             if(key_up)git=git-i+checkout;
             if(key_down)git-=i;
             if(git>=8*checkout)git=checkout;
+            if(volume&&(key_right||key_left))al_stop_samples();
             switch(ev.keyboard.keycode){
             case ALLEGRO_KEY_UP:key_up=false;break;
             case ALLEGRO_KEY_DOWN:key_down=false;break;
-            case ALLEGRO_KEY_LEFT:key_left=false;break;
-            case ALLEGRO_KEY_RIGHT:key_right=false;break;
+            case ALLEGRO_KEY_LEFT:
+                if(volume){
+                    if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+                    else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+                };
+                key_left=false;break;
+            case ALLEGRO_KEY_RIGHT:
+                if(volume){
+                    if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+                    else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+                };key_right=false;break;
             case ALLEGRO_KEY_ENTER:key_enter=false;break;
-            }
-            if(volume&&!key_right&&!key_left){
-                al_stop_samples();
-                if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
-                else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
             }
         }
         if(key_enter){
@@ -599,6 +604,9 @@ void al_setting(allegro n)
                 write(fd,&musicflag,sizeof(bool));
                 write(fd,&volume_num,sizeof(int));
                 close(fd);
+                al_stop_samples();
+                if(musicflag)al_play_sample(n.sample2,volume_num/100.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+                else al_play_sample(n.sample2,0.0,0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
             }
         }
         //set_back
