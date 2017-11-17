@@ -1,4 +1,8 @@
-#include "variate.h"
+#include"allegro.h"
+#include"began.h"
+#include"variate.h"
+
+circle click=NULL;
 
 int main()
 {
@@ -149,7 +153,8 @@ int main()
             }
             else if(quit)break;
         }
-        if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP||ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
+        if(ev.type==ALLEGRO_EVENT_MOUSE_BUTTON_UP){
+            if(musicflag)al_play_sample(n.sample1,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
             circle p=click;
             if(!p){
                 click=(circle)malloc(sizeof(Circle));
@@ -162,11 +167,12 @@ int main()
             else{
                 while(p->next)p=p->next;
                 p->next=(circle)malloc(sizeof(Circle));
-                p->next->x=ev.mouse.x;
-                p->next->y=ev.mouse.y;
-                p->next->size=1;
+                p=p->next;
+                p->x=ev.mouse.x;
+                p->y=ev.mouse.y;
+                p->size=1;
                 p->color=al_map_rgb(Rand(0,255),Rand(0,255),Rand(0,255));
-                p->next->next=NULL;
+                p->next=NULL;
             }
         }
         circle p1=click;

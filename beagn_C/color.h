@@ -1,3 +1,6 @@
+#ifndef COLOR_H
+#define COLOR_H
+
 /*
  * #define green al_map_rgb(0,255,0)//绿色
  * #define yellow al_map_rgb(255,255,0)//黄色
@@ -52,3 +55,5 @@
 #define purple_simple al_map_rgb(218,112,214)//淡紫色
 #define purple_violet al_map_rgb(138,43,226)//紫罗兰
 #define purple_lavender al_map_rgb(153,51,250)//胡紫色
+
+#endif // COLOR_H

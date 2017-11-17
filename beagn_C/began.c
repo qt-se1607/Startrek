@@ -1,4 +1,5 @@
-#include "variate.h"
+#include "began.h"
+#include"allegro.h"
 
 bool key_enter=false;
 bool key_up=false;
@@ -11,8 +12,8 @@ bool load=false;
 bool list=false;
 bool setting=false;
 bool quit=false;
-bool screenflag=false;//全屏标志
-bool musicflag=true;//音乐标志
+bool screenflag=false;
+bool musicflag=true;
 bool screen=false;
 bool resolution=false;
 bool music=false;
@@ -31,7 +32,6 @@ bool load_back=false;
 int list_num=7;
 char num[MAXSIZE];
 int number=0;
-circle click=NULL;
 
 void al_draw_wait(allegro n,bool T,int form)
 {
@@ -132,20 +132,76 @@ void al_load(allegro n,bool score)
             al_draw_loadboard(n,0,0);
             event_timer=false;
         }
-        archive_1=false;
-        archive_2=false;
-        archive_3=false;
-        archive_4=false;
-        archive_5=false;
-        archive_6=false;
-        load_back=false;
-        if(git>=7*checkout)load_back=true;
-        else if(git>=6*checkout)archive_6=true;
-        else if(git>=5*checkout)archive_5=true;
-        else if(git>=4*checkout)archive_4=true;
-        else if(git>=3*checkout)archive_3=true;
-        else if(git>=2*checkout)archive_2=true;
-        else if(git>=1*checkout)archive_1=true;
+        if(git>=7*checkout){
+            if(!load_back&&musicflag)al_play_sample(n.sample1,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
+            load_back=true;
+            archive_1=false;
+            archive_2=false;
+            archive_3=false;
+            archive_4=false;
+            archive_5=false;
+            archive_6=false;
+        }
+        else if(git>=6*checkout){
+            if(!archive_6&&musicflag)al_play_sample(n.sample1,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
+            archive_6=true;
+            archive_1=false;
+            archive_2=false;
+            archive_3=false;
+            archive_4=false;
+            archive_5=false;
+            load_back=false;
+        }
+        else if(git>=5*checkout){
+            if(!archive_5&&musicflag)al_play_sample(n.sample1,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
+            archive_5=true;
+            archive_1=false;
+            archive_2=false;
+            archive_3=false;
+            archive_4=false;
+            archive_6=false;
+            load_back=false;
+        }
+        else if(git>=4*checkout){
+            if(!archive_4&&musicflag)al_play_sample(n.sample1,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
+            archive_4=true;
+            archive_1=false;
+            archive_2=false;
+            archive_3=false;
+            archive_5=false;
+            archive_6=false;
+            load_back=false;
+        }
+        else if(git>=3*checkout){
+            if(!archive_3&&musicflag)al_play_sample(n.sample1,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
+            archive_3=true;
+            archive_1=false;
+            archive_2=false;
+            archive_4=false;
+            archive_5=false;
+            archive_6=false;
+            load_back=false;
+        }
+        else if(git>=2*checkout){
+            if(!archive_2&&musicflag)al_play_sample(n.sample1,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
+            archive_2=true;
+            archive_1=false;
+            archive_3=false;
+            archive_4=false;
+            archive_5=false;
+            archive_6=false;
+            load_back=false;
+        }
+        else if(git>=1*checkout){
+            if(!archive_1&&musicflag)al_play_sample(n.sample1,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
+            archive_1=true;
+            archive_2=false;
+            archive_3=false;
+            archive_4=false;
+            archive_5=false;
+            archive_6=false;
+            load_back=false;
+        }
         if(ev.type == ALLEGRO_EVENT_KEY_DOWN){
             switch(ev.keyboard.keycode){
             case ALLEGRO_KEY_UP:key_up=true;break;
@@ -390,20 +446,76 @@ void al_setting(allegro n)
             al_draw_settingboard(n,0,0);
             event_timer=false;
         }
-        screen=false;
-        resolution=false;
-        music=false;
-        volume=false;
-        save=false;
-        set_back=false;
-        recover=false;
-        if(git>=7*checkout)screen=true;
-        else if(git>=6*checkout)resolution=true;
-        else if(git>=5*checkout)music=true;
-        else if(git>=4*checkout)volume=true;
-        else if(git>=3*checkout)save=true;
-        else if(git>=2*checkout)recover=true;
-        else if(git>=checkout)set_back=true;
+        if(git>=7*checkout){
+            if(!screen&&musicflag)al_play_sample(n.sample1,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
+            screen=true;
+            resolution=false;
+            music=false;
+            volume=false;
+            save=false;
+            set_back=false;
+            recover=false;
+        }
+        else if(git>=6*checkout){
+            if(!resolution&&musicflag)al_play_sample(n.sample1,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
+            resolution=true;
+            screen=false;
+            music=false;
+            volume=false;
+            save=false;
+            set_back=false;
+            recover=false;
+        }
+        else if(git>=5*checkout){
+            if(!music&&musicflag)al_play_sample(n.sample1,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
+            music=true;
+            screen=false;
+            resolution=false;
+            volume=false;
+            save=false;
+            set_back=false;
+            recover=false;
+        }
+        else if(git>=4*checkout){
+            if(!volume&&musicflag)al_play_sample(n.sample1,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
+            volume=true;
+            screen=false;
+            resolution=false;
+            music=false;
+            save=false;
+            set_back=false;
+            recover=false;
+        }
+        else if(git>=3*checkout){
+            if(!save&&musicflag)al_play_sample(n.sample1,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
+            save=true;
+            screen=false;
+            resolution=false;
+            music=false;
+            volume=false;
+            set_back=false;
+            recover=false;
+        }
+        else if(git>=2*checkout){
+            if(!recover&&musicflag)al_play_sample(n.sample1,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
+            recover=true;
+            screen=false;
+            resolution=false;
+            music=false;
+            volume=false;
+            save=false;
+            set_back=false;
+        }
+        else if(git>=checkout){
+            if(!set_back&&musicflag)al_play_sample(n.sample1,volume_num/100,0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
+            set_back=true;
+            screen=false;
+            resolution=false;
+            music=false;
+            volume=false;
+            save=false;
+            recover=false;
+        }
         if(ev.type == ALLEGRO_EVENT_KEY_DOWN){
             switch(ev.keyboard.keycode){
             case ALLEGRO_KEY_UP:key_up=true;break;
@@ -699,7 +811,8 @@ void al_draw_settingboard(allegro n,int x,int y)
 
 void al_draw_startboard(allegro n,int x,int y)
 {
-    ALLEGRO_BITMAP *c1,*c2;
+    ALLEGRO_BITMAP *c1,*c2,*c3;
+    c3=al_load_bitmap("../UI/welcome/c3.png");
     c2=al_load_bitmap("../UI/welcome/c1.png");
     c1=al_load_bitmap("../UI/welcome/c2.png");
     al_draw_bitmap(n.bitmap1,x,y,0);
@@ -709,6 +822,7 @@ void al_draw_startboard(allegro n,int x,int y)
         p->size+=6;
         p=p->next;
     }
+    al_draw_bitmap(c3,x+0.5*(game_width-al_get_bitmap_width(c3)),y+0.5*al_get_bitmap_height(c3),0);
     //start
     if(!start){
         al_draw_bitmap(c1,x+0.5*(game_width-al_get_bitmap_width(c1)),y+0.41*game_height,0);
@@ -757,6 +871,7 @@ void al_draw_startboard(allegro n,int x,int y)
     al_flip_display();
     al_destroy_bitmap(c1);
     al_destroy_bitmap(c2);
+    al_destroy_bitmap(c3);
 }
 
 void al_list(allegro n)

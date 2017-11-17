@@ -4,7 +4,7 @@ int word_size=0;//文字大小
 float FPS=120;//帧数
 int game_width=0;//游戏屏幕宽度
 int game_height=0;//游戏屏幕高度
-int img_x=0;
+int img_x=0;//屏幕大小
 int img_y=0;
 
 void Init_Allegro(allegro *n)
@@ -46,6 +46,7 @@ void Init_Allegro(allegro *n)
         fprintf(stderr,"Failed to initialize al_reserve_samples!");
         exit(1);
     }
+    al_get_display_mode(0,&(n->display_date));
 }
 
 void Destroy_Allegro(allegro *n)
@@ -126,7 +127,7 @@ void Init_Display(allegro *n)
     Init_Queue(n);
 }
 
-bool judge_inside(ALLEGRO_EVENT ev,ALLEGRO_BITMAP *bitmap)
+/*bool judge_inside(ALLEGRO_EVENT ev,ALLEGRO_BITMAP *bitmap)
 {
     int mouse_x = ev.mouse.x;
     int mouse_y = ev.mouse.y;
@@ -139,7 +140,7 @@ bool judge_inside(ALLEGRO_EVENT ev,ALLEGRO_BITMAP *bitmap)
     if(mouse_y < y)return false;
     if(mouse_y > y + height)return false;
     return true;
-}
+}*/
 
 int Rand(int low,int high)
 {

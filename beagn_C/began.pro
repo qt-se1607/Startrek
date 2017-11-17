@@ -21,5 +21,7 @@ LIBS+=-L/usr/lib -lallegro_ttf
 LIBS+=-L/usr/lib -lallegro_video
 
 HEADERS += \
-    variate.h
+    variate.h \
+    allegro.h \
+    began.h
 HEADERS += color.h
